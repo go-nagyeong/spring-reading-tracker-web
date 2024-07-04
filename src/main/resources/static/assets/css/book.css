@@ -1,0 +1,792 @@
+.btn-link {
+    color: var(--bs-heading-color);
+}
+
+/**
+ * 체크박스 (item-check)
+ */
+.item-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 0;
+}
+
+/**
+ * 책 표지 (item-img)
+ *   > img-item
+ */
+.item-img {
+    vertical-align: top;
+}
+
+/**
+ * 책 정보 (item-info)
+ *   > info-num
+ *   > info-name
+ *   > info-pub-grp
+ *   > info-tag
+ *   > info-detail
+ *   > info-rating
+ */
+.item-info {
+    display: flex;
+    flex-direction: column;
+    padding-left: calc(var(--bs-gutter-x) * 0.3);
+}
+
+@media (max-width: 767px) {
+    .item-info {
+        padding-left: 0;
+    }
+}
+
+.item-info > * + * {
+    margin-top: .25rem;
+}
+
+@media (max-width: 767px) {
+    .item-info > * + * {
+        margin-top: .1rem;
+    }
+}
+
+/* info-num */
+.item-info .info-num {
+    display: block;
+    margin-bottom: .25rem;
+}
+@media (max-width: 767px) {
+    .item-info .info-num {
+        font-size: 0.875rem;
+    }
+}
+
+/* info-name */
+.item-info .info-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 767px) {
+    .item-info .info-name {
+        margin-top: 0;
+    }
+}
+
+.item-info .info-name .bk-name {
+    color: var(--bs-heading-color);
+    font-size: 1rem;
+    font-weight: 600;
+}
+@media (max-width: 767px) {
+    .item-info .info-name .bk-name {
+        font-size: 0.95rem;
+    }
+}
+
+/* info-pub-grp */
+.item-info .info-pub-grp {
+    display: block;
+    color: var(--bs-muted-color);
+    font-size: .875rem;
+}
+
+/* info-tag */
+.item-info .info-tag {
+    font-size: .8125rem;
+}
+
+.item-info .info-tag .tag {
+    display: inline-block;
+}
+
+.item-info .info-tag .tag a {
+    display: block;
+    margin: .2rem .2rem 0 0;
+    padding: .1rem .6rem;
+    white-space: nowrap;
+    border: solid 1px #ebebeb;
+    border-radius: 12px;
+    color: #666;
+    background-color: #f8f8f8;
+}
+
+/* info-desc */
+.item-info .info-detail {
+    color: var(--bs-body-color);
+    font-size: .8125rem;
+    margin-top: .5rem;
+}
+
+.item-info .info-detail .bk-intro {
+    color: var(--bs-muted-color);
+}
+
+.item-info .info-detail .bk-intro.ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* info-rating(info-rating-wrap) */
+.item-info .info-rating-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.item-info .info-rating {
+    display: block;
+    font-size: .875rem;
+    margin-top: .5rem;
+}
+
+.item-info .info-rating > * {
+    color: var(--bs-body-color);
+    line-height: 16px;
+    vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+    .item-info .info-rating .rating-grade {
+        display: block;
+    }
+}
+
+.item-info .info-rating .rating-detail {
+    color: var(--bs-muted-color);
+    font-size: .75rem;
+    margin-top: -3px;
+}
+
+.item-info .item-btn-sm-col > :first-child {
+    margin-right: .25rem;
+}
+
+
+/**
+ * item-btn-col (버튼)
+ */
+.item-btn-col {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.item-btn-sm-col {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+
+/* ---------------------------- */
+/**
+* 책 목록
+*/
+.tp-list > li {
+    padding: 30px 0;
+}
+
+.tp-list > li:first-child {
+    padding-top: 15px;
+}
+
+@media (max-width: 767px) {
+    .tp-list > li {
+        padding: 20px 0;
+    }
+
+    .tp-list > li:first-child {
+        padding-top: 0;
+    }
+}
+
+.tp-list > li + li {
+    border-top: solid 1px #ebebeb;
+}
+#readingBookList > li + li {
+    border: 0;
+}
+
+#readingBookList.selectable li {
+    margin: 0 -1.5rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+}
+#readingBookList.selectable li.active {
+    background-color: rgba(var(--bs-gray-rgb), 0.1);
+    order: -1;
+}
+#readingBookList.selectable .collapse.show li {
+    animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+    25%, 75% {opacity: 0.5;}
+    50% {opacity: 0;}
+}
+
+.tp-list > li > .item-unit {
+    position: relative;
+}
+
+/* 책 검색 결과 */
+.item-unit .item-img { width: 28%; }
+.item-unit .item-info { width: 72%; }
+/* 마이페이지 > 읽고 있는 책 */
+#readingBookList .item-unit .item-img { width: 24%; }
+#readingBookList .item-unit .item-info { width: 76%; }
+/* 마이페이지 > 내 책장*/
+#myBookList .item-unit .item-img { width: 30%; }
+#myBookList .item-unit .item-info { width: 70%; }
+
+@media (min-width: 768px) {
+    .item-unit .item-img { width: 20%; }
+    .item-unit .item-info { width: 55%; }
+    .item-unit .item-btn-col { width: 25%; }
+
+    #readingBookList .item-unit .item-img { width: 14%; }
+    #readingBookList .item-unit .item-info { width: 86%; }
+
+    #myBookList .item-unit .item-check { width: 5%; }
+    #myBookList .item-unit .item-img { width: 17%; }
+    #myBookList .item-unit .item-info { width: 55%; }
+    #myBookList .item-btn-col { width: 23%; }
+}
+@media (min-width: 992px) {
+    .item-unit .item-img { width: 14%; }
+    .item-unit .item-info { width: 68%; }
+    .item-unit .item-btn-col { width: 18%; }
+
+    #readingBookList .item-unit .item-img { width: 16%; }
+    #readingBookList .item-unit .item-info { width: 84%; }
+
+    #myBookList .item-unit .item-check { width: 4%; }
+    #myBookList .item-unit .item-img { width: 14%; }
+    #myBookList .item-unit .item-info { width: 64%; }
+    #myBookList .item-btn-col { width: 18%; }
+}
+
+
+/* ---------------------------- */
+/**
+* 책 상세
+*/
+.col-100 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+@media (min-width: 768px) {
+    .col-md-50 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+}
+@media (min-width: 992px) {
+    .col-lg-30 {
+        flex: 0 0 auto;
+        width: 30%;
+    }
+    .col-lg-70 {
+        flex: 0 0 auto;
+        width: 70%;
+    }
+}
+
+.item-detail .item-img {
+    width: 25%;
+}
+
+.item-detail .item-info {
+    width: 75%;
+}
+
+.item-detail .bk-name {
+    font-size: 1.125rem !important;
+}
+
+@media (max-width: 575px) {
+    .item-detail .bk-name {
+        font-size: 1.05rem !important;
+    }
+}
+
+/* 내 독서 관리 */
+.card-body > .carousel {
+    position: static;
+}
+
+.card-body .carousel-indicators {
+    height: 1.5rem;
+    margin: 0;
+    align-items: center;
+}
+
+.card-body .carousel-indicators [data-bs-target] {
+    width: 20px;
+}
+
+.card-body .carousel-inner {
+    border: 1px solid var(--bs-light-primary);
+    border-radius: .5rem;
+    overflow: visible;
+}
+
+.card-body .carousel-inner-top-bar {
+    height: 8px;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-primary);
+    margin-bottom: .35rem;
+    border-top-left-radius: var(--bs-card-border-radius);
+    border-top-right-radius: var(--bs-card-border-radius);
+}
+
+.card-body .carousel-item {
+    padding: 0 1.4rem .5rem 1.8rem;
+}
+
+.card-body .carousel-control-prev,
+.card-body .carousel-control-next {
+    width: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.card-body .carousel-control-prev-icon,
+.card-body .carousel-control-next-icon {
+    background-image: none;
+    width: inherit;
+    height: inherit;
+}
+
+/* 내 독서 노트 */
+.list-group {
+    font-size: 0.9375rem;
+}
+
+.list-group-item:hover, .list-group-item:focus {
+    background-color: rgba(var(--bs-gray-rgb), 0.06);
+}
+
+/* 내 리뷰 */
+.rv-wrap {
+    position: relative;
+    border: 1px solid #d9dee3;
+    border-radius: .375rem;
+    padding: 0.6rem 0.8rem 0.5rem;
+}
+
+.rv-wrap:hover, .rv-wrap:focus {
+    background-color: rgba(var(--bs-gray-rgb), 0.06);
+}
+
+.rv-wrap span {
+    cursor: pointer;
+}
+
+.rv-content {
+    font-size: .9rem;
+}
+
+.rv-content.ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rv-content.ellipsis.line-clamp-2 {
+    -webkit-line-clamp: 2;
+}
+
+.rv-content.ellipsis.line-clamp-3 {
+    -webkit-line-clamp: 3;
+}
+
+.rv-sub {
+    color: var(--bs-muted-color);
+    font-size: .875rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+/* 리뷰/평점 */
+.rv-list > li {
+    padding: 20px 0;
+}
+
+.rv-list > li:first-child {
+    padding-top: 10px;
+}
+
+@media (max-width: 767px) {
+    .rv-list > li {
+        padding: 15px 0;
+    }
+
+    .rv-list > li:first-child {
+        padding-top: 0;
+    }
+}
+
+.rv-list > li + li {
+    border-top: solid 1px #ebebeb;
+}
+
+.rv-list .rv-unit {
+    display: flex;
+}
+
+.rv-list .rv-left {
+    flex-shrink: 0;
+    margin-right: .8rem;
+}
+
+.rv-list .rv-right {
+    /*flex-shrink: 1;*/
+}
+
+.rv-list .rv-user {
+    color: var(--bs-heading-color);
+    font-weight: 500;
+}
+
+.rv-list .rv-info {
+    font-size: .875rem;
+    margin-bottom: .5rem;
+}
+
+.rv-list .rv-info .rv-rating {
+    vertical-align: middle;
+}
+
+.rv-list .rv-info .rv-date {
+    vertical-align: middle;
+    color: var(--bs-muted-color);
+}
+
+
+/* ---------------------------- */
+/**
+* 마이페이지
+*/
+.bookshelf {
+    width: 100%;
+    position: relative;
+    overflow: visible;
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+}
+
+.bookshelf .books {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    padding-left: 1.5rem;
+    width: 90%;
+}
+.bookshelf .more {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%;
+    height: 100%;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+}
+.bookshelf .shelf {
+    height: 1rem;
+    border-radius: 2px;
+    z-index: 1;
+    box-shadow: 0 -5px 3px 0 rgba(var(--bs-gray-rgb), 0.2),
+        0 15px 20px 0 rgba(var(--bs-gray-rgb), 0.7),
+        0 5px 5px 0 rgba(var(--bs-gray-rgb), 0.3);
+}
+
+/* 도서 디폴트 크기: 152*225*35 */
+.bookshelf .book {
+    --book-width: 152px; /* 도서별 사이즈 => JS로 동적 세팅 */
+    --book-height: 225px;
+    --book-depth: 35px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: translateZ(0) rotateY(0);
+    transition: transform 1s;
+    overflow: visible;
+    margin: 0 0.05rem;
+}
+.bookshelf.ui-book-cover .book {
+    margin: 0 0.5rem;
+}
+.bookshelf.ui-library .book:hover {
+    z-index: 1;
+    /*transform: rotateX(-25deg) rotateY(-40deg) rotateZ(-15deg) translateY(50px) translateX(-30px);*/
+    /*transform: rotateX(-5deg) rotateY(-30deg) rotateZ(-15deg) translateX(-10px);*/
+    transform: rotateY(-90deg);
+}
+
+.bookshelf .spine {
+    width: var(--book-depth);
+    height: var(--book-height);
+    min-width: 22px;
+    position: relative;
+    border-radius: 3px;
+    background-color: var(--bs-primary);
+    transform: rotateY(0deg) translateZ(0px);
+    padding: 4px;
+}
+.bookshelf.ui-book-cover .spine {
+    display: none;
+}
+.bookshelf .spine-title {
+    height: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.875rem;
+    line-height: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    writing-mode: vertical-lr;
+    /*text-orientation: upright;*/
+    /*word-spacing: -12px;*/
+}
+
+.bookshelf.ui-library .side {
+    position: absolute;
+    text-align: center;
+    transform-origin: center left;
+}
+
+.bookshelf .top {
+    width: var(--book-depth);
+    height: var(--book-width);
+    min-width: 22px;
+    top: 0;
+    background-image: linear-gradient(90deg, white 90%, gray 10%);
+    background-size: 5px 5px;
+    transform: rotateX(90deg) translateZ(calc(var(--book-width) / 2)) translateY(calc(var(--book-width) / 2 * -1));
+}
+.bookshelf.ui-book-cover .top {
+    display: none;
+}
+
+.bookshelf .cover {
+    width: var(--book-width);
+    height: var(--book-height);
+    box-shadow: 0 -5px 20px 2px rgba(var(--bs-gray-rgb), 0.3);
+}
+.bookshelf.ui-library .cover {
+    top: 0;
+    left: min(22px, var(--book-depth));
+    transform: rotateY(90deg) translateZ(0);
+    transition: transform 1s;
+}
+.bookshelf .cover img {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 767px) {
+    .bookshelf .books {
+        padding-left: 1rem;
+    }
+    .bookshelf.ui-book-cover .book {
+        margin: 0 0.35rem;
+    }
+    .bookshelf .spine {
+        width: calc(var(--book-depth) * 0.5);
+        height: calc(var(--book-height) * 0.5);
+    }
+    .bookshelf .spine-title {
+        font-weight: 500;
+    }
+    .bookshelf .top {
+        width: calc(var(--book-depth) * 0.5);
+        height: calc(var(--book-width) * 0.5);
+        min-width: calc(22px * 0.5);
+        transform: rotateX(90deg) translateZ(calc(var(--book-width) * 0.5 / 2)) translateY(calc(var(--book-width) * 0.5 / 2 * -1));
+    }
+    .bookshelf .cover {
+        width: calc(var(--book-width) * 0.5);
+        height: calc(var(--book-height) * 0.5);
+    }
+}
+
+/* ---------------------------- */
+/**
+* 독서 노트
+*/
+/* 형광펜 */
+.highlight-list {
+    --hl-red-color: #FF6F61;
+    --hl-orange-color: #FFA500;
+    --hl-blue-color: #5BC0EB;
+    --hl-grean-color: #4CAF50;
+    --hl-navy-color: #0074D9;
+    --hl-purple-color: #9B5DE5;
+}
+
+/* 포스트잇 */
+.post-its {
+    --pi-padding-y: 0.8rem;
+    --pi-gap: 1.25rem;
+    --pi-width: 100%;
+    --pi-height: 2rem;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.875rem;
+    padding: var(--pi-padding-y) 0;
+    gap: var(--pi-gap);
+    --pi-red-color: #FF6F61;
+    --pi-orange-color: #FFA500;
+    --pi-blue-color: #5BC0EB;
+    --pi-grean-color: #4CAF50;
+    --pi-navy-color: #0074D9;
+    --pi-purple-color: #9B5DE5;
+}
+.post-its > li {
+    width: var(--pi-width);
+    height: var(--pi-height);
+}
+
+.post-its > li > div {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+.post-its > li > .post-it-bg {
+    padding: 0.25rem;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+}
+.post-its > li:nth-child(1) > .post-it-bg { background-color: var(--pi-red-color); }
+.post-its > li:nth-child(2) > .post-it-bg { background-color: var(--pi-orange-color); }
+.post-its > li:nth-child(3) > .post-it-bg { background-color: var(--pi-blue-color); }
+.post-its > li:nth-child(4) > .post-it-bg { background-color: var(--pi-grean-color); }
+.post-its > li:nth-child(5) > .post-it-bg { background-color: var(--pi-navy-color); }
+.post-its > li:nth-child(6) > .post-it-bg { background-color: var(--pi-purple-color); }
+
+.post-its > li > div > input {
+    color: #fff;
+    background: none !important;
+    border: 0 !important;
+    outline: none !important;
+}
+.post-its > li > div > input::placeholder {
+    color: #fff;
+}
+.post-its > li > div > input:first-child {
+    width: 80%;
+    font-weight: 500;
+}
+.post-its > li > div > input:last-child {
+    width: 20%;
+    text-align: right;
+}
+
+.post-its > li > div > a {
+    color: rgba(var(--bs-body-color-rgb), 0.3);
+}
+.post-its > li.active > div > a {
+    color: var(--bs-body-color);
+}
+
+
+.bookshelf.with-post-it {
+    margin-bottom: 2rem;
+}
+
+.bookshelf.with-post-it .books {
+    width: 100%;
+    padding: 0;
+}
+
+.bookshelf.with-post-it .book {
+    --book-size: calc((100% - (4rem * 6)) / 6);
+    --book-margin-x: 2rem;
+    aspect-ratio: 5 / 7;
+    display: flex;
+    flex: 0 0 auto;
+    width: var(--book-size);
+    margin: 0 var(--book-margin-x);
+}
+
+.bookshelf.with-post-it .book .cover {
+    width: 100%;
+    height: 100%;
+}
+
+.book .post-its {
+    --pi-gap: 0.9rem;
+    --pi-width: 1rem;
+    --pi-height: 0.75rem;
+}
+
+@media (max-width: 1399px) {
+    .bookshelf .book .post-its {
+        --pi-gap: 0.7rem;
+        --pi-width: 0.8rem;
+        --pi-height: 0.6rem;
+    }
+    .bookshelf.with-post-it .book {
+        --book-size: calc((100% - (3.6rem * 6)) / 6);
+        --book-margin-x: 1.8rem;
+    }
+}
+@media (max-width: 1199px) {
+    .bookshelf .book .post-its {
+        --pi-gap: 0.9rem;
+        --pi-width: 1rem;
+        --pi-height: 0.7rem;
+    }
+    .bookshelf.with-post-it .book {
+        --book-size: calc((100% - (4.4rem * 5)) / 5);
+        --book-margin-x: 2.2rem;
+    }
+}
+@media (max-width: 991px) {
+    .bookshelf .book .post-its {
+        --pi-gap: 0.8rem;
+        --pi-width: 0.9rem;
+        --pi-height: 0.75rem;
+    }
+    .bookshelf.with-post-it .book {
+        --book-size: calc((100% - (4rem * 4)) / 4);
+        --book-margin-x: 2rem;
+    }
+}
+@media (max-width: 767px) {
+    .bookshelf .book .post-its {
+        --pi-padding-y: 0.6rem;
+        --pi-gap: 0.55rem;
+        --pi-width: 0.65rem;
+        --pi-height: 0.55rem;
+    }
+    .bookshelf.with-post-it .book {
+        --book-size: calc((100% - (3rem * 3)) / 3);
+        --book-margin-x: 1.5rem;
+    }
+}
+@media (max-width: 375px) {
+    .bookshelf .book .post-its {
+        --pi-padding-y: 0.5rem;
+        --pi-gap: 0.5rem;
+        --pi-width: 0.6rem;
+        --pi-height: 0.5rem;
+    }
+    .bookshelf.with-post-it .book {
+        --book-size: calc((100% - (2.4rem * 3)) / 3);
+        --book-margin-x: 1.2rem;
+    }
+}

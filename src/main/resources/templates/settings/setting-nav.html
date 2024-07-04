@@ -1,0 +1,21 @@
+<ul th:fragment="nav (menu)" class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link" th:classappend="${menu == 'account' ? 'active' : ''}"
+           th:href="@{/settings/account-setting}">
+            <i class="bx bx-user me-1"></i> 계정
+        </a>
+    </li>
+    <!-- TODO: 소셜 연동, 앱 설정 -->
+<!--    <li class="nav-item">-->
+<!--        <a class="nav-link" th:classappend="${menu == 'social' ? 'active' : ''}"-->
+<!--           th:href="@{/settings/social-setting}">-->
+<!--            <i class="bx bx-link-alt me-1"></i> 소셜 연동-->
+<!--        </a>-->
+<!--    </li>-->
+<!--    <li class="nav-item">-->
+<!--        <a class="nav-link" th:classappend="${menu == 'app' ? 'active' : ''}"-->
+<!--           th:href="@{/settings/app-setting}">-->
+<!--            <i class="bx bx-cog me-1"></i> 앱 설정-->
+<!--        </a>-->
+<!--    </li>-->
+</ul>

@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'San Fransisco';
+    src: url('../fonts/sf-pro-display/SFPRODISPLAYREGULAR.otf') format('opentype');
+    font-weight: 300;
+}
+@font-face {
+    font-family: 'San Fransisco';
+    src: url('../fonts/sf-pro-display/SFPRODISPLAYMEDIUM.otf') format('opentype');
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'San Fransisco';
+    src: url('../fonts/sf-pro-display/SFPRODISPLAYBOLD.otf') format('opentype');
+    font-weight: 700;
+}

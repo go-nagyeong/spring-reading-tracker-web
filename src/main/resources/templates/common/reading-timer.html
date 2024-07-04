@@ -1,0 +1,68 @@
+<div th:fragment="div" class="d-flex flex-column h-100 reading-timer pause" id="">
+    <h1 class="sw-time-wrap pt-3 pb-4">
+        <span class="sw-hour">00</span>
+        : <span class="sw-min">00</span>
+        : <span class="sw-sec">00</span>
+    </h1>
+    <div class="btn-group sw-button-wrap" role="group" aria-label="Second group">
+        <button type="button" class="btn btn-outline-primary btn-sm timer-play-btn">
+            <i class="bx bx-play bx-sm"></i>
+            <i class="bx bx-pause bx-sm"></i>
+        </button>
+        <a href="javascript:void(0);" class="btn btn-outline-primary btn-sm" role="button"
+           data-bs-toggle="popover" data-bs-offset="0,14" data-bs-placement="bottom"
+           data-bs-title="저장 없이 중단"
+           data-bs-content="<p class='mb-2'>정말 하시겠습니까?</p>
+                <div class='d-flex justify-content-between'>
+                    <button type='button' class='btn btn-sm btn-outline-secondary' data-bs-dismiss='popover'>닫기</button>
+                    <button type='button' class='btn btn-sm btn-primary' id='stopBtn' data-bs-dismiss='popover'>예</button>
+                </div>">
+            <i class="bx bx-stop bx-sm"></i>
+        </a>
+        <a href="javascript:void(0);" class="btn btn-primary btn-sm" role="button"
+           data-bs-toggle="popover" data-bs-offset="0,14" data-bs-placement="bottom"
+           data-bs-title="저장 후 종료"
+           data-bs-content="<p class='mb-2'>정말 하시겠습니까?</p>
+                <div class='d-flex justify-content-between'>
+                    <button type='button' class='btn btn-sm btn-outline-secondary' data-bs-dismiss='popover'>닫기</button>
+                    <button type='button' class='btn btn-sm btn-primary' id='closeBtn' data-bs-dismiss='popover'>예</button>
+                </div>">
+            <i class="bx bx-check bx-sm"></i>
+        </a>
+    </div>
+</div>
+
+<script>
+    window.Helpers.initializePopovers();
+
+    if (window.stopwatch) {
+        window.stopwatch.setTime();
+    }
+
+    function playOrPause() {
+        if (window.stopwatch.isPlaying) {
+            window.stopwatch.stop();
+        } else {
+            window.stopwatch.start();
+        }
+    }
+
+    // 플레이/일시정지 버튼 클릭 이벤트
+    for(const el of document.querySelectorAll('.timer-play-btn')) {
+        el.addEventListener('click', function (event) {
+            event.stopImmediatePropagation();
+            playOrPause();
+            window.applyTimerShortcutOnline();
+        });
+    }
+
+    // 중단/종료 버튼 클릭 이벤트
+    document.addEventListener('click', function (event) {
+        event.stopImmediatePropagation();
+        console.log('click')
+        if (event.target.id === 'stopBtn' || event.target.id === 'closeBtn') {
+            window.stopwatch.reset();
+            window.applyTimerShortcutOnline();
+        }
+    });
+</script>

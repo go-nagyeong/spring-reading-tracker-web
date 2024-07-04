@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" class="layout-navbar-fixed layout-menu-fixed">
+
+<head th:replace="~{layouts/base :: head(_, ~{::link})}">
+    <link rel="stylesheet" th:href="@{/assets/css/dashboard.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/book.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: _body('dashboard', ~{::div}, ~{::script}, true)}">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <!-- 독서 타이머 -->
+        <div class="col-lg-6 mb-4 order-1">
+            <div class="card">
+                <div class="row row-bordered g-0">
+                    <div class="col-12">
+                        <h5 class="card-header">독서 타이머</h5>
+                        <div class="card-body">
+                            <div id="readingTimerCont">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5>읽고 있는 책 <em class="fs-6 text-primary">2</em></h5>
+                            <button class="btn btn-sm btn-outline-primary" data-bs-show="collapse"
+                                    data-bs-target="#collapseExample">책 변경
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <ul id="readingBookList" class="tp-list selectable">
+                                <li class="active">
+                                    <div class="item-unit row">
+                                        <div class="item-img">
+                                            <span class="img-item">
+                                                <img class="img-thumbnail" src="/assets/img/book01.jpg" alt="배움의 발견">
+                                            </span>
+                                        </div>
+                                        <div class="item-info">
+                                            <div class="info-name">
+                                                <a href="/book/book-detail" class="bk-name btn-link">
+                                                    배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)
+                                                </a>
+                                            </div>
+                                            <div class="info-detail mt-1">
+                                                <p class="text-muted">2024. 05. 01 부터 읽는 중</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <div class="collapse" id="collapseExample">
+                                    <li>
+                                        <div class="item-unit row">
+                                            <div class="item-img">
+                                                <span class="img-item">
+                                                    <a href="/book/book-detail">
+                                                        <img class="img-thumbnail" src="/assets/img/book02.jpg"
+                                                             alt="종의 기원">
+                                                    </a>
+                                                </span>
+                                            </div>
+                                            <div class="item-info">
+                                                <div class="info-name">
+                                                    <a href="/book/book-detail" class="bk-name btn-link">
+                                                        종의 기원
+                                                    </a>
+                                                </div>
+                                                <div class="info-detail mt-1">
+                                                    <p class="text-muted">2024. 05. 01 부터 읽는 중</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item-unit row">
+                                            <div class="item-img">
+                                                <span class="img-item">
+                                                    <a href="/book/book-detail">
+                                                        <img class="img-thumbnail" src="/assets/img/book03.jpg"
+                                                             alt="일류의 조건">
+                                                    </a>
+                                                </span>
+                                            </div>
+                                            <div class="item-info">
+                                                <div class="info-name">
+                                                    <a href="/book/book-detail" class="bk-name btn-link">
+                                                        일류의 조건
+                                                    </a>
+                                                </div>
+                                                <div class="info-detail mt-1">
+                                                    <p class="text-muted">2024. 05. 01 부터 읽는 중</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 일일 독서 목표 -->
+        <div class="col-lg-6 mb-4 order-2">
+            <div class="card mb-4" id="readingGoalCont">
+                <div class="row row-bordered g-0">
+                    <div class="col-12">
+                        <div class="d-flex align-items-start row">
+                            <div class="col-sm-7">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">축하해요 홍길동님! 🎉</h5>
+                                    <p class="">
+                                        오늘의 독서 목표를 <span class="fw-medium">72%</span> 이상 달성하셨어요!<br/>
+                                        <!--                                                새로 획득한 뱃지를 확인해 보세요!-->
+                                    </p>
+                                    <!--                                            <a href="javascript:void(0);" class="btn btn-sm btn-outline-primary">보러가기</a>-->
+                                </div>
+                            </div>
+                            <div class="d-none d-sm-block col-sm-5 text-center text-sm-left align-self-end">
+                                <div class="card-body ps-0 pb-0">
+                                    <img alt="View Badge User"
+                                         class="img-fluid max-w-px-240"
+                                         th:src="@{/assets/img/illustrations/reading-book-people.png}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5>일일 목표 달성</h5>
+                            <div class="dropdown">
+                                <button aria-expanded="false" aria-haspopup="true" class="btn p-0"
+                                        data-bs-toggle="dropdown" id="dailyGoalEdit" type="button">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div aria-labelledby="dailyGoalEdit" class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" data-bs-target="#smallModal" data-bs-toggle="modal"
+                                       href="javascript:void(0);">일일 목표 설정</a>
+                                    <a class="dropdown-item text-danger" href="javascript:void(0);">초기화</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="week-stats-inline mb-4">
+                                <a class="btn"></a>
+                                <a class="btn"></a>
+                                <a class="btn"></a>
+                                <a class="btn"></a>
+                                <a class="btn"></a>
+                                <a class="btn"></a>
+                                <a class="btn"></a>
+                                <!-- TODO: 요일 클릭하면 아래 바 바뀌게 -->
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="progress col">
+                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="75"
+                                         class="progress-bar"
+                                         role="progressbar" style="width: 75%">
+                                        80%
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span>80/100분</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 월간 독서 목표 -->
+                <div class="col-sm-6 mb-4 mb-sm-0">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5>월간 목표 달성</h5>
+                            <div class="dropdown">
+                                <button aria-expanded="false" aria-haspopup="true" class="btn p-0"
+                                        data-bs-toggle="dropdown" id="monthlyGoalEdit" type="button">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div aria-labelledby="monthlyGoalEdit" class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" data-bs-target="#smallModal" data-bs-toggle="modal"
+                                       href="javascript:void(0);">월간 목표 설정</a>
+                                    <a class="dropdown-item text-danger" href="javascript:void(0);">초기화</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-medium">5월</span>
+                                <div class="text-end">
+                                    <h3 class="card-title mb-1">2<span class="fs-4 ms-1">/ 8 권</span></h3>
+                                    <small class="text-success fw-medium">
+                                        <i class="bx bx-chevron-up"></i>(전월 대비) +2
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="progress col">
+                                <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="25"
+                                     class="progress-bar" role="progressbar" style="width: 25%">
+                                    25%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 연간 독서 목표 -->
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <h5>연간 목표 달성</h5>
+                            <div class="dropdown">
+                                <button aria-expanded="false" aria-haspopup="true" class="btn p-0"
+                                        data-bs-toggle="dropdown" id="yearlyGoalEdit" type="button">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div aria-labelledby="yearlyGoalEdit" class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" data-bs-target="#smallModal" data-bs-toggle="modal"
+                                       href="javascript:void(0);">연간 목표 설정</a>
+                                    <a class="dropdown-item text-danger" href="javascript:void(0);">초기화</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-medium">2024년</span>
+                                <div class="text-end">
+                                    <h3 class="card-title mb-1">36<span class="fs-4 ms-1">/ 100 권</span></h3>
+                                    <small class="text-danger fw-medium">
+                                        <i class="bx bx-chevron-down"></i>(전년 대비) -3
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="progress col">
+                                <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="36" class="progress-bar"
+                                     role="progressbar" style="width: 36%">
+                                    36%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 베스트셀러 -->
+    <div class="col-12 mb-4 order-0">
+        <div class="card" id="bestSellerCont">
+            <div class="card-header d-flex align-items-center justify-content-between py-3">
+                <h5>베스트셀러</h5>
+                <a class="btn btn-sm btn-outline-primary under-construction" href="javascript:void(0);">더보기</a>
+            </div>
+
+            <div class="card-group">
+                <div class="card">
+                    <a th:href="@{/book/book-detail}">
+                        <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book01.jpg}">
+                        <div class="card-body">
+                            <p class="card-title fw-medium">배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)</p>
+                            <p class="card-text">
+                                <small class="text-muted">타라 웨스트오버</small>
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book02.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book03.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book04.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book05.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book06.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book01.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <img alt="Card image cap" class="card-img-top" th:src="@{/assets/img/book02.jpg}">
+                    <div class="card-body">
+                        <p class="card-title fw-medium">종의 기원</p>
+                        <p class="card-text">
+                            <small class="text-muted">정유정</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/js/reading-goal-stats.js}"></script>
+<script>
+    /**
+     * (HTML 동적 로드) 독서 타이머
+     */
+    document.addEventListener('DOMContentLoaded', function () {
+        const target = document.querySelector('#readingTimerCont');
+        fetchHTML('/common/reading-timer', target);
+    });
+
+    /**
+     * 독서 타이머 책 선택 이벤트
+     */
+    const bookListWrap = document.querySelector('#readingBookList');
+    const bookListCollapse = document.querySelector('#readingBookList .collapse');
+    const bookListElements = bookListWrap.querySelectorAll('li');
+    bookListElements.forEach(el => {
+        el.addEventListener('click', function (event) {
+            // 기존 active 엘리먼트 비활성화
+            const actived = bookListWrap.querySelector('.active');
+            if (actived) {
+                actived.classList.remove('active');
+                bookListCollapse.prepend(actived);
+            }
+
+            // 클릭한 엘리먼트 활성화
+            el.classList.add('active');
+            bookListWrap.prepend(el);
+
+            bookListCollapse.classList.remove('show');
+        });
+    });
+
+    /**
+     * (HTML 동적 로드) 독서 목표 설정 모달
+     */
+    const goalModalButtons = document.querySelectorAll('[data-bs-toggle=modal]');
+    goalModalButtons.forEach(el => {
+        el.addEventListener('click', function (event) {
+            const target = document.querySelector('#smallModal .modal-content');
+            fetchHTML('/modal-daily-goal-edit', target);
+        });
+    });
+</script>
+</body>
+</html>

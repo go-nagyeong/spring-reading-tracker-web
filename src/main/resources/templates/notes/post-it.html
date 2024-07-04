@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, ~{::link})}">
+    <title>북카이브 - 독서 노트</title>
+    <link rel="stylesheet" th:href="@{/assets/css/book.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: _body('reading-note', ~{::div}, ~{::script}, true)}">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <ul th:replace="~{notes/note-nav :: nav('post-it')}"></ul>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <div>
+                <h5 class="mb-1">포스트잇</h5>
+                <div class="text-muted">
+                    <i class="bx bx-tag bx-xs me-1"></i>간단한 한 줄 메모를 해보세요.
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-icon btn-primary btn-md" data-bs-toggle="modal"
+                        data-bs-target="#mediumModal">
+                    <i class="bx bx-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="bookshelf ui-book-cover with-post-it">
+                <div class="books">
+                    <th:block th:each="num : ${#numbers.sequence(1,8)}">
+                        <div class="book" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCont">
+                            <div class="cover">
+                                <img src="/assets/img/book03.jpg">
+                            </div>
+                            <ul class="post-its">
+                                <li>
+                                    <div class="post-it-bg"></div>
+                                </li>
+                                <li>
+                                    <div class="post-it-bg"></div>
+                                </li>
+                                <li>
+                                    <div class="post-it-bg"></div>
+                                </li>
+                                <li>
+                                    <div class="post-it-bg"></div>
+                                </li>
+                                <li>
+                                    <div class="post-it-bg"></div>
+                                </li>
+                                <li>
+                                    <div class="post-it-bg"></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </th:block>
+                </div>
+                <div class="shelf"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/js/bookshelf.js}"></script>
+
+<script>
+    /**
+     * (HTML 동적 로드) 포스트잇 신규 모달
+     */
+    const modalButton = document.querySelector('[data-bs-toggle=modal]');
+    modalButton.addEventListener('click', function () {
+        const target = document.querySelector('#mediumModal .modal-content');
+        fetchHTML('/notes/modal-post-it-add', target);
+    })
+
+    /**
+     * (HTML 동적 로드) 포스트잇 상세보기 오프캔버스
+     */
+    const offcanvasButton = document.querySelector('[data-bs-toggle=offcanvas]');
+    offcanvasButton.addEventListener('click', function () {
+        const target = document.querySelector('#offcanvasCont .offcanvas-body');
+        const callback = () => {
+            document.querySelector('#offcanvasCont .offcanvas-title').innerText = '포스트잇 상세';
+        }
+        fetchHTML('/notes/offcanvas-post-it-detail', target, callback);
+    })
+</script>
+</body>
+</html>

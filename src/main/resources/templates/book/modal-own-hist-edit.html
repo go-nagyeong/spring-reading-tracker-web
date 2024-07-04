@@ -1,0 +1,62 @@
+<div class="modal-header">
+    <h5 class="modal-title">구매/대여 이력 기록</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="list-group list-group-horizontal text-center" role="tablist">
+        <a class="list-group-item list-group-item-md list-group-item-action active" data-bs-toggle="list"
+           href="#purchaseHistItem" aria-selected="false" role="tab" tabindex="-1">구매이력</a>
+        <a class="list-group-item list-group-item-md list-group-item-action" data-bs-toggle="list"
+           href="#rentalHistItem" aria-selected="true" role="tab">대여이력</a>
+    </div>
+    <form id="bookHistForm">
+        <div class="tab-content p-0 mt-3">
+            <div class="tab-pane fade active show" id="purchaseHistItem" role="tabpanel">
+                <div class="mb-2">
+                    <label class="form-label">구매일자</label>
+                    <input type="date" class="form-control"
+                           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">구매처</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">가격</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₩</span>
+                        <input type="number" class="form-control">
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">메모</label>
+                    <textarea class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="rentalHistItem" role="tabpanel">
+                <div class="mb-2">
+                    <label class="form-label">대여일자</label>
+                    <input type="date" class="form-control"
+                           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">반납기한</label>
+                    <input type="date" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">대여처</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">메모</label>
+                    <textarea class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+    <button type="button" class="btn btn-primary">저장</button>
+</div>

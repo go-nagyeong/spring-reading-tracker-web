@@ -1,0 +1,87 @@
+<div class="item-unit mb-2">
+    <div class="item-img mb-1" style="width: 45%;">
+<!--        <span class="img-item">-->
+<!--            <img class="img-thumbnail" src="/assets/img/book01.jpg" alt="배움의 발견">-->
+<!--        </span>-->
+        <div class="book book-lg d-flex" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCont">
+            <div class="cover">
+                <img src="/assets/img/book03.jpg">
+            </div>
+            <ul class="post-its">
+                <li>
+                    <div class="post-it-bg"></div>
+                </li>
+                <li>
+                    <div class="post-it-bg"></div>
+                </li>
+                <li>
+                    <div class="post-it-bg"></div>
+                </li>
+                <li>
+                    <div class="post-it-bg"></div>
+                </li>
+                <li>
+                    <div class="post-it-bg"></div>
+                </li>
+                <li>
+                    <div class="post-it-bg"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="item-info w-100">
+        <div class="info-name">
+            <a href="/book/book-detail" class="bk-name btn-link">
+                배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)
+            </a>
+        </div>
+        <div class="info-detail mt-1">
+            <p class="text-muted">2024. 05. 01 부터 읽는 중</p>
+        </div>
+    </div>
+</div>
+
+<ul class="post-its">
+    <li class="d-flex gap-2 active" id="post-it1">
+        <div class="post-it-bg">
+            <input type="text" value="인상 깊었던 내용">
+            <input type="text" value="124" placeholder="0">p
+        </div>
+        <div>
+            <a href="#" class="active-btn" data-id="#post-it1">
+                <i class="bx bx-check bx-sm"></i>
+            </a>
+        </div>
+    </li>
+    <th:block th:each="num : ${#numbers.sequence(2,6)}">
+        <li class="d-flex gap-2" th:id="'post-it'+${num}">
+            <div class="post-it-bg">
+                <input type="text" value="" placeholder="한 줄 메모" disabled>
+                <input type="number" value="" placeholder="0" disabled>p
+            </div>
+            <div>
+                <a href="#" class="active-btn" th:data-id="'#post-it'+${num}">
+                    <i class="bx bx-check bx-sm"></i>
+                </a>
+            </div>
+        </li>
+    </th:block>
+</ul>
+
+<script>
+    /**
+     * 포스트잇 활성화
+     */
+    for (const el of document.getElementsByClassName('active-btn')) {
+        el.addEventListener('click', function (event) {
+            const postItEl = document.querySelector(el.dataset.id);
+            if (postItEl) {
+                postItEl.classList.toggle('active');
+
+                const inputElements = postItEl.querySelectorAll('input');
+                inputElements.forEach(el => el.disabled = !postItEl.classList.contains('active'));
+                inputElements[0].focus();
+            }
+        })
+    }
+</script>

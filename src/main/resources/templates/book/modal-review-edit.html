@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h5 class="modal-title">내 리뷰 수정</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="reviewEditForm">
+        <div class="rating-grade mb-2">
+            <select class="star-rating" data-value="3" data-range="10"></select>
+        </div>
+        <textarea class="form-control" rows="5">일류가 된다는 것은 결국 어떤 분야에서 달인이 되는 것이다. 달인이 된다는 것은 해당 분야를 숙달한다는 것이고 숙달하기 위해서는 기술을 훔치고, 요약하고, 추진해야 한다.</textarea>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+    <button type="button" class="btn btn-primary">저장</button>
+</div>
+
+<script>
+    window.initializeStarRating(document.querySelector('#reviewEditForm .star-rating'));
+</script>

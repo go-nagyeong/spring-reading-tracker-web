@@ -1,0 +1,63 @@
+<aside th:fragment="aside" id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand">
+        <a th:replace="~{partials/logo :: logo}"></a>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+    </div>
+
+    <ul class="menu-inner py-1">
+        <!-- 대시보드 -->
+        <li class="menu-item" th:classappend="${page == 'dashboard' ? 'active' : ''}">
+            <a th:href="@{/}" class="menu-link">
+                <div data-i18n="Dashboard1">대시보드 1</div>
+            </a>
+        </li>
+
+        <!-- 마이페이지 -->
+        <li class="menu-item" th:classappend="${#strings.startsWith(page, 'mypage') ? 'active' : ''}">
+            <a th:href="@{/mypage/mypage}" class="menu-link">
+                <div data-i18n="Dashboard2">대시보드 2</div>
+            </a>
+        </li>
+
+        <li class="menu-item" th:classappend="${page == 'my-book-list' ? 'active' : ''}">
+            <a th:href="@{/mypage/my-book-list}" class="menu-link">
+                <div data-i18n="MyBook">책장</div>
+            </a>
+        </li>
+
+        <li class="menu-item" th:classappend="${page == 'my-collection' ? 'active' : ''}">
+            <a th:href="@{/mypage/my-collection}" class="menu-link">
+                <div data-i18n="MyCollection">컬렉션</div>
+            </a>
+        </li>
+
+        <li class="menu-item" th:classappend="${page == 'reading-note' ? 'active' : ''}">
+            <a th:href="@{/notes/pencil-note}" class="menu-link">
+                <div data-i18n="ReadingNote">독서 노트</div>
+            </a>
+        </li>
+
+        <!-- TODO: 독서 리포트 -->
+        <li class="menu-item" th:classappend="${page == 'statistics' ? 'active' : ''}">
+            <a href="javascript:void(0);" class="menu-link under-construction">
+                <div data-i18n="Statistics">독서 리포트</div>
+            </a>
+        </li>
+
+        <!-- TODO: 베스트셀러 -->
+        <li class="menu-item" th:classappend="${page == 'bestseller' ? 'active' : ''}">
+            <a href="javascript:void(0);" class="menu-link under-construction">
+                <div data-i18n="Bestseller">베스트셀러</div>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="social js-clone-nav">
+        <li><a href="#"><span class="icon-instagram"></span></a></li>
+        <li><a href="#"><span class="icon-facebook"></span></a></li>
+        <li><a href="#"><span class="icon-twitter"></span></a></li>
+        <li><a href="#"><span class="icon-linkedin"></span></a></li>
+    </ul>
+</aside>

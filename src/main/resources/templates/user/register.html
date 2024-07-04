@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, ~{::link})}">
+    <title>북카이브 - 회원가입</title>
+    <link rel="stylesheet" th:href="@{/assets/css/auth.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: auth_body(~{::div}, _)}">
+<div class="card">
+    <div class="card-body">
+        <div class="app-brand">
+            <a th:replace="~{partials/logo :: logo}"></a>
+        </div>
+        <h4 class="mb-2">회원가입</h4>
+        <p class="mb-3">북카이브의 회원이 되어 다양한 서비스를 이용해 보세요!</p>
+
+        <form id="formAuthentication" class="mb-3" action="../index.html">
+            <div class="mb-3">
+                <label for="email" class="form-label">이메일</label>
+                <div class="input-group">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="example@boochive.com"
+                           autofocus>
+                    <button class="btn btn-outline-primary" type="button" id="emailBtn">중복 확인</button> <!-- TODO: 중복확인 모달 -->
+                </div>
+            </div>
+            <div class="mb-3 form-password-toggle">
+                <label class="form-label" for="password">비밀번호</label>
+                <div class="input-group input-group-merge invalid">
+                    <input type="password" id="password" class="form-control invalid" name="password"
+                           placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"/>
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                </div>
+                <div class="form-text">※ 8~20자 이내로 영문, 숫자, 특수문자(!@#$%^&*()-_+=) 중 2가지 이상을 조합하셔야 합니다.</div>
+                <div class="form-text invalid-feedback">비밀번호가 올바르지 않습니다.</div>
+            </div>
+            <div class="mb-3 form-password-toggle">
+                <label class="form-label" for="passwordConfirm">비밀번호 확인</label>
+                <div class="input-group input-group-merge">
+                    <input type="password" id="passwordConfirm" class="form-control" name="passwordConfirm"
+                            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"/>
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">이름</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="홍길동"/>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="termsConditions" name="terms"/>
+                    <label class="form-check-label form-label-md" for="termsConditions">
+                        <a href="javascript:void(0);" class="text-primary">개인정보수집 및 이용약관</a>에 동의합니다. <!-- TODO: 이용약관 모달 -->
+                    </label>
+                </div>
+            </div>
+            <button class="btn btn-primary d-grid w-100">가입하기</button>
+        </form>
+
+        <p class="text-center">
+            <span class="form-label-md">이미 계정이 있으신가요?</span>
+            <a th:href="@{/user/login}" class="form-label-md text-primary">
+                <span>로그인</span>
+            </a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

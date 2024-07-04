@@ -1,0 +1,259 @@
+/**
+ * Color
+ */
+.fc .fc-event-primary:not(.fc-list-event) {
+    background-color: var(--bs-light-primary) !important;
+    color: var(--bs-primary) !important
+}
+
+.fc .fc-event-primary:not(.fc-list-event) {
+    border-color: rgba(var(--bs-primary-rgb), .15)
+}
+
+.fc .fc-event-primary.fc-list-event .fc-list-event-dot {
+    border-color: var(--bs-primary) !important
+}
+
+.fc .fc-toolbar .fc-prev-button,
+.fc .fc-toolbar .fc-next-button {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.fc .fc-toolbar .fc-prev-button .fc-icon,
+.fc .fc-toolbar .fc-next-button .fc-icon {
+    color: var(--bs-body-color);
+}
+
+.fc .fc-button-primary.fc-prev-button:not(:disabled):active,
+.fc .fc-button-primary.fc-next-button:not(:disabled):active {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.fc .fc-button-primary:not(.fc-prev-button):not(.fc-next-button) {
+    background-color: rgba(var(--bs-primary-rgb), .08) !important;
+    border: 0;
+    color: var(--bs-primary)
+}
+
+.fc .fc-button-primary:not(.fc-prev-button):not(.fc-next-button).fc-button-active,
+.fc .fc-button-primary:not(.fc-prev-button):not(.fc-next-button):hover {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    color: #fff
+}
+
+.fc .fc-button-primary:not(.fc-prev-button):not(.fc-next-button):hover {
+    box-shadow: 0 .125rem .25rem 0 rgba(var(--bs-primary-rgb), .4)
+}
+
+
+.fc {
+    font-size: .9375rem;
+}
+.fc table {
+    font-size: .9375rem;
+}
+.fc .fc-daygrid-day-number {
+    padding: 4px;
+}
+@media (max-width: 767px) {
+    .fc {
+        font-size: .875rem;
+    }
+    .fc table {
+        font-size: .875rem;
+    }
+    .fc .fc-daygrid-day-number {
+        padding: 2px;
+    }
+}
+
+.fc .fc-button {
+    font-size: 0.875rem;
+}
+.fc .fc-button:disabled {
+    opacity: 0.65;
+}
+
+.fc .fc-toolbar {
+    flex-wrap: wrap;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.3rem;
+}
+
+.fc .fc-toolbar .fc-toolbar-chunk {
+    display: flex;
+    align-items: center;
+}
+@media (max-width: 767px) {
+    .fc .fc-header-toolbar .fc-toolbar-chunk:last-child {
+        margin-top: .7rem;
+        width: 100%;
+        justify-content: end;
+    }
+}
+
+.fc .fc-toolbar .fc-button-group + div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.fc-direction-ltr .fc-toolbar > * > :not(:first-child) {
+    margin-left: 0;
+}
+.fc-direction-ltr .fc-toolbar > * > :not(:last-child) {
+    margin-right: 0.75em;
+}
+
+.fc .fc-toolbar .fc-button:active,
+.fc .fc-toolbar .fc-button:focus {
+    box-shadow: none !important;
+}
+
+.fc-direction-ltr .fc-button-group > .fc-button:first-child {
+    padding-left: 0;
+}
+
+.fc .fc-toolbar .fc-button:not(.fc-next-button):not(.fc-prev-button) {
+    padding: .4rem 1.125rem;
+}
+
+.fc .fc-customMonthView-view .fc-multimonth-title {
+    display: none;
+}
+
+.fc .fc-daygrid-day-top {
+    flex-direction: row;
+    justify-content: center;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-width: 0;
+    border-bottom-width: 1px;
+}
+
+.fc-theme-standard td:last-child,
+.fc-theme-standard th:last-child {
+    border-width: 0;
+    border-bottom-width: 1px;
+}
+
+td.fc-day-disabled {
+    background: inherit !important;
+}
+
+.fc-direction-ltr .fc-daygrid-event.fc-event-end,
+.fc-direction-rtl .fc-daygrid-event.fc-event-start {
+    margin-right: 0;
+    padding-right: 2px;
+}
+
+.fc-direction-ltr .fc-daygrid-event.fc-event-start,
+.fc-direction-rtl .fc-daygrid-event.fc-event-end {
+    margin-left: 0;
+    padding-left: 2px;
+}
+
+.fc-h-event {
+    background-color: var(--bs-primary);
+    border: 0;
+}
+.fc-h-event.ui-book-cover {
+    background-color: transparent;
+}
+
+.fc-h-event[href]:hover {
+    /*transform: translateX(10px) scale(1.2);*/
+    z-index: 100 !important;
+}
+
+.fc-h-event:not(.ui-book-cover) .fc-event-main > div {
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.fc-h-event:not(.ui-book-cover):hover {
+    display: inline-block;
+    width: auto;
+    min-width: 100%;
+}
+.fc-h-event:not(.ui-book-cover):hover .fc-event-main > div {
+    display: inline-block;
+    overflow: visible;
+}
+
+/**
+ * 독서 달력 커스텀 디자인
+ */
+.fc-daygrid-day-events.multiple-event-overlay {
+    padding: 0 .1875rem;
+}
+@media (max-width: 767px) {
+    .fc-daygrid-day-events.multiple-event-overlay {
+        padding: 0 .05rem;
+    }
+}
+
+.fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-day-bottom {
+    position: relative;
+    z-index: 20 !important;
+}
+.fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-day-bottom > span {
+    font-size: inherit;
+    border-radius: 0;
+}
+@media (max-width: 767px) {
+    .fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-day-bottom > span.badge-center {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+}
+
+.fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-event-harness > .fc-daygrid-event {
+    position: absolute !important;
+    width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: visible;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-event-harness:nth-child(2) > .fc-daygrid-event {
+    z-index: 11;
+    margin-top: 7px;
+    margin-left: 7px;
+}
+.fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-event-harness:nth-child(3) > .fc-daygrid-event {
+    z-index: 12;
+    margin-top: 14px;
+    margin-left: 14px;
+}
+@media (max-width: 767px) {
+    .fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-event-harness:nth-child(2) > .fc-daygrid-event {
+        z-index: 11;
+        margin-top: 4px;
+        margin-left: 4px;
+    }
+    .fc-daygrid-day-events.multiple-event-overlay > .fc-daygrid-event-harness:nth-child(3) > .fc-daygrid-event {
+        z-index: 12;
+        margin-top: 8px;
+        margin-left: 8px;
+    }
+}
+
+.book-cover {
+    width: 100%;
+    height: auto;
+}
+
+
+
+
+

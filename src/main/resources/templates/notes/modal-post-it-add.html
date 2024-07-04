@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h5 class="modal-title">포스트잇 신규</h5>
+    <h6 class="modal-sub-title text-body">추가할 책 선택</h6>
+</div>
+<div class="modal-body">
+    <div class="card-body">
+        <select class="lc-select" name="lg">
+            <optgroup label="읽는 중">
+                <option value="배움의 발견" th:data-image="@{/assets/img/book01.jpg}">배움의 발견</option>
+                <option value="종의 기원" th:data-image="@{/assets/img/book02.jpg}">종의 기원</option>
+            </optgroup>
+            <optgroup label="그 외">
+                <option value="일류의 조건" th:data-image="@{/assets/img/book03.jpg}">일류의 조건</option>
+            </optgroup>
+        </select>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+    <button type="button" class="btn btn-primary">완료</button>
+</div>
+
+<script>
+    window.Helpers.initializeLCSelect();
+</script>

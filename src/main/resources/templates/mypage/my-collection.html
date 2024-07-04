@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, ~{::link})}">
+    <title>북카이브 - 컬렉션</title>
+    <link rel="stylesheet" th:href="@{/assets/css/book.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: _body('my-collection', ~{::div}, ~{::script}, true)}">
+<div class="container-xxl flex-grow-1 container-p-y" id="mypageContainer">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center flex-wrap">
+                <h5 class="order-first">컬렉션 없음 <em class="fs-6 text-primary">18</em></h5>
+                <div class="ms-auto">
+                    <div class="form-inline d-inline-block">
+                        <label for="bookListViewOption1" class="form-check-label">
+                            <i class="bx bx-library text-muted"></i>
+                        </label>
+                        <div class="form-check-inline form-switch mx-1 d-inline">
+                            <input type="checkbox" class="form-check-input book-list-view-option" name="bookListViewOption1"
+                                   id="bookListViewOption1" data-id="bookListView1" role="switch">
+                        </div>
+                        <label for="bookListViewOption1" class="form-check-label">
+                            <i class="bx bxs-book-alt text-muted"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body px-0">
+                <div class="bookshelf ui-library book-list-view" id="bookListView1">
+                    <div class="books">
+                        <th:block th:each="num : ${#numbers.sequence(1,7)}">
+                            <div class="book" data-width="143" data-height="210" data-depth="32">
+                                <div class="spine">
+                                    <span class="spine-title">배움의 발견</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book01.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="150" data-height="210" data-depth="30">
+                                <div class="spine">
+                                    <span class="spine-title">종의 기원</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book02.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="140" data-height="210" data-depth="30">
+                                <div class="spine">
+                                    <span class="spine-title">일류의 조건</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book03.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="135" data-height="200" data-depth="30">
+                                <div class="spine">
+                                    <span class="spine-title">무엇이 나를 행복하게 만드는가</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book04.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="125" data-height="188" data-depth="16">
+                                <div class="spine">
+                                    <span class="spine-title">나를 소모하지 않는 현명한 태도에 관하여</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book05.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="155" data-height="235" data-depth="40">
+                                <div class="spine">
+                                    <span class="spine-title">듄 1</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book06.jpg}">
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="more">
+                        <a th:href="@{/mypage/my-book-list}" class="">
+                            <i class="bx bx-right-arrow-circle"></i>
+                            <span class="align-middle">더보기</span>
+                        </a>
+                    </div>
+                    <div class="shelf"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center flex-wrap">
+                <h5 class="order-first">인생 책 <em class="fs-6 text-primary">18</em></h5>
+                <div class="ms-auto">
+                    <div class="form-inline d-inline-block">
+                        <label for="bookListViewOption2" class="form-check-label">
+                            <i class="bx bx-library text-muted"></i>
+                        </label>
+                        <div class="form-check-inline form-switch mx-1 d-inline">
+                            <input type="checkbox" class="form-check-input book-list-view-option" name="bookListViewOption2"
+                                   id="bookListViewOption2" data-id="bookListView2" role="switch">
+                        </div>
+                        <label for="bookListViewOption2" class="form-check-label">
+                            <i class="bx bxs-book-alt text-muted"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="bookshelf ui-library book-list-view" id="bookListView2">
+                    <div class="books">
+                        <th:block th:each="num : ${#numbers.sequence(1,7)}">
+                            <div class="book" data-width="143" data-height="210" data-depth="32">
+                                <div class="spine">
+                                    <span class="spine-title">배움의 발견</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book01.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="150" data-height="210" data-depth="30">
+                                <div class="spine">
+                                    <span class="spine-title">종의 기원</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book02.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="140" data-height="210" data-depth="30">
+                                <div class="spine">
+                                    <span class="spine-title">일류의 조건</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book03.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="135" data-height="200" data-depth="30">
+                                <div class="spine">
+                                    <span class="spine-title">무엇이 나를 행복하게 만드는가</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book04.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="125" data-height="188" data-depth="16">
+                                <div class="spine">
+                                    <span class="spine-title">나를 소모하지 않는 현명한 태도에 관하여</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book05.jpg}">
+                                </div>
+                            </div>
+                            <div class="book" data-width="155" data-height="235" data-depth="40">
+                                <div class="spine">
+                                    <span class="spine-title">듄 1</span>
+                                </div>
+                                <div class="side top"></div>
+                                <div class="side cover">
+                                    <img th:src="@{/assets/img/book06.jpg}">
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="more">
+                        <a th:href="@{/mypage/my-book-list}" class="">
+                            <i class="bx bx-right-arrow-circle"></i>
+                            <span class="align-middle">더보기</span>
+                        </a>
+                    </div>
+                    <div class="shelf"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/js/bookshelf.js}"></script>
+<script>
+    /**
+     * 책 목록 뷰 옵션 토글 이벤트
+     */
+    const viewOptionButtons = document.querySelectorAll('.book-list-view-option');
+    function toggleBookViewOption(el) {
+        const viewEl = document.getElementById(el.dataset.id);
+        viewEl.classList.toggle('ui-library', !el.checked);
+        viewEl.classList.toggle('ui-book-cover', el.checked);
+        hideOverflowingElement(viewEl);
+    }
+    viewOptionButtons.forEach(el => {
+        el.addEventListener('change', function (e) {
+            // TODO: 서버에서 책 데이터 다시 불러오기
+            const el = e.target;
+            toggleBookViewOption(el);
+        })
+    })
+</script>
+</body>
+</html>

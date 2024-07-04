@@ -1,0 +1,68 @@
+<div class="offcanvas-header">
+    <h5 id="offcanvasEndLabel" class="offcanvas-title">완독일 변경</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body mx-0 flex-grow-0">
+    <div class="content mb-5">
+        <div class="mb-3" id="readingDate1">
+            <div class="label-group">
+                <label class="form-label">1번째 독서</label>
+                <div data-target="#readingDate1">
+                    <a href="#" class="edit-btn me-1" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="수정">
+                        <i class="bx bx-pencil"></i>
+                    </a>
+                    <a href="#" class="remove-btn" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="삭제">
+                        <i class="bx bx-trash"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="date" value="2021-06-18" readonly>
+                <span class="input-group-text fw-medium fs-5">~</span>
+                <input class="form-control" type="date" value="2021-06-18" readonly>
+            </div>
+        </div>
+        <div class="mb-3" id="readingDate2">
+            <div class="label-group">
+                <label class="form-label">2번째 독서</label>
+                <div data-target="#readingDate2">
+                    <a href="#" class="edit-btn me-1" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="수정">
+                        <i class="bx bx-pencil"></i>
+                    </a>
+                    <a href="#" class="remove-btn" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="삭제">
+                        <i class="bx bx-trash"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="date" value="2021-06-18" readonly>
+                <span class="input-group-text fw-medium fs-5">~</span>
+                <input class="form-control" type="date" value="2021-06-18" readonly>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary mb-2 d-grid w-100">저장</button>
+    <button type="button" class="btn btn-outline-secondary d-grid w-100" data-bs-dismiss="offcanvas">
+        취소
+    </button>
+</div>
+<script>
+    for (const el of document.getElementsByClassName('edit-btn')) {
+        el.addEventListener('click', function () {
+            const formEl = document.querySelector(el.parentElement.getAttribute('data-target'));
+            for (const input of formEl.querySelectorAll('input')) {
+                input.readOnly = !input.readOnly;
+            }
+        })
+    }
+    for (const el of document.getElementsByClassName('remove-btn')) {
+        el.addEventListener('click', function () {
+            const formEl = document.querySelector(el.parentElement.getAttribute('data-target'));
+            formEl.remove();
+        })
+    }
+</script>

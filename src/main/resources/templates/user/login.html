@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, ~{::link})}">
+    <title>북카이브 - 로그인</title>
+    <link rel="stylesheet" th:href="@{/assets/css/auth.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: auth_body(~{::div}, _)}">
+<div class="card">
+    <div class="card-body">
+        <div class="app-brand">
+            <a th:replace="~{partials/logo :: logo}"></a>
+        </div>
+        <h4 class="mb-2">로그인</h4>
+        <p class="mb-3">가입한 이메일 주소로 로그인하세요.</p>
+
+        <form id="formAuthentication" class="mb-3" action="../index.html">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="email" name="email" placeholder="이메일" autofocus/>
+            </div>
+            <div class="mb-3 form-password-toggle">
+                <div class="input-group input-group-merge invalid">
+                    <input type="password" id="password" class="form-control" name="password" placeholder="비밀번호"
+                           aria-describedby="password"/>
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                </div>
+                <div class="form-text invalid-feedback pt-1">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe"/>
+                    <label class="form-check-label form-label-md" for="rememberMe"> 로그인 상태 유지 </label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary d-grid w-100" type="submit">로그인</button>
+            </div>
+        </form>
+
+        <p class="text-center">
+            <a th:href="@{/user/register}" class="btn-link form-label-md">
+                <span>회원가입</span>
+            </a>
+            <span class="horizontal-divider"></span>
+            <a th:href="@{/user/find-password}" class="btn-link form-label-md">
+                <span>비밀번호 찾기</span>
+            </a>
+        </p>
+
+        <div class="divider my-4">
+            <div class="divider-text">소셜 계정으로 로그인</div>
+        </div>
+
+        <div class="social-btn-wrap">
+            <a href="#">
+                <img th:src="@{/assets/img/social-round-goggle.png}" alt="" class="img-fluid rounded-circle">
+            </a>
+            <a href="#">
+                <img th:src="@{/assets/img/social-round-naver.png}" alt="" class="img-fluid rounded-circle">
+            </a>
+            <a href="#">
+                <img th:src="@{/assets/img/social-round-kakao.png}" alt="" class="img-fluid rounded-circle">
+            </a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

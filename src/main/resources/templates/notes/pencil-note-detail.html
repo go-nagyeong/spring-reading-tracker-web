@@ -1,0 +1,102 @@
+<form class="edit-or-view-mode">
+    <div class="mb-3 mb-md-4">
+        <label class="form-label">본문</label>
+        <div class="editor-container editor-container_classic-editor edit-mode" id="editor-container">
+            <div class="editor-container__editor"><div id="editor"></div></div>
+        </div>
+        <div class="form-border overflow-auto view-mode" style="height: 30vh;">
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+            <p>그저 그랬어요</p>
+        </div>
+    </div>
+
+    <div class="row mb-2 mb-md-3">
+        <label class="col-3 col-sm-2 col-form-label">책 선택</label>
+        <div class="col-9 col-sm-10 d-flex align-items-center">
+            <div class="w-100 edit-mode">
+                <select class="lc-select" name="">
+                    <optgroup label="읽는 중">
+                        <option value="배움의 발견" th:data-image="@{/assets/img/book01.jpg}">배움의 발견</option>
+                        <option value="종의 기원" th:data-image="@{/assets/img/book02.jpg}">종의 기원</option>
+                    </optgroup>
+                    <optgroup label="그 외">
+                        <option value="일류의 조건" th:data-image="@{/assets/img/book03.jpg}">일류의 조건</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="view-mode">
+                <select class="lc-select" name="" disabled>
+                    <optgroup label="읽는 중">
+                        <option value="배움의 발견" th:data-image="@{/assets/img/book01.jpg}">배움의 발견</option>
+                        <option value="종의 기원" th:data-image="@{/assets/img/book02.jpg}">종의 기원</option>
+                    </optgroup>
+                    <optgroup label="그 외">
+                        <option value="일류의 조건" th:data-image="@{/assets/img/book03.jpg}">일류의 조건</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2 mb-md-3">
+        <label class="col-3 col-sm-2 col-form-label">작성일자</label>
+        <div class="col-9 col-sm-10 d-flex align-items-center">
+            <input type="date" class="form-control edit-mode" value="2024-07-01">
+            <p class="view-mode">2024-07-01</p>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-md-4">
+        <label class="col-3 col-sm-2 col-form-label">공개여부</label>
+        <div class="col-9 col-sm-10 d-flex align-items-center">
+            <div class="form-check form-check-inline edit-mode">
+                <input class="form-check-input" type="radio" name="gender" id="genderMale" value="M"
+                       checked="">
+                <label class="form-check-label" for="genderMale">비공개</label>
+            </div>
+            <div class="form-check form-check-inline edit-mode">
+                <input class="form-check-input" type="radio" name="gender" id="genderFemale"
+                       value="F">
+                <label class="form-check-label" for="genderFemale">전체 공개</label>
+            </div>
+            <span class="badge bg-label-primary view-mode">비공개</span>
+        </div>
+    </div>
+
+    <div>
+        <button type="submit" class="btn btn-primary me-2 edit-mode">저장</button>
+        <button type="reset" class="btn btn-outline-secondary edit-mode" onclick="switchMode('view')">취소</button>
+        <button type="reset" class="btn btn-outline-secondary view-mode" data-bs-dismiss="collapse">닫기</button>
+    </div>
+</form>
+
+<script>
+    window.Helpers.initializeLCSelect();
+    window.initializeEditor();
+
+    /**
+     * 읽기/편집 모드 전환
+     */
+    function switchMode(mode) {
+        for(const el of document.querySelectorAll('.view-mode')) {
+            el.style.display = mode === 'view' ? 'revert' : 'none';
+        }
+        for(const el of document.querySelectorAll('.edit-mode')) {
+            el.style.display = mode === 'edit' ? 'revert' : 'none';
+        }
+    }
+</script>

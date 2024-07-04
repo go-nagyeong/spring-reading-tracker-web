@@ -1,0 +1,99 @@
+<div class="modal-header">
+    <div class="d-flex justify-content-between w-100">
+        <h5 class="modal-title">일일 목표 설정</h5>
+        <div class="form-check-inline form-switch m-0">
+            <input type="checkbox" class="form-check-input float-end fs-5" id="dailyGoalToggle"
+                   name="dailyGoalToggle" role="switch">
+        </div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="list-group list-group-horizontal text-center" role="tablist">
+        <a class="list-group-item list-group-item-md list-group-item-action active" data-bs-toggle="list"
+           href="#horizontal-time" aria-selected="true" role="tab">시간</a>
+        <a class="list-group-item list-group-item-md list-group-item-action" data-bs-toggle="list"
+           href="#horizontal-page" aria-selected="false" role="tab">장수</a>
+    </div>
+    <form id="dailyGoalForm">
+        <div class="tab-content p-0 mt-3">
+            <div class="tab-pane fade active show" id="horizontal-time" role="tabpanel">
+                <div class="mb-1">
+                    <label class="form-label">하루 독서 시간</label>
+                    <input type="range" class="form-range" id="dailyTimeRange" name="dailyTimeRange"
+                           value="0" min="0" max="36000" step="1800">
+                </div>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="dailyTimeHour" name="dailyTimeHour">
+                    <span class="input-group-text">시간</span>
+                    <input type="number" class="form-control" id="dailyTimeMin" name="dailyTimeMin" max="59">
+                    <span class="input-group-text">분</span>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="horizontal-page" role="tabpanel">
+                <div class="mb-1">
+                    <label class="form-label">하루 독서 시간</label>
+                    <input type="range" class="form-range" id="dailyPageRange" name="dailyPageRange"
+                           value="0" min="0" max="1000">
+                </div>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="dailyPage" name="dailyPage">
+                    <span class="input-group-text">장</span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+    <button type="button" class="btn btn-primary">저장</button>
+</div>
+
+<script>
+    var dailyGoalToggle = document.getElementById('dailyGoalToggle');
+    var listGroup = document.querySelector('.list-group');
+    var activeListItem = document.querySelector('.list-group-item.active');
+
+    var dailyGoalForm = document.getElementById('dailyGoalForm');
+    var dailyGoalInputs = dailyGoalForm.querySelectorAll('input');
+    var dailyPageRange = document.getElementById('dailyPageRange');
+    var dailyTimeRange = document.getElementById('dailyTimeRange');
+    var dailyPage = document.getElementById('dailyPage');
+    var dailyTimeHour = document.getElementById('dailyTimeHour');
+    var dailyTimeMin = document.getElementById('dailyTimeMin');
+
+    // 리스트 그룹 클릭 이벤트
+    listGroup.addEventListener('click', function (event) {
+        if (!event.target.isSameNode(activeListItem)) {
+            dailyGoalToggle.checked = false;
+            dailyGoalForm.reset();
+        }
+        activeListItem = event.target;
+    });
+
+    // 목표 설정 폼 입력 이벤트
+    dailyGoalInputs.forEach(el => {
+        el.addEventListener('input', function (event) {
+            dailyGoalToggle.checked = el.value > 0; // 값 입력시 목표 설정 토글 on
+
+            // range 폼과 text 폼 입력값 동기화
+            if (el.type === 'range') {
+                if (el.id === 'dailyPageRange') {
+                    dailyPage.value = el.value;
+                } else { // timeRange
+                    const result = calculateTime(el.value);
+                    dailyTimeHour.value = result.h;
+                    dailyTimeMin.value = result.m;
+                }
+            } else { // text
+                if (el.id === 'dailyTimeRange') {
+                    dailyPageRange.value = el.value || 0;
+                } else { // timeText
+                    const rangeValue = (dailyTimeHour.value * 3600) + (dailyTimeMin.value * 60);
+                    dailyTimeRange.value = rangeValue || 0;
+                }
+            }
+        });
+    })
+</script>
+

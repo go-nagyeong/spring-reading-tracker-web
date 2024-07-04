@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, ~{::link})}">
+    <title>북카이브 - 내 책장</title>
+    <link rel="stylesheet" th:href="@{/assets/css/book.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/libs/star-rating/star-rating.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: _body('my-book-list', ~{::div}, ~{::script}, true)}">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="card">
+        <div class="card-header d-flex align-items-center flex-wrap">
+            <h5 class="order-first">내 책장 <em class="fs-6 text-primary">18</em></h5>
+            <div class="d-flex gap-1 gap-md-2 order-1 order-md-0 ms-auto ms-md-4">
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bx-check me-1"></i>읽을 예정
+                    </button>
+                    <ul class="dropdown-menu" style="">
+                        <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        컬렉션
+                    </button>
+                    <ul class="dropdown-menu" style="">
+                        <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        소장 여부
+                    </button>
+                    <ul class="dropdown-menu" style="">
+                        <li><a class="dropdown-item" href="javascript:void(0);">소장 중인</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0);">소장하지 않은</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="order-0 order-md-1 ms-auto d-none d-md-flex">
+                <button type="button" class="btn btn-secondary btn-sm">제거</button>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <ul id="myBookList" class="tp-list">
+                <li data-goods-no="28995741">
+                    <div class="item-unit row">
+                        <div class="item-check d-none d-md-flex">
+                            <label>
+                                <input type="checkbox" class="form-check-input" name="books[]">
+                            </label>
+                        </div>
+                        <div class="item-img">
+                            <span class="img-item">
+                                <a th:href="@{/book/book-detail}">
+                                    <img class="img-thumbnail" th:src="@{/assets/img/book01.jpg}" alt="배움의 발견">
+                                </a>
+                            </span>
+                        </div>
+                        <div class="item-info">
+                            <div class="info-num">
+                                <span class="badge bg-label-primary">소장중</span>
+                            </div>
+
+                            <div class="info-name">
+                                <a th:href="@{/book/book-detail}" class="bk-name btn-link">
+                                    배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)
+                                </a>
+                            </div>
+
+                            <div class="info-pub-grp">
+                                <span class="info-auth">
+                                    <a class="btn-link fw-medium" href="" target="">타라 웨스트오버</a> 저
+                                </span>
+                                <span class="info-pub">
+                                    <span class="horizontal-divider"></span>
+                                    <a class="btn-link fw-medium" href="">열린책들</a>
+                                </span>
+                                <span class="info-date d-none d-sm-inline-block">
+                                    <span class="horizontal-divider"></span>
+                                    2020.01.05.
+                                </span>
+                            </div>
+
+                            <div class="info-detail d-none d-lg-block">
+                                <p class="bk-intro ellipsis">
+                                    교육을 거부한 아버지의 세계를 떠나 자신만의 삶을 살아간 한 소녀의 이야기!
+                                    세상의 종말이 임박했다고 믿는 모르몬교 근본주의자였고, 공교육에 대한 불신 때문에 자녀들을 학교에 보내지 않았던 아버지로 인해 16년간 학교에 다니지
+                                    못하고 기초 교육 과정을 모두 건너뛴 채로 대입자격시험(ACT)을 치렀고, 17세에 대학에 합격하면서 기적과 같은 배움의 여정을 시작하게 된 타라
+                                    웨스트오버의 첫 저술이자 회고록 『배움의 발견』.
+                                    1986년 미국 아이다호에서 7남매 중 막내딸로 태어난 저자가 아이다호주 벅스피크의 유년 시절부터 케임브리지에서 역사학으로 박사 학위를 얻기까지 남다른
+                                    배움을 여정을 이야기한다. 저자의 일곱 남매 중 네 명은 출생증명서가 없었다. 가정 분만으로 태어나서 한 번도 의사나 간호사에게 가본 적이 없어 의료
+                                    기록도 없었기 때문에 아이다호 주정부와 연방 정부에게 저자는 존재하지 않는 아이였다.
+                                </p>
+                            </div>
+
+                            <div class="info-rating-wrap mt-auto">
+                                <div class="info-rating">
+                                    <span class="rating-grade d-none d-sm-inline-block">
+                                        <select class="star-rating star-rt-sm" data-value="9.4" data-range="10"
+                                                disabled></select>
+                                    </span>
+                                    <span class="rating-grade d-block d-sm-none">
+                                        <select class="star-rating star-rt-sm non-label" data-value="9.4" data-range="10"
+                                                disabled></select>
+                                    </span>
+                                    <span class="rating-detail">
+                                        <span class="me-1">노트 4</span>
+                                        <span>완독 1</span>
+                                    </span>
+                                </div>
+
+                                <div class="item-btn-sm-col d-inline-block d-sm-none">
+                                    <div class="btn-group">
+                                        <button type="button"
+                                                class="btn btn-icon rounded-pill btn-primary dropdown-toggle hide-arrow"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bx bxs-bookmark-plus"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" style="">
+                                            <!-- TODO: 상태에 따른 표시 목록
+                                                추가 전 : 읽을 예정 ~ 읽음
+                                                추가 후 : 읽을 예정 ~ 독서 포기 / 독서 목록에서 제거
+                                            -->
+                                            <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">잠시 중단</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">독서 포기</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="javascript:void(0);">
+                                                    독서 목록에서 제거
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-icon rounded-pill btn-outline-primary">
+                                        <i class="bx bx-basket"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-btn-col d-none d-sm-flex">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-md btn-primary dropdown-toggle"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bx bx-check me-1"></i>읽을 예정
+                                </button>
+                                <ul class="dropdown-menu" style="">
+                                    <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">잠시 중단</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">독서 포기</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="javascript:void(0);">
+                                            독서 목록에서 제거
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-md btn-outline-primary">
+                                관심 목록에 추가
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/vendor/libs/star-rating/star-rating.js}"></script>
+<script th:src="@{/assets/js/custom-rating.js}"></script>
+</body>
+</html>

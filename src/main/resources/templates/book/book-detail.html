@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, ~{::link})}">
+    <title>북카이브 - 책 상세</title>
+    <link rel="stylesheet" th:href="@{/assets/css/book.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/libs/star-rating/star-rating.css}"/>
+</head>
+
+<body th:replace="~{layouts/base :: _body('book-detail', ~{::div}, ~{::script}, false)}">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a class="btn-link" th:href="@{/}">홈</a>
+        </li>
+        <li class="breadcrumb-item active">도서 상세</li>
+    </ol>
+
+    <div class="row">
+        <!-- 책 정보 -->
+        <div class="col-100 col-lg-70 mb-4 order-0">
+            <div class="card">
+                <div class="card-body">
+                    <div class="item-detail row">
+                        <div class="item-img">
+                        <span class="img-item">
+                            <a href="">
+                                <img class="img-thumbnail" th:src="@{/assets/img/book01.jpg}" alt="배움의 발견">
+                            </a>
+                        </span>
+                        </div>
+                        <div class="item-info">
+                            <div class="info-name">
+                                <a class="bk-name btn-link" href="">배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)</a>
+                            </div>
+
+                            <div class="info-pub-grp">
+                                <span class="info-auth">
+                                    <a class="btn-link fw-medium" href="" target="">타라 웨스트오버</a> 저
+                                </span>
+                                <span class="info-pub">
+                                    <span class="horizontal-divider"></span>
+                                    <a class="btn-link fw-medium" href="">열린책들</a>
+                                </span>
+                                <span class="info-date d-none d-md-inline-block">
+                                    <span class="horizontal-divider"></span>
+                                    2020.01.05.
+                                </span>
+                            </div>
+
+                            <div class="info-tag">
+                                <span class="tag"><a href="javascript:void(0);">#시/에세이</a></span>
+                                <span class="tag"><a href="javascript:void(0);">#외국에세이</a></span>
+                                <span class="tag"><a href="javascript:void(0);">#영미에세이</a></span>
+                                <span class="tag"><a href="javascript:void(0);">#여성에세이</a></span>
+                            </div>
+
+                            <div class="info-detail">
+                                <span class="bk-page">
+                                    쪽수 : <em>280p</em>
+                                </span>
+                                <span class="bk-isbn">
+                                    <span class="horizontal-divider"></span>
+                                    ISBN : <em>9788932919553</em>
+                                </span>
+                            </div>
+
+                            <div class="info-rating-wrap mt-auto">
+                                <div class="info-rating">
+                                    <span class="sale-num">
+                                        독자수 219,093
+                                    </span>
+                                    <span class="rating-rv-count me-1">
+                                        <span class="horizontal-divider"></span>
+                                        리뷰(<em class="text-primary">97</em>건)
+                                    </span>
+                                    <span class="rating-grade">
+                                        <select class="star-rating star-rt-sm" data-value="9.4" data-range="10"
+                                                disabled></select>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 리뷰/평점, 책 소개, 목차 -->
+        <div class="col-100 col-lg-70 mb-4 order-4 order-lg-2">
+            <div class="nav-align-top">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
+                                data-bs-target="#navs-review" aria-controls="navs-review" aria-selected="true"
+                                tabindex="-1">
+                            리뷰/평점
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
+                                data-bs-target="#navs-intro" aria-controls="navs-intro"
+                                aria-selected="false" tabindex="-1">
+                            책 소개
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
+                                data-bs-target="#navs-chapter" aria-controls="navs-chapter"
+                                aria-selected="false">
+                            목차
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="navs-review" role="tabpanel">
+                        <ul class="rv-list">
+                            <li>
+                                <div class="rv-unit">
+                                    <div class="rv-left avatar">
+                                        <img th:src="@{/assets/img/icons/unicons/paypal.png}" alt="Credit Card"
+                                             class="img-fluid rounded-circle"/>
+                                    </div>
+                                    <div class="rv-right">
+                                        <span class="rv-user">홍길동</span>
+                                        <div class="rv-info">
+                                        <span class="rating-grade rv-rating">
+                                            <select class="star-rating star-rt-sm non-label"
+                                                    data-value="9.4"
+                                                    data-range="10"
+                                                    disabled></select>
+                                        </span>
+                                            <span class="horizontal-divider"></span>
+                                            <span class="rv-date">2024.04.23</span>
+                                        </div>
+                                        <div class="rv-content">
+                                            <p>일류가 된다는 것은 결국 어떤 분야에서 달인이 되는 것이다.
+                                                달인이 된다는 것은 해당 분야를 숙달한다는 것이고
+                                                숙달하기 위해서는 기술을 훔치고, 요약하고, 추진해야 한다.
+                                                무언가에 숙달되는 보편적 원리와 목적의식을 꾸준히 일깨워주는 것이 부모와 교사의 주된 역할이다.
+                                                동경하는 마음이 생기면 숙달하고자 하는 의욕이 생긴다.
+                                                그 대상이 가진 매력과 강력한 기운에 대한 반응으로 동경하는 마음이 일어나는 것이다.
+                                                숙달에 이르는 비결이란 자신에게 맞는 스타일을 파악하려는 의식을 갖는 것, 그 행위 자체라 말할 수 있다.
+                                                아이들에게 전하고 가르칠 것은 어떤 사회, 어떤 환경에서도 거뜬히 살아가는 힘이다.
+                                                살아가는 힘이란 숙달에 이르는 보편적 원리를 반복적 체험을 통해 기술로 만드는 것이다.
+                                                진정 일류가 되기 위해서는 메뉴얼을 넘어서 언어로 표현할 수 없는 부분까지 훔쳐내 체화해야 한다.
+                                                범위를 좁혀 반드시 훔쳐야 할 핵심을 찾아내야 한다.
+                                                암묵지(내재된 지식)와 그것을 활성화한 형식지의 순환을 기술화해야 한다.
+                                                책을 많이 읽고 요지를 추출하는 기술이야말로 모든 구분을 뛰어넘는 필수 기술이다.
+                                                요약력이란 결국 중요도를 파악하는 것이다.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="rv-unit">
+                                    <div class="rv-left avatar">
+                                        <img th:src="@{/assets/img/icons/unicons/paypal.png}" alt="Credit Card"
+                                             class="img-fluid rounded-circle"/>
+                                    </div>
+                                    <div class="rv-right">
+                                        <span class="rv-user">홍길동</span>
+                                        <div class="rv-info">
+                                        <span class="rating-grade rv-rating">
+                                            <select class="star-rating star-rt-sm non-label"
+                                                    data-value="9.4"
+                                                    data-range="10"
+                                                    disabled></select>
+                                        </span>
+                                            <span class="horizontal-divider"></span>
+                                            <span class="rv-date">2024.04.23</span>
+                                        </div>
+                                        <div class="rv-content ellipsis line-clamp-3">
+                                            <p>일류가 된다는 것은 결국 어떤 분야에서 달인이 되는 것이다.
+                                                달인이 된다는 것은 해당 분야를 숙달한다는 것이고
+                                                숙달하기 위해서는 기술을 훔치고, 요약하고, 추진해야 한다.
+                                                무언가에 숙달되는 보편적 원리와 목적의식을 꾸준히 일깨워주는 것이 부모와 교사의 주된 역할이다.
+                                                동경하는 마음이 생기면 숙달하고자 하는 의욕이 생긴다.
+                                                그 대상이 가진 매력과 강력한 기운에 대한 반응으로 동경하는 마음이 일어나는 것이다.
+                                                숙달에 이르는 비결이란 자신에게 맞는 스타일을 파악하려는 의식을 갖는 것, 그 행위 자체라 말할 수 있다.
+                                                아이들에게 전하고 가르칠 것은 어떤 사회, 어떤 환경에서도 거뜬히 살아가는 힘이다.
+                                                살아가는 힘이란 숙달에 이르는 보편적 원리를 반복적 체험을 통해 기술로 만드는 것이다.
+                                                진정 일류가 되기 위해서는 메뉴얼을 넘어서 언어로 표현할 수 없는 부분까지 훔쳐내 체화해야 한다.
+                                                범위를 좁혀 반드시 훔쳐야 할 핵심을 찾아내야 한다.
+                                                암묵지(내재된 지식)와 그것을 활성화한 형식지의 순환을 기술화해야 한다.
+                                                책을 많이 읽고 요지를 추출하는 기술이야말로 모든 구분을 뛰어넘는 필수 기술이다.
+                                                요약력이란 결국 중요도를 파악하는 것이다.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="navs-intro" role="tabpanel">
+                        <h4 class="mb-3 fw-bold">책 소개</h4>
+                        <div class="intro-bottom">
+                            <div class="info-text fw-bold">교육을 거부한 아버지의 세계를 떠나 자신만의 삶을 살아간 한 소녀의 이야기!</div>
+                            <div class="info-text">세상의 종말이 임박했다고 믿는 모르몬교 근본주의자였고, 공교육에 대한 불신 때문에 자녀들을 학교에 보내지 않았던 아버지로
+                                인해 16년간 학교에 다니지 못하고 기초 교육 과정을 모두 건너뛴 채로 대입자격시험(ACT)을 치렀고, 17세에 대학에 합격하면서 기적과 같은 배움의 여정을
+                                시작하게 된 타라 웨스트오버의 첫 저술이자 회고록 『배움의 발견』. <br><br>1986년 미국 아이다호에서 7남매 중 막내딸로 태어난 저자가 아이다호주
+                                벅스피크의 유년 시절부터 케임브리지에서 역사학으로 박사 학위를 얻기까지 남다른 배움을 여정을 이야기한다. 저자의 일곱 남매 중 네 명은 출생증명서가 없었다.
+                                가정 분만으로 태어나서 한 번도 의사나 간호사에게 가본 적이 없어 의료 기록도 없었기 때문에 아이다호 주정부와 연방 정부에게 저자는 존재하지 않는
+                                아이였다.<br><br>그런 저자는 대학에 들어간 집에 돌아온 셋째 오빠가 산 너머 세상에 대한 이야기를 해주자 새로운 인생을 향해 발걸음을 떼기로 결심하게
+                                되었다. 아버지의 눈을 피해 대입자격시험(ACT)에 필요한 과목들을 독학으로 공부했고, 기적처럼 브리검 영 대학(모르몬교 재단에서 운영하는 대학으로 홈스쿨링
+                                학생들을 뽑는다)에 합격했다. <br><br>그렇게 17세에 처음 교실에 발을 들여놓게 된 저자는 아버지의 왜곡된 신념 때문에 자신과 가족들이 얼마나 큰
+                                희생을 치러왔는지 깨닫고, 깊은 분노와 배신감을 느끼게 되었다. 저자는 아버지가 기른 그 옛날 소녀와 배움을 통해 새롭게 만들어진 지금의 자신이 공존할 수
+                                없음을 깨달았고, 바다와 대륙을 건너 케임브리지와 하버드 대학교에 가서 공부하기에 이르렀다. 저자는 자신의 이야기를 통해 배움이 무엇인지, 배움을 통해 우리는
+                                무엇을 얻을 수 있는지 보편적인 성장 이야기를 들려주고, 배움을 통해 자신의 삶을 보는 새로운 눈을 얻을 수 있고, 자신의 삶을 변화시킬 의지를 얻는다는
+                                깨달음을 전한다.
+                            </div>
+                            <div class="info-text">빌려 쓰는 책상에 앉아 자신을 버리고 떠난 오빠를 흉내 내면서 모르몬 사상의 한 분파를 이해하려고 노력하며 보낸 그 긴긴
+                                시간들이 배움이요 교육이었다고 이야기하는 저자에게 배움은 단순히 좋은 대학에서 학위를 따는 것이 아니라 세상을 더 깊고 더 넓게 보는 눈을 뜨고 자신을
+                                재발견하는 일이었다. 이처럼 한 여성이 자신의 자아를 찾아 가는 투쟁의 이야기, 가장 가까웠던 사람들과의 관계를 끊는 데 따르는 슬픔에 관한 이야기이며,
+                                가족과의 연결 고리를 잃지 않고 세상 속에서 자기 자리를 찾으려는 노력을 담은 이야기를 읽는 동안 함께 부끄러워하고, 아파하고, 기뻐하는 자신을 발견할 수
+                                있을 것이다.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="navs-chapter" role="tabpanel">
+                        <h4 class="mb-3 fw-bold">목차</h4>
+                        <ul class="book-contents-list">
+                            <li class="book-contents-item">저자의 말 <br>프롤로그 <br><br>1부<br>1 선을 선택하라 <br>2 산파 <br>3 크림색 신발
+                                <br>4 아파치 여인 <br>5 정직한 검댕 <br>6 보호막과 방패 <br>7 주님이 마련해 주시리니 <br>8 꼬마 창녀들 <br>9 그 세대로서는
+                                완벽한 <br>10 깃털로 만든 방패 <br>11 본능 <br>12 물고기 눈깔 <br>13 교회 내의 정적 <br>14 내 발은 더 이상 땅에 닿아 있질
+                                않아 <br>15 더 이상 어린아이가 아닌 <br>16 불충한 인간, 불복하는 하늘 <br><br>2부<br>17 신성함을 지키기 위해 <br>18 피와 깃털
+                                <br>19 태초에 <br>20 아버지들의 합창 <br>21 골무꽃 <br>22 우리가 속삭인 말들과 우리가 외친 말들 <br>23 나는 아이다호에서 왔어요
+                                <br>24 모험을 찾아 떠나는 기사 <br>25 지옥 불길의 조화 <br>26 흐르는 물을 기다리며 <br>27 내가 여자였다면 <br>28 피그말리온
+                                <br>29 졸업 <br><br>3부<br>30 전지전능하신 주님의 손 <br>31 비극 그리고 광대극 <br>32 커다란 집의 떠들썩한 여자 <br>33
+                                물리학의 주술 <br>34 사물의 내용 <br>35 태양의 서쪽 <br>36 허우적거리는 네 개의 긴 팔 <br>37 구원을 위한 도박 <br>38 가족
+                                <br>39 버펄로 떼 지켜보기 <br>40 교육 <br><br>감사의 말 <br>본문에 관한 저자의 말
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 내 독서 관리 -->
+        <div class="col-100 col-md-50 col-lg-30 mb-4 order-1">
+            <div class="card">
+                <div class="row row-bordered g-0">
+                    <div class="col-12">
+                        <h5 class="card-header">내 독서 관리</h5>
+                        <div class="card-body position-relative">
+                            <div id="carouselExample" class="carousel slide" data-bs-ride="false">
+                                <div class="carousel-indicators">
+                                    <button type="button" class="bg-secondary active" data-bs-target="#carouselExample"
+                                            data-bs-slide-to="0" aria-label="Slide 1"></button>
+                                    <button type="button" class="bg-secondary" data-bs-target="#carouselExample"
+                                            data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                    <button type="button" class="bg-secondary" data-bs-target="#carouselExample"
+                                            data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                    <button type="button" class="bg-secondary" data-bs-target="#carouselExample"
+                                            data-bs-slide-to="3" aria-label="Slide 4"></button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-inner-top-bar">
+                                        <i class="bx bxs-bookmark fs-2"></i>
+                                    </div>
+                                    <div class="carousel-item active">
+                                        <a href="#" id="readingTimerOpenModalBtn" data-bs-toggle="modal" data-bs-target="#smallModal">
+                                            <p class="text-center fw-light">
+                                                <em class="fw-medium fs-4">p. 10</em> / 280
+                                            </p>
+                                            <p class="text-center text-muted">
+                                                <small>탭해서 독서 타이머 열기</small>
+                                            </p>
+                                        </a>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <a href="#" data-bs-toggle="popover" data-bs-offset="0,0"
+                                           data-bs-placement="left" data-bs-custom-class="custom-popover"
+                                           data-bs-title="독서일 변경"
+                                           data-bs-content="<input type='date' class='form-control form-control-sm mb-2' value='2024-06-01'>
+                                            <div class='d-flex justify-content-between'>
+                                                <button type='button' class='btn btn-sm btn-outline-secondary close-btn'
+                                                data-bs-dismiss='popover'>취소</button>
+                                                <button type='button' class='btn btn-sm btn-primary' id='stopBtn'>저장</button>
+                                            </div>">
+                                            <p class="text-muted">
+                                                <small>2024. 6. 1 부터</small>
+                                                <i class="bx bx-pencil bx-xxs"></i>
+                                            </p>
+                                            <p class="text-center">
+                                                <em class="text-primary fw-medium fs-4">24</em> 일째 독서중
+                                            </p>
+                                            <p class="text-center text-muted">
+                                                <small>탭해서 독서일 변경</small>
+                                            </p>
+                                        </a>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <a href="#" id="readingRecordEditCanvasBtn" data-bs-toggle="offcanvas"
+                                           data-bs-target="#offcanvasCont" aria-controls="offcanvasCont">
+                                            <p class="text-muted">
+                                                <small>최근 독서 시간 (2024. 5. 20)</small>
+                                            </p>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span>92p <small>(158 ~ 249)</small></span>
+                                                <span class="text-primary fw-medium fs-4">
+                                                    2:30
+                                                    <i class="bx bx-pencil bx-xxs text-muted"></i>
+                                                </span>
+
+                                            </div>
+                                            <p class="text-center text-muted">
+                                                <small>탭해서 독서 기록 변경</small>
+                                            </p>
+                                        </a>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <a href="#" id="readingDateEditCanvasBtn" data-bs-toggle="offcanvas"
+                                           data-bs-target="#offcanvasCont" aria-controls="offcanvasCont">
+                                            <p class="text-muted">
+                                                <small>2023. 6. 1 ~ 2023. 6. 28</small>
+                                                <i class="bx bx-pencil bx-xxs"></i>
+                                            </p>
+                                            <p class="text-center">
+                                                <em class="text-primary fw-medium fs-4">1</em> 번 읽었습니다.
+                                            </p>
+                                            <p class="text-center text-muted">
+                                                <small>탭해서 완독일 변경</small>
+                                            </p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <a class="carousel-control-prev" href="#carouselExample" role="button"
+                                   data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"
+                                          aria-hidden="true">
+                                        <i class="bx bxs-chevron-left text-secondary"></i>
+                                    </span>
+                                    <span class="visually-hidden">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExample" role="button"
+                                   data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"
+                                          aria-hidden="true">
+                                         <i class="bx bxs-chevron-right text-secondary"></i>
+                                    </span>
+                                    <span class="visually-hidden">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card-body">
+                            <div class="item-btn-col flex-row">
+                                <div class="btn-group flex-grow-1">
+                                    <button type="button" class="btn btn-md btn-primary dropdown-toggle"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bx bx-check me-1"></i>읽을 예정
+                                    </button>
+                                    <ul class="dropdown-menu" style="">
+                                        <!-- TODO: 상태에 따른 표시 목록
+                                            추가 전 : 읽을 예정 ~ 읽음
+                                            추가 후 : 읽을 예정 ~ 독서 포기 / 독서 목록에서 제거
+                                        -->
+                                        <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);">잠시 중단</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);">독서 포기</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="javascript:void(0);">
+                                                독서 목록에서 제거
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-md btn-outline-primary flex-grow-1">
+                                    관심 목록에 추가
+                                </button>
+                                <button type="button" class="btn btn-md btn-outline-dark w-100" id="ownHistEditModalBtn"
+                                        data-bs-toggle="modal" data-bs-target="#smallModal">
+                                    구매/대여 이력 기록
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 내 독서 노트 (내 리뷰) -->
+        <div class="col-100 col-md-50 col-lg-30 order-2 order-lg-3">
+            <div class="card mb-4">
+                <h5 class="card-header">내 독서 노트</h5>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a th:href="@{/notes/pencil-note(book=1)}"
+                           class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex justify-content-between w-100">
+                                <span class="fw-medium">연필</span>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bx bx-pencil bx-xs me-1"></i>책에 대한 나의 생각을 정리해 보세요.
+                            </small>
+                        </a>
+                        <a th:href="@{/notes/highlight-note(book=1)}"
+                           class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex justify-content-between w-100">
+                                <span class="fw-medium">형광펜</span>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bx bx-highlight bx-xs me-1"></i>인상깊은 구절을 남겨보세요.
+                            </small>
+                        </a>
+                        <a href="#" id="postItCanvasBtn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCont"
+                           class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex justify-content-between w-100">
+                                <span class="fw-medium">포스트잇</span>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bx bx-tag bx-xs me-1"></i>간단한 한 줄 메모를 해보세요.
+                            </small>
+                        </a>
+                        <a href="javascript:void(0);"
+                           class="list-group-item list-group-item-action flex-column align-items-start under-construction">
+                            <div class="d-flex justify-content-between w-100">
+                                <span class="fw-medium">독서 카드</span>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bx bx-credit-card-front bx-xs me-1"></i>나만의 독서 카드를 만들어 보세요.
+                            </small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card d-none d-lg-flex">
+                <h5 class="card-header">내 리뷰</h5>
+                <div class="card-body">
+                    <div class="rv-wrap" id="reviewEditModalBtn" role="button" data-bs-toggle="modal"
+                         data-bs-target="#smallModal">
+                        <div class="rating-grade mb-1">
+                            <select class="star-rating non-label" data-value="3" data-range="10"
+                                    disabled></select>
+                        </div>
+                        <p class="rv-content mb-2 ellipsis line-clamp-2"
+                           th:text="${'일류가 된다는 것은 결국 어떤 분야에서 달인이 되는 것이다. 달인이 된다는 것은 해당 분야를 숙달한다는 것이고 숙달하기 위해서는 기술을 훔치고, 요약하고, 추진해야 한다.'}">
+                            <span class="text-muted">이 책은 어땠나요?</span>
+                        </p>
+                        <div class="rv-sub">
+                            <small>2024.04.23</small>
+                            <i class="bx bx-pencil bx-xxs text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 내 리뷰 -->
+        <div class="col-100 col-lg-30 mb-4 d-flex d-lg-none order-3">
+            <div class="card">
+                <h5 class="card-header">내 리뷰</h5>
+                <div class="card-body">
+                    <div class="rv-wrap" id="reviewEditModalBtn" role="button" data-bs-toggle="modal"
+                         data-bs-target="#smallModal">
+                        <div class="rating-grade mb-1">
+                            <select class="star-rating non-label" data-value="3" data-range="10"
+                                    disabled></select>
+                        </div>
+                        <p class="rv-content mb-2 ellipsis line-clamp-2"
+                           th:text="${'일류가 된다는 것은 결국 어떤 분야에서 달인이 되는 것이다. 달인이 된다는 것은 해당 분야를 숙달한다는 것이고 숙달하기 위해서는 기술을 훔치고, 요약하고, 추진해야 한다.'}">
+                            <span class="text-muted">이 책은 어땠나요?</span>
+                        </p>
+                        <div class="rv-sub">
+                            <small>2024.04.23</small>
+                            <i class="bx bx-pencil bx-xxs text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/vendor/libs/star-rating/star-rating.js}"></script>
+<script th:src="@{/assets/js/custom-rating.js}"></script>
+<script>
+    /**
+     * (HTML 동적 로드) 모달
+     */
+    const modalButtons = document.querySelectorAll('[data-bs-toggle=modal]');
+    modalButtons.forEach(el => {
+        el.addEventListener('click', function (event) {
+            let url = '/common/reading-timer';
+            let target = document.querySelector('#smallModal .modal-content');
+            let callback = null;
+            switch (el.id) {
+                case 'readingTimerOpenModalBtn': // 독서 타이머 모달
+                    target = document.querySelector('#smallModal .modal-body');
+                    callback = () => {
+                        document.querySelector('#smallModal .modal-title').innerText = '독서 타이머';
+                    }
+                    break;
+                case 'ownHistEditModalBtn': // 도서 대여/구매 이력 기록 모달
+                    url = '/book/modal-own-hist-edit';
+                    break;
+                case 'reviewEditModalBtn': // 도서 리뷰 수정 모달
+                    url = '/book/modal-review-edit';
+                    break;
+            }
+            fetchHTML(url, target, callback);
+        });
+    })
+
+    /**
+     * (HTML 동적 로드) 오프캔버스
+     */
+    const offcanvasButtons = document.querySelectorAll('[data-bs-toggle=offcanvas]');
+    offcanvasButtons.forEach(el => {
+        el.addEventListener('click', function () {
+            let url = '/book/offcanvas-reading-record-edit'; // 독서 기록 수정 오프캔버스
+            let target = document.querySelector('#offcanvasCont .offcanvas-content');
+            let callback = null;
+            switch (el.id) {
+                case 'readingDateEditCanvasBtn': // 완독일 수정 오프캔버스
+                    url = '/book/offcanvas-reading-date-edit';
+                    break;
+                case 'postItCanvasBtn': // 포스트잇 오프캔버스
+                    url = '/notes/offcanvas-post-it-detail';
+                    target = document.querySelector('#offcanvasCont .offcanvas-body');
+                    callback = () => {
+                        document.querySelector('#offcanvasCont .offcanvas-title').innerText = '포스트잇 상세';
+                    }
+                    break;
+            }
+            fetchHTML(url, target, callback);
+        })
+    })
+</script>
+</body>
+</html>

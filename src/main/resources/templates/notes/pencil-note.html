@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, _)}">
+    <title>북카이브 - 독서 노트</title>
+</head>
+
+<body th:replace="~{layouts/base :: _body('reading-note', ~{::div}, ~{::script}, true)}">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <ul th:replace="~{notes/note-nav :: nav('pencil')}"></ul>
+
+    <div class="row">
+        <div class="col-12 order-1 order-lg-0 with-collapse">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">연필</h5>
+                        <div class="text-muted">
+                            <i class="bx bx-pencil bx-xs me-1"></i>책에 대한 나의 생각을 정리해 보세요.
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-icon btn-primary btn-md" data-bs-show="collapse"
+                                data-bs-target=".collapse">
+                            <i class="bx bx-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>책</th>
+                            <th>본문</th>
+                            <th>작성일자</th>
+                            <th>공개여부</th>
+                            <th>수정</th>
+                        </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                        <tr role="button" data-bs-show="collapse" href=".collapse">
+                            <td>
+                                <img th:src="@{/assets/img/book01.jpg}"
+                                     class="img-thumbnail square rounded-circle bx-sm me-2" width="30">
+                                <span class="fw-medium">배움의 발견</span>
+                            </td>
+                            <td>블라블라블라 제목</td>
+                            <td class="text-muted">2024-06-02</td>
+                            <td>
+                                <span class="badge bg-label-primary">비공개</span>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                            data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" data-bs-show="collapse" href=".collapse">
+                                            <i class="bx bx-edit-alt me-1"></i> 수정
+                                        </a>
+                                        <button class="dropdown-item" href="javascript:void(0);">
+                                            <i class="bx bx-trash me-1"></i> 삭제
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr role="button" data-bs-show="collapse" href=".collapse">
+                            <td>
+                                <img th:src="@{/assets/img/book02.jpg}"
+                                     class="img-thumbnail square rounded-circle bx-sm me-2" width="30">
+                                <span class="fw-medium">종의 기원</span>
+                            </td>
+                            <td>블라블라블라 제목</td>
+                            <td class="text-muted">2024-06-02</td>
+                            <td>
+                                <span class="badge bg-label-success">전체 공개</span>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                            data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" data-bs-show="collapse" href=".collapse">
+                                            <i class="bx bx-edit-alt me-1"></i> 수정</a>
+                                        <button class="dropdown-item" href="javascript:void(0);">
+                                            <i class="bx bx-trash me-1"></i> 삭제</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7 mb-4 order-0 order-lg-1 collapse collapse-horizontal">
+            <div class="card">
+                <div class="card-header d-flex justify-content-end pb-0">
+                    <div class="dropdown view-mode">
+                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" data-bs-show="collapse" data-bs-target=".collapse">
+                                <i class="bx bx-edit-alt me-1"></i> 수정
+                            </a>
+                            <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="bx bx-trash me-1"></i> 삭제
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" id="noteDetailCont">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module" th:src="@{/assets/js/ckeditor5.js}"></script>
+<script>
+    /**
+     * (HTML 동적 로드) 노트 신규/상세보기 콜랩스
+     */
+    const collapseButtons = document.querySelectorAll('[data-bs-show=collapse]');
+    collapseButtons.forEach(el => {
+        el.addEventListener('click', function (event) {
+            const target = document.querySelector('#noteDetailCont');
+            let mode = 'edit';
+            if (el.tagName === 'TR') mode = 'view';
+            const callback = () => {
+                switchMode(mode); // TODO: 임시
+            }
+            fetchHTML('/notes/pencil-note-detail', target, callback);
+        });
+    })
+    // 부모 이벤트 전파 막기
+    const buttonsInRow = document.querySelectorAll('tr button');
+    buttonsInRow.forEach(el => {
+        el.addEventListener('click', function (event) {
+            event.stopPropagation();
+        })
+    })
+
+    /**
+     * 상세보기 카드 show/hide 시 이벤트 (크기 조정)
+     */
+    const leftCard = document.querySelector('.with-collapse');
+    const collapseCard = document.querySelector('.collapse');
+    collapseCard.addEventListener('show.bs.collapse', function (event) {
+        leftCard.classList.add('reduce-col-lg-5');
+    });
+    collapseCard.addEventListener('hide.bs.collapse', function (event) {
+        leftCard.classList.remove('reduce-col-lg-5');
+    });
+</script>
+</body>
+</html>

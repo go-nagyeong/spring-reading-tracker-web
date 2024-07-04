@@ -1,0 +1,122 @@
+<div class="offcanvas-header">
+    <h5 id="offcanvasEndLabel" class="offcanvas-title">독서 기록 변경</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body mx-0 flex-grow-0">
+    <div class="content mb-5">
+        <div class="mb-4" id="readingRecord1">
+            <div class="label-group mb-0">
+                <label class="form-label form-label-md fw-bold">2024. 05. 24 18:34</label>
+                <div data-target="#readingRecord1">
+                    <a href="#" class="edit-btn me-1" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="수정">
+                        <i class="bx bx-pencil"></i>
+                    </a>
+                    <a href="#" class="remove-btn" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="삭제">
+                        <i class="bx bx-trash"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="d-flex gap-1">
+                <div class="flex-col-60">
+                    <label class="form-label mb-0">페이지</label>
+                    <div class="input-group page-input-group">
+                        <input type="number" class="form-control form-control-md text-center merge-right" id="startPage" name="startPage" value="158" readonly>
+                        <span class="input-group-text fw-medium">~</span>
+                        <input type="number" class="form-control form-control-md text-center merge-left" id="endPage" name="endPage" value="249" readonly>
+                        <span class="input-group-text fs-7" style="width: 60px;">
+                            <span class="mx-auto page-num">92p</span>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label mb-0">시간</label>
+                    <div class="input-group input-group-merge">
+                        <input type="number" class="form-control form-control-md text-center" id="timeHour" name="timeHour" value="2" readonly>
+                        <span class="input-group-text fw-medium">:</span>
+                        <input type="number" class="form-control form-control-md text-center" id="timeMin" name="timeMin" max="59" value="30" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-4" id="readingRecord2">
+            <div class="label-group mb-0">
+                <label class="form-label form-label-md fw-bold">2024. 05. 24 18:34</label>
+                <div data-target="#readingRecord2">
+                    <a href="#" class="edit-btn me-1" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="수정">
+                        <i class="bx bx-pencil"></i>
+                    </a>
+                    <a href="#" class="remove-btn" data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="bottom"
+                       data-bs-title="삭제">
+                        <i class="bx bx-trash"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="d-flex gap-1">
+                <div class="flex-col-60">
+                    <label class="form-label mb-0">페이지</label>
+                    <div class="input-group page-input-group">
+                        <input type="number" class="form-control form-control-md text-center merge-right" id="startPage" name="startPage" value="158" readonly>
+                        <span class="input-group-text fw-medium">~</span>
+                        <input type="number" class="form-control form-control-md text-center merge-left" id="endPage" name="endPage" value="249" readonly>
+                        <span class="input-group-text fs-7" style="width: 60px;">
+                            <span class="mx-auto page-num">92p</span>
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label mb-0">시간</label>
+                    <div class="input-group input-group-merge">
+                        <input type="number" class="form-control form-control-md text-center" id="timeHour" name="timeHour" value="2" readonly>
+                        <span class="input-group-text fw-medium">:</span>
+                        <input type="number" class="form-control form-control-md text-center" id="timeMin" name="timeMin" max="59" value="30" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary mb-2 d-grid w-100">저장</button>
+    <button type="button" class="btn btn-outline-secondary d-grid w-100" data-bs-dismiss="offcanvas">
+        취소
+    </button>
+</div>
+<script>
+    /**
+     * 기록 수정/삭제 버튼 이벤트
+     */
+    for (const el of document.getElementsByClassName('edit-btn')) {
+        el.addEventListener('click', function () {
+            const formEl = document.querySelector(el.parentElement.getAttribute('data-target'));
+            for (const input of formEl.querySelectorAll('input')) {
+                input.readOnly = !input.readOnly;
+            }
+        })
+    }
+    for (const el of document.getElementsByClassName('remove-btn')) {
+        el.addEventListener('click', function () {
+            const formEl = document.querySelector(el.parentElement.getAttribute('data-target'));
+            formEl.remove();
+        })
+    }
+
+    /**
+     * 쪽수 계산 함수
+     */
+    for (const el of document.querySelectorAll('.page-input-group > input')) {
+        el.addEventListener('input', function () {
+            const startPageEl = el.parentElement.querySelector('input[name=startPage]')
+            const endPageEl = el.parentElement.querySelector('input[name=endPage]')
+            const pageNumEl = el.parentElement.querySelector('.page-num')
+            const pageNum = endPageEl.value - startPageEl.value + 1;
+            if (!isNaN(pageNum)) {
+                if (pageNum >= 0) {
+                    pageNumEl.innerHTML = pageNum + 'p';
+                } else {
+                    pageNumEl.innerHTML = '<i class="bx bx-error bx-xs text-danger">';
+                }
+            }
+        })
+    }
+</script>

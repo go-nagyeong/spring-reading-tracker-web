@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(~{::title}, _)}">
+    <title>북카이브 - 독서 노트</title>
+</head>
+
+<body th:replace="~{layouts/base :: _body('reading-note', ~{::div}, ~{::script}, true)}">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <ul th:replace="~{notes/note-nav :: nav('highlight')}"></ul>
+
+    <div class="row" id="highlightNoteCard">
+        <div class="col-12 order-1 order-lg-0 with-collapse">
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">형광펜</h5>
+                        <div class="text-muted">
+                            <i class="bx bx-highlight bx-xs me-1"></i>인상깊은 구절을 남겨보세요.
+                        </div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-icon btn-primary btn-md" data-bs-show="collapse"
+                                data-bs-target=".collapse">
+                            <i class="bx bx-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid grid-2-column grid-md-3-column grid-lg-4-column gap-3" id="noteGridCard">
+                <div class="card" role="button" data-bs-show="collapse" href=".collapse">
+                    <div class="card-img-top overflow-hidden">
+                        <img th:src="@{/assets/img/highlight-example.jpg}">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">배움의 발견</h5>
+                        <p class="card-text">
+                            p.246
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">2024-05-24</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="card" role="button" data-bs-show="collapse" href=".collapse">
+                    <div class="card-img-top overflow-hidden">
+                        <div class="card-img-overlay">
+                            <p>
+                                <mark>
+                                    "두려움은 정신을 죽인다. 두려움은 완전한 소멸을 초래하는 작은 죽 음이다. 나는 두려움에 맞설 것이며 두려움이 나를 통과해서 지나가도록 허락할 것이다.
+                                    두려움이 지나가고 나면 나는 마음의 눈으로 그것이 지나간 길을 살펴보리라.
+                                </mark>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">배움의 발견</h5>
+                        <p class="card-text">
+                            p.246
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">2024-05-24</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-4 order-0 order-lg-1 collapse collapse-horizontal">
+            <div class="card">
+                <div class="card-header d-flex justify-content-end pb-0">
+                    <div class="dropdown">
+                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                                data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" data-bs-show="collapse" data-bs-target=".collapse">
+                                <i class="bx bx-edit-alt me-1"></i> 수정</a>
+                            <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="bx bx-trash me-1"></i> 삭제</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" id="noteDetailCont">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * (HTML 동적 로드) 노트 신규/상세보기 콜랩스
+     */
+    const collapseButtons = document.querySelectorAll('[data-bs-show=collapse]');
+    collapseButtons.forEach(el => {
+        el.addEventListener('click', function (event) {
+            const target = document.querySelector('#noteDetailCont');
+            let mode = 'edit';
+            if (el.tagName === 'DIV') mode = 'view';
+            const callback = () => {
+                switchMode(mode); // TODO: 임시
+            }
+            fetchHTML('/notes/highlight-note-detail', target, callback);
+        });
+    })
+
+    /**
+     * 상세보기 카드 show/hide 시 이벤트 (크기 조정)
+     */
+    const leftCard = document.querySelector('.with-collapse');
+    const collapseCard = document.querySelector('.collapse');
+    const noteGridCard = document.querySelector('#noteGridCard');
+    collapseCard.addEventListener('show.bs.collapse', function (event) {
+        leftCard.classList.add('reduce-col-lg-7');
+        noteGridCard.classList.remove('grid-lg-4-column');
+        noteGridCard.classList.add('grid-lg-3-column');
+    });
+    collapseCard.addEventListener('hide.bs.collapse', function (event) {
+        leftCard.classList.remove('reduce-col-lg-7');
+        noteGridCard.classList.add('grid-lg-4-column');
+        noteGridCard.classList.remove('grid-lg-3-column');
+    });
+</script>
+</body>
+</html>
