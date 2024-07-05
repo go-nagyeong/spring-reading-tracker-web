@@ -112,7 +112,7 @@
                                     </div>
                                     <button type="button" class="btn btn-icon rounded-pill btn-outline-primary toast-btn"
                                             data-bs-toggle="toast" data-bs-target="#toastCont">
-                                        <i class="bx bx-basket"></i>
+                                        <i class="bx bx-folder"></i>
                                     </button>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@
                             </div>
                             <button type="button" class="btn btn-md btn-outline-primary toast-btn"
                                     data-bs-toggle="toast" data-bs-target="#toastCont">
-                                관심 목록에 추가
+                                컬렉션에 추가
                             </button>
                         </div>
                     </div>
@@ -222,7 +222,7 @@
                                     </div>
                                     <button type="button" class="btn btn-icon rounded-pill btn-outline-primary toast-btn"
                                             data-bs-toggle="toast" data-bs-target="#toastCont">
-                                        <i class="bx bx-basket"></i>
+                                        <i class="bx bx-folder"></i>
                                     </button>
                                 </div>
                             </div>
@@ -241,7 +241,7 @@
                             </div>
                             <button type="button" class="btn btn-md btn-outline-primary toast-btn"
                                     data-bs-toggle="toast" data-bs-target="#toastCont">
-                                관심 목록에 추가
+                                컬렉션에 추가
                             </button>
                         </div>
                     </div>
@@ -258,7 +258,7 @@
     for (const el of document.getElementsByClassName('toast-btn')) {
         console.log(el)
         el.addEventListener('click', function () {
-            const content = '관심 목록에 추가되었습니다.';
+            const content = '컬렉션에 추가되었습니다.';
             showToast(content, 'success');
         })
     }

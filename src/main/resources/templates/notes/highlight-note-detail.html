@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <div class="row mb-3 mb-md-4">
+    <div class="row mb-2 mb-md-3">
         <label class="col-3 col-sm-2 col-form-label">페이지</label>
         <div class="col-9 col-sm-10 d-flex align-items-center">
             <div class="edit-mode">
@@ -89,6 +89,31 @@
                 </div>
             </div>
             <p class="view-mode">253 <em>p</em></p>
+        </div>
+    </div>
+
+    <div class="row mb-2 mb-md-3">
+        <label class="col-3 col-sm-2 col-form-label">작성일자</label>
+        <div class="col-9 col-sm-10 d-flex align-items-center">
+            <input type="date" class="form-control edit-mode" value="2024-07-01">
+            <p class="view-mode">2024-07-01</p>
+        </div>
+    </div>
+
+    <div class="row mb-3 mb-md-4">
+        <label class="col-3 col-sm-2 col-form-label">공개여부</label>
+        <div class="col-9 col-sm-10 d-flex align-items-center">
+            <div class="form-check form-check-inline edit-mode">
+                <input class="form-check-input" type="radio" name="gender" id="genderMale" value="M"
+                       checked="">
+                <label class="form-check-label" for="genderMale">비공개</label>
+            </div>
+            <div class="form-check form-check-inline edit-mode">
+                <input class="form-check-input" type="radio" name="gender" id="genderFemale"
+                       value="F">
+                <label class="form-check-label" for="genderFemale">전체 공개</label>
+            </div>
+            <span class="badge bg-label-primary view-mode">비공개</span>
         </div>
     </div>
 
