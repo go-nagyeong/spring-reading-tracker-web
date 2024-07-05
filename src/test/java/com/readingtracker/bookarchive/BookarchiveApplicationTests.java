@@ -1,10 +1,10 @@
-package com.readingtracker.bookarchive;
+package com.readingtracker.boochive;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BookarchiveApplicationTests {
+class boochiveApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,4 +1,4 @@
-package com.readingtracker.bookarchive.controller;
+package com.readingtracker.boochive.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
