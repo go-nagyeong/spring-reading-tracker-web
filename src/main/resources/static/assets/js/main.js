@@ -254,8 +254,9 @@ let menu, animate;
 
     // 독서 타이머 단축 버튼 > '온라인' 스타일 적용 (사용 중인 경우)
     window.applyTimerShortcutOnline = () => {
-        if (window.stopwatch) {
-            document.querySelector('.short-cut .btn').classList.toggle('avatar-online', window.stopwatch.isPlaying);
+        const shortcutButton = document.querySelector('.short-cut .btn');
+        if (window.stopwatch && shortcutButton) {
+            shortcutButton.classList.toggle('avatar-online', window.stopwatch.isPlaying);
         }
     }
 })();
