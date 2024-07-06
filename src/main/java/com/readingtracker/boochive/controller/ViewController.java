@@ -1,20 +1,43 @@
 package com.readingtracker.boochive.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.readingtracker.boochive.dto.RegisterForm;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class HomeController {
+public class ViewController {
 
+    /**
+     * Home
+     */
     @RequestMapping("/")
     public String home() {
-        return "index";
+        return "redirect:/login";
     }
 
+    /**
+     * User
+     */
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "user/login";
+    }
+
+    @GetMapping("/register")
+    public String showRegisterForm(RegisterForm registerForm) {
+        return "user/register";
+    }
+
+    @GetMapping("/find-password")
+    public String showFindPasswordForm() {
+        return "user/find-password";
+    }
+
+    /**
+     * TODO: 임시
+     */
     @RequestMapping("/{page}")
     public String custom1(@PathVariable("page") String page) {
         return page.replace(".html","");

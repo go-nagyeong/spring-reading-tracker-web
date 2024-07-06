@@ -16,56 +16,93 @@
         <h4 class="mb-2">회원가입</h4>
         <p class="mb-3">북카이브의 회원이 되어 다양한 서비스를 이용해 보세요!</p>
 
-        <form id="formAuthentication" class="mb-3" action="../index.html">
+        <form class="mb-3" novalidate>
             <div class="mb-3">
                 <label for="email" class="form-label">이메일</label>
-                <div class="input-group">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="example@boochive.com"
-                           autofocus>
-                    <button class="btn btn-outline-primary" type="button" id="emailBtn">중복 확인</button> <!-- TODO: 중복확인 모달 -->
-                </div>
+                <input type="email" class="form-control" id="email" name="email" placeholder="example@boochive.com"
+                       autofocus>
+                <span class="form-text invalid-feedback error-email"></span>
             </div>
             <div class="mb-3 form-password-toggle">
                 <label class="form-label" for="password">비밀번호</label>
-                <div class="input-group input-group-merge invalid">
-                    <input type="password" id="password" class="form-control invalid" name="password"
+                <div class="input-group input-group-merge">
+                    <input type="password" id="password" class="form-control" name="password"
                            placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"/>
                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                 </div>
+                <span class="form-text invalid-feedback error-password"></span>
                 <div class="form-text">※ 8~20자 이내로 영문, 숫자, 특수문자(!@#$%^&*()-_+=) 중 2가지 이상을 조합하셔야 합니다.</div>
-                <div class="form-text invalid-feedback">비밀번호가 올바르지 않습니다.</div>
             </div>
             <div class="mb-3 form-password-toggle">
-                <label class="form-label" for="passwordConfirm">비밀번호 확인</label>
+                <label class="form-label" for="confirmPassword">비밀번호 확인</label>
                 <div class="input-group input-group-merge">
-                    <input type="password" id="passwordConfirm" class="form-control" name="passwordConfirm"
+                    <input type="password" id="confirmPassword" class="form-control" name="confirmPassword"
                             placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"/>
                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                 </div>
+                <span class="form-text invalid-feedback error-confirmPassword"></span>
             </div>
             <div class="mb-3">
                 <label for="username" class="form-label">이름</label>
                 <input type="text" class="form-control" id="username" name="username" placeholder="홍길동"/>
+                <span class="form-text invalid-feedback error-username"></span>
             </div>
 
             <div class="mb-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="termsConditions" name="terms"/>
-                    <label class="form-check-label form-label-md" for="termsConditions">
-                        <a href="javascript:void(0);" class="text-primary">개인정보수집 및 이용약관</a>에 동의합니다. <!-- TODO: 이용약관 모달 -->
+                    <input type="hidden" name="isTermsAgreed" value="false"/>
+                    <input class="form-check-input" type="checkbox" id="isTermsAgreed" name="isTermsAgreed" value="true"/>
+                    <label class="form-check-label form-label-md" for="isTermsAgreed">
+                        <a href="javascript:void(0);" class="btn-link fw-semibold">개인정보수집 및 이용약관</a>에 동의합니다. <!-- TODO: 이용약관 모달 -->
                     </label>
                 </div>
+                <span class="form-text invalid-feedback error-isTermsAgreed"></span>
             </div>
             <button class="btn btn-primary d-grid w-100">가입하기</button>
         </form>
 
         <p class="text-center">
             <span class="form-label-md">이미 계정이 있으신가요?</span>
-            <a th:href="@{/user/login}" class="form-label-md text-primary">
+            <a th:href="@{/user/login}" class="btn-link form-label-md text-primary">
                 <span>로그인</span>
             </a>
         </p>
     </div>
 </div>
 </body>
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        _post('/api/auth/register', formToJson(new FormData(form)))
+            .then(result => {
+                clearErrorMessages();
+                if (result.success) {
+                    // 회원가입 성공 메시지 후 메인 페이지로 이동
+                    showToast(result.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    displayErrorMessages(result.data);
+                }
+            });
+    });
+
+    function displayErrorMessages(errors) {
+        $.each(errors, function(field, message) {
+            let errorSpan = document.querySelector('.error-' + field);
+            errorSpan.textContent = message;
+            errorSpan.previousElementSibling.classList.add('invalid');
+        });
+    }
+
+    function clearErrorMessages() {
+        const invalidList = document.querySelectorAll('.invalid');
+        invalidList.forEach(el => {
+            el.classList.remove('invalid');
+            el.nextElementSibling.textContent = '';
+        });
+    }
+</script>
 </html>

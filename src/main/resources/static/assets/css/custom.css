@@ -181,8 +181,9 @@ img.square {
     word-break: keep-all;
 }
 
-form .invalid ~ .input-group-text {
-    border-color: var(--bs-form-invalid-color) !important;
+.invalid input,
+.invalid .input-group-text {
+    border-color: var(--bs-danger) !important;
 }
 .invalid ~ .invalid-feedback {
     display: block;

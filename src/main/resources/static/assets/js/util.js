@@ -39,6 +39,56 @@ function handleScripts(scripts) {
 }
 
 /**
+ * formData JSON 형태로 변환
+ */
+function formToJson(data) {
+    let obj = {};
+    for (let [key, value] of data) {
+        obj[key] = value;
+    }
+    return JSON.stringify(obj);
+}
+
+/**
+ * 공통 fetch 함수
+ */
+async function fetchRequest(url, options = {}) {
+    try {
+        const response = await fetch(url, options);
+        const json = await response.json();
+        console.log(json)
+        return json;
+    } catch (error) {
+        console.error("Error fetching data:", error.message);
+        throw error; // 에러를 다시 던져서 호출자에게 처리할 수 있도록 함
+    }
+}
+async function _get(url, body) {
+    const options = {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: body
+    };
+    return fetchRequest(url, options);
+}
+async function _post(url, body) {
+    const options = {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: body
+    };
+    return fetchRequest(url, options);
+}
+
+/**
  * HTML 코드 동적 로드 함수
  */
 function fetchHTML(url, targetElement, callback = null) {
@@ -88,7 +138,7 @@ function showReadingTimerModal() {
     const callback = () => {
         document.querySelector('#smallModal .modal-title').innerText = '독서 타이머';
     }
-    fetchHTML('/common/reading-timer', target, callback);
+    loadHtml('/common/reading-timer', target, callback);
 
     const modalBootstrap = new bootstrap.Modal(modalEl)
     modalBootstrap.show();
