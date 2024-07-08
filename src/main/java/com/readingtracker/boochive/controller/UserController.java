@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -27,6 +28,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
     private final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/register")
@@ -70,33 +72,36 @@ public class UserController {
             return ApiResponse.failure("", errorMap);
         }
 
+        // 계정 존재 여부 및 비밀번호 검사
         Optional<User> authenticatedUser = userService.findUserByEmail(form.getEmail());
-        if (authenticatedUser.isPresent()) {
-            String accessToken = jwtTokenProvider.generateAccessToken(authenticatedUser.get());
-            String refreshToken = jwtTokenProvider.generateRefreshToken(authenticatedUser.get());
-
-            // Token 쿠키에 저장
-            Cookie cookie = new Cookie("access_token", accessToken);
-            cookie.setHttpOnly(true); // Http Only 속성 설정
-//            cookie.setSecure(true);   // https 연결에서만 전송할 경우 설정 (TODO: 개발 중 임시 주석)
-            cookie.setPath("/");      // 쿠키가 적용될 경로 설정
-            response.addCookie(cookie);
-
-            cookie = new Cookie("refresh_token", refreshToken);
-            cookie.setHttpOnly(true);
-//            cookie.setSecure(true);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-
-            // Access Token은 응답 헤더에 담아서 반환
-            response.addHeader("Authorization", "Bearer " + accessToken);
-
-            return ApiResponse.success("로그인에 성공하였습니다.");
-        } else {
-            // 사용자가 인증되지 않은 경우 처리
+        if (authenticatedUser.isEmpty() || !userService.isMatchPassword(form)) {
             errorMap.put("password", "이메일 또는 비밀번호가 올바르지 않습니다.");
             return ApiResponse.failure("", errorMap);
         }
+
+        User user = authenticatedUser.get();
+
+        String accessToken = jwtTokenProvider.generateAccessToken(user);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+
+        // Token 쿠키에 저장
+        // (memo) Access Token까지 저장하는 이유는 클라이언트에서 페이지 이동시 헤더에 담아 보내지 못하기 때문에 저장된 쿠키로 검증
+        Cookie cookie = new Cookie("access_token", accessToken);
+        cookie.setHttpOnly(true); // Http Only 속성 설정
+//            cookie.setSecure(true);   // https 연결에서만 전송할 경우 설정 (TODO: 개발 중 임시 주석)
+        cookie.setPath("/");      // 쿠키가 적용될 경로 설정
+        response.addCookie(cookie);
+
+        cookie = new Cookie("refresh_token", refreshToken); // TODO: 추후 Refresh Token은 Redis에 저장
+        cookie.setHttpOnly(true);
+//            cookie.setSecure(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        // Access Token은 응답 헤더에 담아서 반환
+        response.addHeader("Authorization", "Bearer " + accessToken);
+
+        return ApiResponse.success("로그인에 성공하였습니다.");
     }
 
     // 유효성 검사 결과 전처리 메서드

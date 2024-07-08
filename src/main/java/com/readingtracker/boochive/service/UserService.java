@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.LoginForm;
 import com.readingtracker.boochive.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,14 @@ public class UserService implements UserDetailsService {
 
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public Boolean isMatchPassword(LoginForm form) {
+        Optional<User> user = userRepository.findByEmail(form.getEmail());
+        if (user.isPresent()) {
+            return passwordEncoder.matches(form.getPassword(), user.get().getPassword());
+        }
+        return false;
     }
 
     private void setEncodedPassword(User user) {

@@ -42,11 +42,14 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 // url 접근 권한 설정
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/assets/**","/login","/register","/find-password","/api/auth/**").permitAll() // 권한 허가
-//                        .anyRequest().authenticated() // 그 외 모든 경로 인증 필요
-                        .anyRequest().permitAll() // 추가 (TODO: 임시)
+                        .requestMatchers("/assets/**","/","/login","/register","/find-password","/api/auth/**").permitAll() // 권한 허가
+                        .anyRequest().authenticated() // 그 외 모든 경로 인증 필요
+//                        .anyRequest().permitAll() // TODO: 임시
                 )
-                .logout(LogoutConfigurer::deleteCookies);
+                .logout(logout ->
+                        logout.clearAuthentication(true)
+                                .deleteCookies("access_token")
+                );
 
         return http.build();
     }
