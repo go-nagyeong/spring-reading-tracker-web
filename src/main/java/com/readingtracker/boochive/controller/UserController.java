@@ -1,14 +1,17 @@
 package com.readingtracker.boochive.controller;
 
-import com.readingtracker.boochive.common.ApiResponse;
+import com.readingtracker.boochive.util.ApiResponse;
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.LoginForm;
 import com.readingtracker.boochive.dto.RegisterForm;
 import com.readingtracker.boochive.service.UserService;
+import com.readingtracker.boochive.util.JwtTokenProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -19,18 +22,15 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
     private final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<HashMap<String, String>>> register(@Valid @RequestBody RegisterForm form, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterForm form, BindingResult bindingResult) {
         // 추가 검증 (이메일 중복 확인, 비밀번호 확인 일치 여부)
         if (!bindingResult.hasFieldErrors("email")) {
             if (userService.findUserByEmail(form.getEmail()).isPresent()) {
@@ -45,21 +45,10 @@ public class UserController {
             }
         }
 
-        // 유효성 검사 응답 데이터 전처리
+        // 유효성 검사 결과 전처리
         if (bindingResult.hasErrors()) {
-            // 유효성 검증 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)
-            List<FieldError> fieldErrors = new ArrayList<>(bindingResult.getFieldErrors());
-            fieldErrors.sort(Comparator.comparing(FieldError::getCode).reversed());
-
-            HashMap<String, String> errorMap = new HashMap<>();
-            fieldErrors.forEach(error -> {
-                errorMap.put(error.getField(), error.getDefaultMessage());
-            });
-            bindingResult.getGlobalErrors().forEach(error -> {
-                errorMap.put(error.getObjectName(), error.getDefaultMessage());
-            });
-
-            return ApiResponse.failure("", errorMap, HttpStatus.MULTI_STATUS);
+            Map<String, String> errorMap = handleValidationErrors(bindingResult);
+            return ApiResponse.failure("", errorMap);
         }
 
         // 회원 데이터 생성
@@ -69,6 +58,64 @@ public class UserController {
         user.setName(form.getUsername());
         userService.saveUser(user);
 
-        return ApiResponse.success("회원가입이 성공적으로 완료되었습니다.");
+        return ApiResponse.success("회원가입에 성공하였습니다.");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginForm form, BindingResult bindingResult, HttpServletResponse response) {
+        // 유효성 검사 결과 전처리
+        Map<String, String> errorMap = new LinkedHashMap<>();
+        if (bindingResult.hasErrors()) {
+            errorMap = handleValidationErrors(bindingResult);
+            return ApiResponse.failure("", errorMap);
+        }
+
+        Optional<User> authenticatedUser = userService.findUserByEmail(form.getEmail());
+        if (authenticatedUser.isPresent()) {
+            String accessToken = jwtTokenProvider.generateAccessToken(authenticatedUser.get());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(authenticatedUser.get());
+
+            // Token 쿠키에 저장
+            Cookie cookie = new Cookie("access_token", accessToken);
+            cookie.setHttpOnly(true); // Http Only 속성 설정
+//            cookie.setSecure(true);   // https 연결에서만 전송할 경우 설정 (TODO: 개발 중 임시 주석)
+            cookie.setPath("/");      // 쿠키가 적용될 경로 설정
+            response.addCookie(cookie);
+
+            cookie = new Cookie("refresh_token", refreshToken);
+            cookie.setHttpOnly(true);
+//            cookie.setSecure(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            // Access Token은 응답 헤더에 담아서 반환
+            response.addHeader("Authorization", "Bearer " + accessToken);
+
+            return ApiResponse.success("로그인에 성공하였습니다.");
+        } else {
+            // 사용자가 인증되지 않은 경우 처리
+            errorMap.put("password", "이메일 또는 비밀번호가 올바르지 않습니다.");
+            return ApiResponse.failure("", errorMap);
+        }
+    }
+
+    // 유효성 검사 결과 전처리 메서드
+    private Map<String, String> handleValidationErrors(BindingResult bindingResult) {
+        // 유효성 검사 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)
+        List<FieldError> fieldErrors = new ArrayList<>(bindingResult.getFieldErrors());
+        fieldErrors.sort(Comparator
+                .comparing(FieldError::getField)
+                .thenComparing(Comparator.comparing(FieldError::getCode).reversed()));
+
+        // <필드(key): 에러메세지(value)> 구조로 저장
+        Map<String, String> errorMap = new LinkedHashMap<>(); // 순서 적용을 위해 LinkedHashMap 사용
+        fieldErrors.forEach(error -> {
+            errorMap.put(error.getField(), error.getDefaultMessage());
+        });
+        bindingResult.getGlobalErrors().forEach(error -> {
+            errorMap.put(error.getObjectName(), error.getDefaultMessage());
+        });
+
+        return errorMap;
     }
 }

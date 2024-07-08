@@ -182,10 +182,12 @@ img.square {
 }
 
 .invalid input,
-.invalid .input-group-text {
+.invalid .input-group-text,
+.invalid ~ .input-group-text {
     border-color: var(--bs-danger) !important;
 }
-.invalid ~ .invalid-feedback {
+.invalid ~ .invalid-feedback,
+.invalid-feedback.show {
     display: block;
 }
 

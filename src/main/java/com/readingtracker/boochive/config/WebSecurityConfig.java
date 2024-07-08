@@ -1,53 +1,80 @@
 package com.readingtracker.boochive.config;
 
+import com.readingtracker.boochive.repository.UserRepository;
+import com.readingtracker.boochive.service.UserService;
+import com.readingtracker.boochive.util.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
+
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // 추가 (TODO: 임시 < 403 에러 해결되면 삭제)
+                // jwt 토큰 사용으로 http 기본 인증, csrf 보안, 세션 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                // jwt 토큰 기반의 인증 처리 (커스텀 필터)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                // url 접근 권한 설정
                 .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/","/login","/register","/assets/**","/api/auth/**")
-//                        .permitAll() // 위 경로 권한 허가
+                        .requestMatchers("/assets/**","/login","/register","/find-password","/api/auth/**").permitAll() // 권한 허가
 //                        .anyRequest().authenticated() // 그 외 모든 경로 인증 필요
                         .anyRequest().permitAll() // 추가 (TODO: 임시)
                 )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/", true) // 추가
-                        .permitAll()
-                )
-//                .rememberMe()
-                .logout((logout) -> logout // 추가
-                        .invalidateHttpSession(true) // 전체 세션 초기화
-                        .permitAll()
-                );
+                .logout(LogoutConfigurer::deleteCookies);
 
         return http.build();
     }
 
-//    @Bean
-//    public InMemoryUserDetailsManager userDetailsService() {
-//        UserDetails user = User.withUsername("user")
-//                .password(passwordEncoder().encode("userPass"))
-//                .roles("USER")
-//                .build();
-//        return new InMemoryUserDetailsManager(user);
-//    }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
+        configuration.setAllowedMethods(List.of("GET","POST"));
+        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**",configuration);
+
+        return source;
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider, userService());
+    }
+
+    @Bean
+    public UserService userService() {
+        return new UserService(userRepository);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/assets/css/auth.css}"/>
 </head>
 
-<body th:replace="~{layouts/base :: auth_body(~{::div}, _)}">
+<body th:replace="~{layouts/base :: auth_body(~{::div}, ~{::script})}">
 <div class="card">
     <div class="card-body">
         <div class="app-brand">
@@ -16,35 +16,39 @@
         <h4 class="mb-2">로그인</h4>
         <p class="mb-3">가입한 이메일 주소로 로그인하세요.</p>
 
-        <form id="formAuthentication" class="mb-3" action="../index.html">
+        <form class="mb-3" novalidate>
             <div class="mb-3">
                 <input type="text" class="form-control" id="email" name="email" placeholder="이메일" autofocus/>
             </div>
+
             <div class="mb-3 form-password-toggle">
-                <div class="input-group input-group-merge invalid">
-                    <input type="password" id="password" class="form-control" name="password" placeholder="비밀번호"
+                <div class="input-group input-group-merge">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호"
                            aria-describedby="password"/>
                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                 </div>
-                <div class="form-text invalid-feedback pt-1">아이디 또는 비밀번호가 올바르지 않습니다.</div>
             </div>
-            <div class="mb-3">
+
+            <div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="rememberMe"/>
                     <label class="form-check-label form-label-md" for="rememberMe"> 로그인 상태 유지 </label>
                 </div>
             </div>
-            <div class="mb-3">
+
+            <span class="form-text invalid-feedback mt-3"></span>
+
+            <div class="mt-4 mb-3">
                 <button class="btn btn-primary d-grid w-100" type="submit">로그인</button>
             </div>
         </form>
 
         <p class="text-center">
-            <a th:href="@{/user/register}" class="btn-link form-label-md">
+            <a th:href="@{/register}" class="btn-link form-label-md">
                 <span>회원가입</span>
             </a>
             <span class="horizontal-divider"></span>
-            <a th:href="@{/user/find-password}" class="btn-link form-label-md">
+            <a th:href="@{/find-password}" class="btn-link form-label-md">
                 <span>비밀번호 찾기</span>
             </a>
         </p>
@@ -54,6 +58,7 @@
         </div>
 
         <div class="social-btn-wrap">
+            <!-- TODO: 소셜 로그인 -->
             <a href="#">
                 <img th:src="@{/assets/img/social-round-goggle.png}" alt="" class="img-fluid rounded-circle">
             </a>
@@ -64,8 +69,58 @@
                 <img th:src="@{/assets/img/social-round-kakao.png}" alt="" class="img-fluid rounded-circle">
             </a>
         </div>
-
     </div>
 </div>
+
+<script>
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        handleSubmit();
+    });
+
+    async function handleSubmit() {
+        await axios.post('/api/auth/login', formToJson(new FormData(form)))
+            .then(response => {
+                clearErrorMessages();
+                if (response.data.success) {
+                    // header에 jwt 토큰 설정
+                    axios.defaults.headers.post['Authorization'] = response.headers.authorization;
+                    location.href = '/';
+                } else {
+                    displayErrorMessages(response.data.data);
+                }
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+            });
+    }
+
+    function displayErrorMessages(errors) {
+        const [field, message] = Object.entries(errors)[0]; // 단일 에러 메세지
+        const errorSpan = document.querySelector('.invalid-feedback');
+        const fieldInput = document.getElementById(field);
+
+        if (errorSpan && fieldInput) {
+            errorSpan.textContent = message;
+            errorSpan.classList.add('show');
+            fieldInput.classList.add('invalid');
+            fieldInput.focus();
+            fieldInput.value = '';
+        }
+    }
+
+    function clearErrorMessages() {
+        const errorSpan = document.querySelector('.invalid-feedback');
+        const invalidInput = document.querySelector('.invalid');
+
+        if (errorSpan && invalidInput) {
+            errorSpan.textContent = '';
+            errorSpan.classList.remove('show');
+            invalidInput.classList.remove('invalid');
+        }
+    }
+</script>
 </body>
 </html>
