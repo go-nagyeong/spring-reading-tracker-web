@@ -92,7 +92,7 @@ public class UserController {
         cookie.setPath("/");      // 쿠키가 적용될 경로 설정
         response.addCookie(cookie);
 
-        cookie = new Cookie("refresh_token", refreshToken); // TODO: 추후 Refresh Token은 Redis에 저장
+        cookie = new Cookie("refresh_token", refreshToken); // TODO: (임시) 추후 Refresh Token은 Redis에 저장
         cookie.setHttpOnly(true);
 //            cookie.setSecure(true);
         cookie.setPath("/");
