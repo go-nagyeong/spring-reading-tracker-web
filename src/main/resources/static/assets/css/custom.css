@@ -505,6 +505,11 @@ input[type=color]::-moz-color-swatch {
     line-height: 1.6;
 }
 
+.error-title {
+    font-family: "Inter", serif;
+    font-weight: 600;
+}
+
 .social-btn-wrap {
     display: flex;
     justify-content: center;
