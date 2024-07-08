@@ -2,6 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.dto.RegisterForm;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ public class ViewController {
      */
     @RequestMapping("/")
     public String home() {
-        return "redirect:/login";
+        return "index";
     }
 
     /**
@@ -26,7 +27,7 @@ public class ViewController {
     }
 
     @GetMapping("/register")
-    public String showRegisterForm(RegisterForm registerForm) {
+    public String showRegisterForm() {
         return "user/register";
     }
 

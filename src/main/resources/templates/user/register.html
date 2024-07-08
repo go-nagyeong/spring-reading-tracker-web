@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/assets/css/auth.css}"/>
 </head>
 
-<body th:replace="~{layouts/base :: auth_body(~{::div}, _)}">
+<body th:replace="~{layouts/base :: auth_body(~{::div}, ~{::script})}">
 <div class="card">
     <div class="card-body">
         <div class="app-brand">
@@ -48,7 +48,7 @@
                 <span class="form-text invalid-feedback error-username"></span>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <div class="form-check">
                     <input type="hidden" name="isTermsAgreed" value="false"/>
                     <input class="form-check-input" type="checkbox" id="isTermsAgreed" name="isTermsAgreed" value="true"/>
@@ -58,12 +58,13 @@
                 </div>
                 <span class="form-text invalid-feedback error-isTermsAgreed"></span>
             </div>
+
             <button class="btn btn-primary d-grid w-100">가입하기</button>
         </form>
 
         <p class="text-center">
             <span class="form-label-md">이미 계정이 있으신가요?</span>
-            <a th:href="@{/user/login}" class="btn-link form-label-md text-primary">
+            <a th:href="@{/login}" class="btn-link form-label-md text-primary">
                 <span>로그인</span>
             </a>
         </p>
@@ -75,30 +76,37 @@
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        _post('/api/auth/register', formToJson(new FormData(form)))
-            .then(result => {
-                clearErrorMessages();
-                if (result.success) {
-                    // 회원가입 성공 메시지 후 메인 페이지로 이동
-                    showToast(result.message, 'success');
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 2000);
-                } else {
-                    displayErrorMessages(result.data);
-                }
-            });
+        handleSubmit();
     });
 
+    async function handleSubmit() {
+        await axios.post('/api/auth/register', formToJson(new FormData(form)))
+            .then(response => {
+                clearErrorMessages();
+                if (response.data.success) {
+                    window.location.href = '/login';
+                } else {
+                    displayErrorMessages(response.data.data);
+                }
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+            });
+    }
+
     function displayErrorMessages(errors) {
-        $.each(errors, function(field, message) {
-            let errorSpan = document.querySelector('.error-' + field);
-            errorSpan.textContent = message;
-            errorSpan.previousElementSibling.classList.add('invalid');
+        Object.entries(errors).forEach(([field, message]) => {
+            const errorSpan = document.querySelector('.error-' + field);
+            if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.previousElementSibling.classList.add('invalid');
+            }
         });
         // input 자동 포커스
-        let inputList = document.querySelectorAll('input.invalid, .invalid input:not([type=hidden])');
-        inputList[0].focus();
+        const firstInvalidInput = document.querySelector('input.invalid, .invalid input:not([type=hidden])');
+        if (firstInvalidInput) {
+            firstInvalidInput.focus();
+        }
     }
 
     function clearErrorMessages() {

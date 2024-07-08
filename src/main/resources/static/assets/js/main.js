@@ -178,6 +178,11 @@ let menu, animate;
     window.Helpers.setCollapsed(true, false);
 
 
+    // axios default config
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    axios.defaults.responseType = 'json';
+    axios.defaults.withCredentials = true;
+
     // Custom helpers & misc
     // --------------------
 
