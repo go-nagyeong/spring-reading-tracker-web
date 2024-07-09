@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Jwt 토큰 예외 처리
+     * JWT 토큰 예외 처리
      */
     private void handleJwtException(JwtException e, HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.error("JWT 필터 처리 중 오류 발생: " + e.getMessage());
@@ -64,12 +64,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 try {
                     String newAccessToken = jwtTokenProvider.generateAccessTokenFromRefreshToken(refreshToken);
 
-                    // 새 Access Token 쿠키에 저장
+                    // 새 액세스 토큰 쿠키에 저장
                     Cookie cookie = new Cookie("access_token", newAccessToken);
                     cookie.setHttpOnly(true); // Http Only 속성 설정
 //                    cookie.setSecure(true);   // https 연결에서만 전송할 경우 설정 (TODO: 개발 중 임시 주석)
                     cookie.setPath("/");      // 쿠키가 적용될 경로 설정
                     response.addCookie(cookie);
+
+                    // 토큰 재발급 후 클라이언트가 요청했던 URL로 리다이렉트
+                    response.sendRedirect(request.getRequestURI());
                 } catch (Exception ex) {
                     logger.error("JWT 재발급 중 오류 발생: " + ex.getMessage());
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

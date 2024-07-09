@@ -10,10 +10,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -24,13 +27,16 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
-    private final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final AuthenticationManager authenticationManager;
 
+    /**
+     * 회원가입
+     */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterForm form, BindingResult bindingResult) {
         // 추가 검증 (이메일 중복 확인, 비밀번호 확인 일치 여부)
@@ -63,6 +69,9 @@ public class UserController {
         return ApiResponse.success("회원가입에 성공하였습니다.");
     }
 
+    /**
+     * 로그인
+     */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginForm form, BindingResult bindingResult, HttpServletResponse response) {
         // 유효성 검사 결과 전처리
@@ -72,36 +81,50 @@ public class UserController {
             return ApiResponse.failure("", errorMap);
         }
 
-        // 계정 존재 여부 및 비밀번호 검사
-        Optional<User> authenticatedUser = userService.findUserByEmail(form.getEmail());
-        if (authenticatedUser.isEmpty() || !userService.isMatchPassword(form)) {
+        // AuthenticationManager를 사용하여 로그인 인증 (인증 객체 생성 후 전달)
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(form.getEmail(), form.getPassword());
+            authenticationManager.authenticate(authenticationToken);
+        } catch (BadCredentialsException e) {
+            // 잘못된 인증 정보 (이메일 또는 비밀번호)
             errorMap.put("password", "이메일 또는 비밀번호가 올바르지 않습니다.");
             return ApiResponse.failure("", errorMap);
+        } catch (LockedException e) {
+            // 계정이 잠겼을 경우
+            errorMap.put("password", "사용자 계정이 잠겼습니다. 관리자에게 문의하세요.");
+            return ApiResponse.failure("", errorMap);
+        } catch (AuthenticationException e) {
+            // 그 외의 인증 예외 처리
+            log.error("인증 객체 생성 에러: {}", e.getMessage(), e);
         }
 
-        User user = authenticatedUser.get();
+        // 인증 성공 시 토큰 발급
+        String accessToken = jwtTokenProvider.generateAccessToken(form.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(form.getEmail());
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
-
-        // Token 쿠키에 저장
+        // 토큰 쿠키에 저장
         // (memo) Access Token까지 저장하는 이유는 클라이언트에서 페이지 이동시 헤더에 담아 보내지 못하기 때문에 저장된 쿠키로 검증
-        Cookie cookie = new Cookie("access_token", accessToken);
-        cookie.setHttpOnly(true); // Http Only 속성 설정
-//            cookie.setSecure(true);   // https 연결에서만 전송할 경우 설정 (TODO: 개발 중 임시 주석)
-        cookie.setPath("/");      // 쿠키가 적용될 경로 설정
-        response.addCookie(cookie);
-
-        cookie = new Cookie("refresh_token", refreshToken); // TODO: (임시) 추후 Refresh Token은 Redis에 저장
-        cookie.setHttpOnly(true);
-//            cookie.setSecure(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        setHttpOnlyCookie("access_token", accessToken, response);
+        setHttpOnlyCookie("refresh_token", refreshToken, response); // TODO: (임시) 추후 Refresh Token은 Redis에 저장
 
         return ApiResponse.success("로그인에 성공하였습니다.");
     }
 
-    // 유효성 검사 결과 전처리 메서드
+    /**
+     * HttpOnly + Secure 쿠키 저장 메서드 (JWT 토큰 저장)
+     */
+    private void setHttpOnlyCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true); // Http Only 속성 설정
+//        cookie.setSecure(true);   // https 연결에서만 전송할 경우 설정 (TODO: 개발 중 임시 주석)
+        cookie.setPath("/");      // 쿠키가 적용될 경로 설정
+        response.addCookie(cookie);
+    }
+
+    /**
+     * 유효성 검사 결과 전처리 메서드
+     */
     private Map<String, String> handleValidationErrors(BindingResult bindingResult) {
         // 유효성 검사 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)
         List<FieldError> fieldErrors = new ArrayList<>(bindingResult.getFieldErrors());

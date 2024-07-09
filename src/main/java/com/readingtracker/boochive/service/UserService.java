@@ -4,7 +4,6 @@ import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.LoginForm;
 import com.readingtracker.boochive.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,8 +17,7 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public User saveUser(User user) {
         this.setEncodedPassword(user); // 비밀번호 해시 변환

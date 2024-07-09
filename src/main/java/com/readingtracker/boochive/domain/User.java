@@ -73,23 +73,39 @@ public class User implements UserDetails {
         return password;
     }
 
+    /**
+     * 계정 만료 여부
+     * => 사용 X
+     */
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
+    /**
+     * 계정 잠김 여부
+     * => TODO: 추후 비밀번호 연속 틀릴 시 계정 잠그는 기능 추가
+     */
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
+    /**
+     * 비밀번호 만료 여부
+     * => TODO: 추후 비밀번호 변경 일자를 저장하고 그 일자를 기준으로 비밀번호 유효 기간을 판단하는 기능 개발
+     */
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
+    /**
+     * 계정 활성화 여부
+     * => 사용 X
+     */
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
