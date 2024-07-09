@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -19,7 +18,7 @@ public class JwtTokenProvider {
 
     private final String secretKey;
     private final long accessTokenExpiration; // 15분
-    private final long refreshTokenExpiration; // 1주
+    private final long refreshTokenExpiration; // 24시간
 
     public JwtTokenProvider(@Value("${security.jwt.secret}") String secretKey,
                             @Value("${security.jwt.access-token-expiration}") long accessTokenExpiration,
@@ -29,16 +28,32 @@ public class JwtTokenProvider {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, accessTokenExpiration);
+    /**
+     * Refresh Token을 사용해 새로운 Access Token 재발급
+     */
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        Claims claims = extractAllClaims(refreshToken);
+        return generateAccessToken(claims.getSubject());
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshTokenExpiration);
+    /**
+     * Refresh Token 발급
+     */
+    public String generateAccessToken(String username) {
+        return generateToken(username, accessTokenExpiration);
     }
 
-    // 사용자 정보를 기반으로 JWT 토큰 생성
-    public String generateToken(UserDetails userDetails, Long expiration) {
+    /**
+     * Access Token 발급
+     */
+    public String generateRefreshToken(String username) {
+        return generateToken(username, refreshTokenExpiration);
+    }
+
+    /**
+     * 사용자 이름을 기반으로 JWT 토큰 생성
+     */
+    public String generateToken(String username, Long expiration) {
         Map<String, Object> claims = new HashMap<>();
 
         return Jwts.builder()
@@ -48,40 +63,19 @@ public class JwtTokenProvider {
 //                .setExpiration(new Date(System.currentTimeMillis() + expiration))
 //                .signWith(SignatureAlgorithm.HS256, getSigningKey())
                 .claims(claims)
-                .subject(userDetails.getUsername())
+                .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    // 사용자 정보를 기반으로 JWT 토큰 생성
-    public String createToken(UserDetails userDetails, Long expiration) {
-        Map<String, Object> claims = new HashMap<>();
-
-        return Jwts.builder()
-//                .setClaims(claims) // deprecated
-//                .setSubject(userDetails.getUsername())
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-//                .signWith(SignatureAlgorithm.HS256, getSigningKey())
-                .claims(claims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey())
-                .compact();
-    }
-
-    // 토큰이 유효한지 검사
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
-
-    // 토큰이 만료되었는지 검사
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    /**
+     * 토큰이 유효한지 검사
+     */
+    public boolean isTokenValid(String token) {
+        boolean isTokenExpired = extractExpiration(token).before(new Date()); // 토큰 만료 여부
+        return !isTokenExpired;
     }
 
     public String extractUsername(String token) {
@@ -97,7 +91,9 @@ public class JwtTokenProvider {
         return claimsResolver.apply(claims);
     }
 
-    // 토큰에서 모든 클레임 추출
+    /**
+     * 토큰에서 모든 클레임 추출
+     */
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
 //                .setSigningKey(getSigningKey()) // deprecated
@@ -111,7 +107,9 @@ public class JwtTokenProvider {
 
     }
 
-    // 서명에 사용할 SecretKey를 생성
+    /**
+     * 서명에 사용할 Secret Key를 생성
+     */
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

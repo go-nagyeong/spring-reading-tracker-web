@@ -86,9 +86,6 @@
             .then(response => {
                 clearErrorMessages();
                 if (response.data.success) {
-                    // header에 jwt 토큰 설정
-                    console.log(response.headers.authorization)
-                    axios.defaults.headers.common['Authorization'] = response.headers.authorization;
                     location.href = '/';
                 } else {
                     displayErrorMessages(response.data.data);

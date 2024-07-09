@@ -181,7 +181,7 @@ let menu, animate;
     // axios default config
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.defaults.responseType = 'json';
-    axios.defaults.withCredentials = true;
+    axios.defaults.withCredentials = true; // 쿠키를 서버로 전송 (Jwt 토큰을 헤더에 담지 않고 쿠키로 전달 <- MPA 형식의 프론트 때문)
 
     // Custom helpers & misc
     // --------------------

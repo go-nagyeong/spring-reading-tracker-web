@@ -81,8 +81,8 @@ public class UserController {
 
         User user = authenticatedUser.get();
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
         // Token 쿠키에 저장
         // (memo) Access Token까지 저장하는 이유는 클라이언트에서 페이지 이동시 헤더에 담아 보내지 못하기 때문에 저장된 쿠키로 검증
@@ -97,9 +97,6 @@ public class UserController {
 //            cookie.setSecure(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-
-        // Access Token은 응답 헤더에 담아서 반환
-        response.addHeader("Authorization", "Bearer " + accessToken);
 
         return ApiResponse.success("로그인에 성공하였습니다.");
     }
