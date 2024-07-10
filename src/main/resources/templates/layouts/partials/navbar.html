@@ -9,14 +9,28 @@
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <!-- Search -->
-        <form th:action="@{/books}" method="get">
+        <form th:action="@{/books}" method="get" class="w-75" id="searchForm">
             <div class="navbar-nav align-items-center">
-                <div class="nav-item d-flex align-items-center">
+                <div class="nav-item d-flex align-items-center w-100">
                     <i class="bx bx-search fs-4 lh-0"></i>
                     <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" name="query"
-                           placeholder="책 제목 검색"/>
+                           th:value="${param.query}" placeholder="책 제목 검색" />
                 </div>
             </div>
+            <script>
+                /**
+                 * 검색어 필수값 검사
+                 */
+                const searchForm = document.getElementById('searchForm');
+                searchForm.addEventListener('submit', function(event) {
+                    const requiredValue = searchForm.querySelector('[name=query]').value;
+                    if (!requiredValue.trim()) {
+                        const content = '검색어를 입력해 주세요.';
+                        showToast(content, 'warning');
+                        event.preventDefault();
+                    }
+                })
+            </script>
         </form>
         <!-- /Search -->
 

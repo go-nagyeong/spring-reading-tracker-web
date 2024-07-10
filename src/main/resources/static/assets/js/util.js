@@ -105,3 +105,92 @@ function showReadingTimerModal() {
     const modalBootstrap = new bootstrap.Modal(modalEl)
     modalBootstrap.show();
 }
+
+/**
+ * 로딩 스피너 함수
+ */
+function showLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+    }
+}
+function hideLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+/**
+ * 검색 결과 안내 메세지 함수
+ */
+function showNoResultMessage() {
+    const resultMsg = document.getElementById('resultMsg');
+    if (resultMsg) {
+        resultMsg.style.display = 'block';
+    }
+}
+function hideNoResultsMessage() {
+    const resultMsg = document.getElementById('resultMsg');
+    if (resultMsg) {
+        resultMsg.style.display = 'none';
+    }
+}
+
+/**
+ * 페이지네이션 함수
+ */
+function setPagination(curPage, lastPage) {
+    const paginationWrap = document.getElementById('paginationWrap');
+    if (paginationWrap) {
+        const pageButtonWrap = paginationWrap.querySelector('.pagination');
+        const searchParams = new URLSearchParams(window.location.search);
+
+        const buttonIcon = (direction) => `<i class="tf-icon bx bx-chevron${direction}"></i>`;
+        const buttonLink = (page) => {
+            searchParams.set('page', page);
+            return curPage === page ? '' : '?'+searchParams;
+        };
+
+        // 페이지 버튼 표시 범위
+        let startPage = Math.max(curPage - 2, 1); // 현재 페이지를 중심으로 앞으로 2페이지 이내로 시작
+        let endPage = Math.min(startPage + 4, lastPage); // 시작 페이지부터 4페이지까지 (최대 5개 버튼)
+
+        // '첫 페이지로 가기', '이전' 버튼
+        appendPageButton(pageButtonWrap, buttonLink(1), buttonIcon('s-left'), 'prev');
+        appendPageButton(pageButtonWrap, buttonLink(Math.max(startPage-1, 1)), buttonIcon('-left'), 'prev');
+
+        // 페이지 버튼
+        for (let page = startPage; page <= endPage; page++) {
+            appendPageButton(pageButtonWrap, buttonLink(page), page, (page === curPage ? 'active' : null));
+        }
+
+        // '다음', '마지막 페이지로 가기' 버튼
+        appendPageButton(pageButtonWrap, buttonLink(Math.min(endPage+1, lastPage)), buttonIcon('-right'), 'prev');
+        appendPageButton(pageButtonWrap, buttonLink(lastPage), buttonIcon('s-right'), 'next');
+    }
+}
+function appendPageButton(pageButtonWrap, link, content, additionalClass = null) {
+    const templateTag = pageButtonWrap.querySelector('.template-tag');
+
+    const newButton = templateTag.cloneNode(true);
+    // 버튼 클래스
+    newButton.classList.remove('template-tag');
+    if (additionalClass) {
+        newButton.classList.add(additionalClass);
+    }
+    // 버튼 링크 경로
+    newButton.querySelector('a').href = link;
+    // 버튼 내용
+    newButton.querySelector('a').innerHTML = content;
+
+    pageButtonWrap.appendChild(newButton);
+}
+
+/**
+ * 페이지네이션이 있는 목록의 행 인덱스 계산 함수
+ */
+function calculateRowIndex(curPage, rowsPerPage, currentRow) {
+    return (curPage - 1) * rowsPerPage + currentRow;
+}

@@ -240,9 +240,11 @@ input[type=color]::-moz-color-swatch {
     font-size: .8125rem;
 }
 
-/* TODO: important 확인 필요 */
 .bx-xxs { /* < .bx-xs */
     font-size: .875rem !important; /* < 1rem */
+}
+.bx-xl { /* > .bx-lg */
+    font-size: 4rem !important; /* > 3rem */
 }
 
 .btn-md { /* .btn-sm < ? < .btn-lg */
@@ -367,7 +369,25 @@ input[type=color]::-moz-color-swatch {
 }
 
 /**
- * ---- Bootstrap Component 5. Tooltip -----------------------
+ * ---- Bootstrap Component 5. Spinner -----------------------
+ */
+.spinner-wrap {
+    display: none;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.spinner-wrap > * {
+    margin: 0 0.25rem;
+}
+
+.spinner-grow-xs {
+    --bs-spinner-width: 0.65rem;
+    --bs-spinner-height: 0.65rem;
+}
+
+/**
+ * ---- Bootstrap Component 6. Toast -----------------------
  */
 .toast {
     --bs-toast-padding-x: 0.8rem;
@@ -457,7 +477,7 @@ input[type=color]::-moz-color-swatch {
 .error.toast, .error.bs-toast {
     --bs-toast-color: var(--bs-danger);
     --bs-toast-icon: '\ef06';
-    --bs-toast-title: '오류';
+    --bs-toast-title: '실패';
 }
 .warning.toast, .warning.bs-toast {
     --bs-toast-color: var(--bs-warning);
@@ -466,7 +486,7 @@ input[type=color]::-moz-color-swatch {
 }
 
 /**
- * ---- Bootstrap Component 6. Tooltip -----------------------
+ * ---- Bootstrap Component 7. Tooltip -----------------------
  */
 .tooltip {
     --bs-tooltip-bg: var(--bs-primary);
@@ -597,7 +617,6 @@ input[type=color]::-moz-color-swatch {
     }
 }
 
-
 .with-collapse {
     transition: width 0.35s ease;
 }
@@ -635,6 +654,16 @@ form.edit-or-view-mode .lcslt-disabled:after {
     right: 1.625rem;
     z-index: 1080;
     box-shadow: 0 1px 20px 1px rgba(var(--bs-primary-rgb), 0.7);
+}
+
+.template-tag {
+    display: none;
+}
+
+.result-msg-wrap {
+    display: none;
+    text-align: center;
+    padding: 1rem 0;
 }
 
 /**

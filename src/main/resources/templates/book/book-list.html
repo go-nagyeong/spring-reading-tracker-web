@@ -15,81 +15,89 @@
             <a class="btn-link" th:href="@{/}">홈</a>
         </li>
         <li class="breadcrumb-item active">
-            <span class="text-primary" th:text="${param.search}"></span>에 대한 검색 결과
+            <span class="text-primary" th:text="${param.query}"></span>에 대한 검색 결과
         </li>
     </ol>
 
     <div class="card">
-        <div class="card-body">
+        <div class="card-body" id="contentCard">
+            <div th:replace="~{common/loading :: div}"></div>
+            <div th:replace="~{common/result-message :: div}"></div>
+
             <ul id="bookSearchList" class="tp-list">
-                <li data-goods-no="28995741">
+                <li data-goods-no="" class="template-tag">
                     <div class="item-unit row">
                         <div class="item-img">
                             <span class="img-item">
                                 <a th:href="@{/book/book-detail}">
-                                    <img class="img-thumbnail" th:src="@{/assets/img/book01.jpg}" alt="배움의 발견">
+                                    <img class="img-thumbnail" src="">
                                 </a>
                             </span>
                         </div>
                         <div class="item-info">
                             <div class="info-num d-none d-md-block">
-                                <span class="badge bg-secondary fw-bold">1</span>
+                                <span class="badge bg-secondary fw-bold">
+                                    <!-- 태그 동적으로 추가될 때 입력 -->
+                                </span>
                             </div>
 
                             <div class="info-name">
                                 <a th:href="@{/book/book-detail}" class="bk-name btn-link">
-                                    배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)
+                                    <!-- 태그 동적으로 추가될 때 입력 -->
                                 </a>
                             </div>
 
                             <div class="info-pub-grp">
                                 <span class="info-auth">
-                                    <a class="btn-link fw-medium" href="" target="">타라 웨스트오버</a> 저
+                                    <a class="btn-link fw-medium" href=""><!-- 태그 동적으로 추가될 때 입력 --></a> 저
+                                    <span class="d-none">
+                                        <em class="text-body"><!-- 태그 동적으로 추가될 때 입력 --></em> 역
+                                    </span>
                                 </span>
                                 <span class="info-pub">
                                     <span class="horizontal-divider"></span>
-                                    <a class="btn-link fw-medium" href="">열린책들</a>
+                                    <a class="btn-link fw-medium" href="">
+                                        <!-- 태그 동적으로 추가될 때 입력 -->
+                                    </a>
                                 </span>
                                 <span class="info-date d-none d-sm-inline-block">
                                     <span class="horizontal-divider"></span>
-                                    2020.01.05.
+                                    <a>
+                                        <!-- 태그 동적으로 추가될 때 입력 -->
+                                    </a>
                                 </span>
                             </div>
 
                             <div class="info-detail d-none d-md-block">
                                 <p class="bk-intro ellipsis">
-                                    교육을 거부한 아버지의 세계를 떠나 자신만의 삶을 살아간 한 소녀의 이야기!
-                                    세상의 종말이 임박했다고 믿는 모르몬교 근본주의자였고, 공교육에 대한 불신 때문에 자녀들을 학교에 보내지 않았던 아버지로 인해 16년간 학교에 다니지
-                                    못하고 기초 교육 과정을 모두 건너뛴 채로 대입자격시험(ACT)을 치렀고, 17세에 대학에 합격하면서 기적과 같은 배움의 여정을 시작하게 된 타라
-                                    웨스트오버의 첫 저술이자 회고록 『배움의 발견』.
-                                    1986년 미국 아이다호에서 7남매 중 막내딸로 태어난 저자가 아이다호주 벅스피크의 유년 시절부터 케임브리지에서 역사학으로 박사 학위를 얻기까지 남다른
-                                    배움을 여정을 이야기한다. 저자의 일곱 남매 중 네 명은 출생증명서가 없었다. 가정 분만으로 태어나서 한 번도 의사나 간호사에게 가본 적이 없어 의료
-                                    기록도 없었기 때문에 아이다호 주정부와 연방 정부에게 저자는 존재하지 않는 아이였다.
+                                    <!-- 태그 동적으로 추가될 때 입력 -->
                                 </p>
                             </div>
 
                             <div class="info-rating-wrap mt-auto">
                                 <div class="info-rating d-none d-sm-block">
                                     <span class="sale-num">
-                                        독자수 219,093
+                                        독자수 <em>0<!-- 태그 동적으로 추가될 때 입력 --></em>
                                     </span>
                                     <span class="rating-rv-count me-1">
                                         <span class="horizontal-divider"></span>
-                                        리뷰(<em class="text-primary">97</em>건)
+                                        리뷰(<em class="text-primary">0<!-- 태그 동적으로 추가될 때 입력 --></em>건)
                                     </span>
                                     <span class="rating-grade">
-                                        <select class="star-rating star-rt-sm" data-value="9.4" data-range="10"
-                                                disabled></select>
+                                        <select class="star-rating star-rt-sm" data-value="" data-range="10" disabled>
+                                        </select>
                                     </span>
                                 </div>
 
                                 <div class="info-rating d-inline-block d-sm-none">
                                     <span class="rating-grade">
-                                        <select class="star-rating star-rt-sm non-label" data-value="9.4" data-range="10"
-                                                disabled></select>
+                                        <select class="star-rating star-rt-sm non-label" data-value="" data-range="10"
+                                                disabled>
+                                        </select>
                                     </span>
                                     <span class="rating-detail">
-                                        독자수 254 리뷰수 97
+                                        독자수 <em class="sale-num">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
+                                        리뷰수 <em class="rating-rv-count">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
                                     </span>
                                 </div>
 
@@ -136,117 +144,9 @@
                         </div>
                     </div>
                 </li>
-                <li data-goods-no="28995742">
-                    <div class="item-unit row">
-                        <div class="item-img">
-                            <span class="img-item">
-                                <a th:href="@{/book/book-detail}">
-                                    <img class="img-thumbnail" th:src="@{/assets/img/book02.jpg}" alt="종의 기원">
-                                </a>
-                            </span>
-                        </div>
-                        <div class="item-info">
-                            <div class="info-num d-none d-md-block">
-                                <span class="badge bg-secondary fw-bold">2</span>
-                            </div>
-
-                            <div class="info-name">
-                                <a th:href="@{/book/book-detail}" class="bk-name btn-link">
-                                    종의 기원
-                                </a>
-                            </div>
-
-                            <div class="info-pub-grp">
-                                <span class="info-auth">
-                                    <a class="btn-link fw-medium" href="" target="">정유정</a> 저
-                                </span>
-                                <span class="info-pub">
-                                    <span class="horizontal-divider"></span>
-                                    <a class="btn-link fw-medium" href="">은행나무</a>
-                                </span>
-                                <span class="info-date d-none d-sm-inline-block">
-                                    <span class="horizontal-divider"></span>
-                                    2020.01.05.
-                                </span>
-                            </div>
-
-                            <div class="info-detail d-none d-md-block">
-                                <p class="bk-intro ellipsis">
-                                    교육을 거부한 아버지의 세계를 떠나 자신만의 삶을 살아간 한 소녀의 이야기!
-                                    세상의 종말이 임박했다고 믿는 모르몬교 근본주의자였고, 공교육에 대한 불신 때문에 자녀들을 학교에 보내지 않았던 아버지로 인해 16년간 학교에 다니지
-                                    못하고 기초 교육 과정을 모두 건너뛴 채로 대입자격시험(ACT)을 치렀고, 17세에 대학에 합격하면서 기적과 같은 배움의 여정을 시작하게 된 타라
-                                    웨스트오버의 첫 저술이자 회고록 『배움의 발견』.
-                                    1986년 미국 아이다호에서 7남매 중 막내딸로 태어난 저자가 아이다호주 벅스피크의 유년 시절부터 케임브리지에서 역사학으로 박사 학위를 얻기까지 남다른
-                                    배움을 여정을 이야기한다. 저자의 일곱 남매 중 네 명은 출생증명서가 없었다. 가정 분만으로 태어나서 한 번도 의사나 간호사에게 가본 적이 없어 의료
-                                    기록도 없었기 때문에 아이다호 주정부와 연방 정부에게 저자는 존재하지 않는 아이였다.
-                                </p>
-                            </div>
-
-                            <div class="info-rating-wrap mt-auto">
-                                <div class="info-rating d-none d-sm-block">
-                                    <span class="sale-num">
-                                        독자수 219,093
-                                    </span>
-                                    <span class="rating-rv-count me-1">
-                                        <span class="horizontal-divider"></span>
-                                        리뷰(<em class="text-primary">97</em>건)
-                                    </span>
-                                    <span class="rating-grade">
-                                        <select class="star-rating star-rt-sm" data-value="9.4" data-range="10"
-                                                disabled></select>
-                                    </span>
-                                </div>
-
-                                <div class="info-rating d-inline-block d-sm-none">
-                                    <span class="rating-grade">
-                                        <select class="star-rating star-rt-sm non-label" data-value="9.4" data-range="10"
-                                                disabled></select>
-                                    </span>
-                                    <span class="rating-detail">
-                                        독자수 254 리뷰수 97
-                                    </span>
-                                </div>
-
-                                <div class="item-btn-sm-col d-inline-block d-sm-none">
-                                    <div class="btn-group">
-                                        <button type="button"
-                                                class="btn btn-icon rounded-pill btn-primary dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bx bxs-bookmark-plus"></i>
-                                        </button>
-                                        <ul class="dropdown-menu" style="">
-                                            <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
-                                        </ul>
-                                    </div>
-                                    <button type="button" class="btn btn-icon rounded-pill btn-outline-primary toast-btn"
-                                            data-bs-toggle="toast" data-bs-target="#toastCont">
-                                        <i class="bx bx-folder"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item-btn-col d-none d-sm-flex">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-md btn-primary dropdown-toggle"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    독서 목록에 추가
-                                </button>
-                                <ul class="dropdown-menu" style="">
-                                    <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
-                                    <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
-                                    <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
-                                </ul>
-                            </div>
-                            <button type="button" class="btn btn-md btn-outline-primary toast-btn"
-                                    data-bs-toggle="toast" data-bs-target="#toastCont">
-                                컬렉션에 추가
-                            </button>
-                        </div>
-                    </div>
-                </li>
             </ul>
+
+            <nav th:replace="~{common/pagination :: nav}"></nav>
         </div>
     </div>
 </div>
@@ -256,11 +156,80 @@
 <script>
     // TODO: (임시) 백엔드 붙일 때 뒷단 프로세스가 성공하면 해당 처리
     for (const el of document.getElementsByClassName('toast-btn')) {
-        console.log(el)
         el.addEventListener('click', function () {
             const content = '컬렉션에 추가되었습니다.';
             showToast(content, 'success');
         })
+    }
+
+    document.addEventListener('DOMContentLoaded', function (e) {
+        searchBooks();
+    });
+
+    /**
+     * 책 검색 (쿼리스트링을 통해 파라미터 자동 처리)
+     */
+    function searchBooks() {
+        hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
+        clearBookList(); // 이전 검색 결과 지우기
+        showLoading(); // 로딩 시작
+
+        axios.get('/api/books' + window.location.search)
+            .then(response => {
+                const data = response.data.data;
+                if (data.item.length) {
+                    appendBookElement(data);
+                    setPagination(data.startIndex, data.totalPages);
+                } else {
+                    showNoResultMessage();
+                }
+                hideLoading();
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+                hideLoading();
+            });
+    }
+
+    /**
+     * 책 검색 결과 html 동적 추가
+     */
+    function appendBookElement(data) {
+        const bookListWrap = document.getElementById('bookSearchList');
+        const templateTag = bookListWrap.querySelector('.template-tag');
+        if (templateTag) {
+            data.item.forEach((item, idx) => {
+                const li = templateTag.cloneNode(true);
+                li.removeAttribute("class");
+
+                li.setAttribute('data-goods-no', item.isbn);
+                li.querySelector('.img-thumbnail').setAttribute('src', item.cover);
+                li.querySelector('.info-num span').textContent = calculateRowIndex(data.startIndex, data.itemsPerPage, idx+1);
+                li.querySelector('.info-name a').textContent = item.title;
+                li.querySelector('.info-auth a').textContent = item.formatAuthor;
+                if (item.translator) {
+                    li.querySelector('.info-auth span').classList.remove("d-none");
+                    li.querySelector('.info-auth span em').textContent = item.translator;
+                }
+                li.querySelector('.info-pub a').textContent = item.publisher;
+                li.querySelector('.info-date a').textContent = item.pubDate;
+                li.querySelector('.info-detail .bk-intro').textContent = item.description;
+                // TODO: 평점 정보 연결
+                // li.querySelector('.info-rating .sale-num em').textContent = '';
+                // li.querySelector('.info-rating .rating-detail em.sale-num').textContent = '';
+                // li.querySelector('.info-rating .rating-rv-count em').textContent = '';
+                // li.querySelector('.info-rating .rating-detail em.rating-rv-count').textContent = '';
+                // li.querySelector('.info-rating .rating-grade select').setAttribute('data-value', '');
+
+                bookListWrap.append(li);
+            })
+        }
+    }
+    function clearBookList() {
+        const bookListWrap = document.getElementById('bookSearchList');
+        while (bookListWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
+            bookListWrap.removeChild(bookListWrap.children[1]);
+        }
     }
 </script>
 </body>

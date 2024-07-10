@@ -190,26 +190,21 @@
 * 책 목록
 */
 .tp-list > li {
+    padding: 15px 0;
+}
+.tp-list > li:not(.template-tag) + li {
     padding: 30px 0;
-}
-
-.tp-list > li:first-child {
-    padding-top: 15px;
-}
-
-@media (max-width: 767px) {
-    .tp-list > li {
-        padding: 20px 0;
-    }
-
-    .tp-list > li:first-child {
-        padding-top: 0;
-    }
-}
-
-.tp-list > li + li {
     border-top: solid 1px #ebebeb;
 }
+@media (max-width: 767px) {
+    .tp-list > li {
+        padding: 0;
+    }
+    .tp-list > li:not(.template-tag) + li {
+        padding: 20px 0;
+    }
+}
+
 #readingBookList > li + li {
     border: 0;
 }

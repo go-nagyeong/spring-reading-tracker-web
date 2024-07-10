@@ -61,6 +61,14 @@ public class ViewController {
     }
 
     /**
+     * Book
+     */
+    @GetMapping("/books")
+    public String showBookSearchList() {
+        return "book/book-list";
+    }
+
+    /**
      * TODO: 임시
      */
     @RequestMapping("/{page1}/{page2}")

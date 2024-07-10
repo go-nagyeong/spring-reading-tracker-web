@@ -1,4 +1,4 @@
-<div th:fragment="div" class="d-flex flex-column h-100 reading-timer pause" id="">
+<div th:fragment="div" class="d-flex flex-column h-100 reading-timer pause">
     <h1 class="sw-time-wrap pt-3 pb-4">
         <span class="sw-hour">00</span>
         : <span class="sw-min">00</span>
@@ -58,9 +58,9 @@
     }
 
     // 중단/종료 버튼 클릭 이벤트
+    // (동적으로 추가되는 팝오버 엘리먼트에 이벤트 적용하기 위해 이벤트 위임 사용)
     document.addEventListener('click', function (event) {
         event.stopImmediatePropagation();
-        console.log('click')
         if (event.target.id === 'stopBtn' || event.target.id === 'closeBtn') {
             window.stopwatch.reset();
             window.applyTimerShortcutOnline();
