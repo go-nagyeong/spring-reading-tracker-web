@@ -73,7 +73,7 @@
     const modalButton = document.querySelector('[data-bs-toggle=modal]');
     modalButton.addEventListener('click', function () {
         const target = document.querySelector('#mediumModal .modal-content');
-        fetchHTML('/notes/modal-post-it-add', target);
+        loadHTML('/notes/modal-post-it-add', target);
     })
 
     /**
@@ -85,7 +85,7 @@
         const callback = () => {
             document.querySelector('#offcanvasCont .offcanvas-title').innerText = '포스트잇 상세';
         }
-        fetchHTML('/notes/offcanvas-post-it-detail', target, callback);
+        loadHTML('/notes/offcanvas-post-it-detail', target, callback);
     })
 </script>
 </body>

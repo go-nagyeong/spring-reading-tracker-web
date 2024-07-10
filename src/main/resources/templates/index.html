@@ -343,7 +343,7 @@
      */
     document.addEventListener('DOMContentLoaded', function () {
         const target = document.querySelector('#readingTimerCont');
-        fetchHTML('/common/reading-timer', target);
+        loadHTML('/common/reading-timer', target);
     });
 
     /**
@@ -376,7 +376,7 @@
     goalModalButtons.forEach(el => {
         el.addEventListener('click', function (event) {
             const target = document.querySelector('#smallModal .modal-content');
-            fetchHTML('/modal-daily-goal-edit', target);
+            loadHTML('/modal-daily-goal-edit', target);
         });
     });
 </script>

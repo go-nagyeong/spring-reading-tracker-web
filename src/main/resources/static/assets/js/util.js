@@ -50,52 +50,12 @@ function formToJson(data) {
 }
 
 /**
- * 공통 fetch 함수
- */
-async function fetchRequest(url, options = {}) {
-    try {
-        const response = await fetch(url, options);
-        const json = await response.json();
-        console.log(json)
-        return json;
-    } catch (error) {
-        console.error("Error fetching data:", error.message);
-        throw error; // 에러를 다시 던져서 호출자에게 처리할 수 있도록 함
-    }
-}
-async function _get(url, body) {
-    const options = {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: body
-    };
-    return fetchRequest(url, options);
-}
-async function _post(url, body) {
-    const options = {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json; charset=utf-8'
-        },
-        body: body
-    };
-    return fetchRequest(url, options);
-}
-
-/**
  * HTML 코드 동적 로드 함수
  */
-function fetchHTML(url, targetElement, callback = null) {
-    fetch(url)
-        .then(response => response.text())
-        .then(data => {
-            targetElement.innerHTML = data;
+function loadHTML(url, targetElement, callback = null) {
+    axios.get(url)
+        .then(response => {
+            targetElement.innerHTML = response.data;
 
             // 동적으로 로드된 HTML 내 스크립트 실행
             const scripts = targetElement.querySelectorAll('script');
@@ -103,7 +63,9 @@ function fetchHTML(url, targetElement, callback = null) {
 
             if (callback) callback();
         })
-        .catch(error => console.error('Error loading HTML:', error));
+        .catch(error => {
+            console.error('axios 요청 오류:', error);
+        });
 }
 
 /**
