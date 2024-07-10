@@ -1,6 +1,6 @@
 <aside th:fragment="aside" id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand">
-        <a th:replace="~{partials/logo :: logo}"></a>
+        <a th:replace="~{common/logo :: logo}"></a>
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
             <i class="bx bx-chevron-left bx-sm align-middle"></i>
         </a>
@@ -9,7 +9,7 @@
     <ul class="menu-inner py-1">
         <!-- 대시보드 -->
         <li class="menu-item" th:classappend="${page == 'dashboard' ? 'active' : ''}">
-            <a th:href="@{/}" class="menu-link">
+            <a th:href="@{/static}" class="menu-link">
                 <div data-i18n="Dashboard1">대시보드 1</div>
             </a>
         </li>

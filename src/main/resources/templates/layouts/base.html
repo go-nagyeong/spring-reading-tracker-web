@@ -51,24 +51,24 @@
         <div class="layout-container">
             <!-- Menu -->
             <th:block th:if="${withMenu}">
-                <aside th:replace="~{partials/sidebar :: aside}"></aside>
+                <aside th:replace="~{layouts/partials/sidebar :: aside}"></aside>
             </th:block>
 
             <div class="layout-page">
                 <!-- Navbar -->
-                <nav th:replace="~{partials/navbar :: nav}"></nav>
+                <nav th:replace="~{layouts/partials/navbar :: nav}"></nav>
 
                 <div class="content-wrapper">
                     <!-- Content -->
                     <div th:replace="${content}"></div>
 
                     <!-- Footer -->
-                    <footer th:replace="~{partials/footer :: footer}"></footer>
+                    <footer th:replace="~{layouts/partials/footer :: footer}"></footer>
 
                     <!-- Modal -->
-                    <div th:replace="~{partials/modal :: smallModal}"></div>
-                    <div th:replace="~{partials/modal :: mediumModal}"></div>
-                    <div th:replace="~{partials/modal :: largeModal}"></div>
+                    <div th:replace="~{layouts/partials/modal :: smallModal}"></div>
+                    <div th:replace="~{layouts/partials/modal :: mediumModal}"></div>
+                    <div th:replace="~{layouts/partials/modal :: largeModal}"></div>
                 </div>
             </div>
         </div>
@@ -77,10 +77,10 @@
         <div class="layout-overlay layout-menu-toggle"></div>
 
         <!-- Toast -->
-        <div th:replace="~{partials/toast :: div}"></div>
+        <div th:replace="~{layouts/partials/toast :: div}"></div>
 
         <!-- Offcanvas -->
-        <div th:replace="~{partials/offcanvas :: div}"></div>
+        <div th:replace="~{layouts/partials/offcanvas :: div}"></div>
     </div>
 
     <!-- Shortcut Button -->
@@ -133,7 +133,7 @@
         </div>
 
         <!-- Toast -->
-        <div th:replace="~{partials/toast :: div}"></div>
+        <div th:replace="~{layouts/partials/toast :: div}"></div>
     </div>
 
     <!-- Core JS -->

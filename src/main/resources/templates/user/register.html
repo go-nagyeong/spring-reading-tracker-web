@@ -11,7 +11,7 @@
 <div class="card">
     <div class="card-body">
         <div class="app-brand">
-            <a th:replace="~{partials/logo :: logo}"></a>
+            <a th:replace="~{common/logo :: logo}"></a>
         </div>
         <h4 class="mb-2">회원가입</h4>
         <p class="mb-3">북카이브의 회원이 되어 다양한 서비스를 이용해 보세요!</p>
@@ -79,6 +79,9 @@
         handleSubmit();
     });
 
+    /**
+     * 회원가입 요청 (+ 유효성 검사)
+     */
     async function handleSubmit() {
         await axios.post('/api/auth/register', formToJson(new FormData(form)))
             .then(response => {

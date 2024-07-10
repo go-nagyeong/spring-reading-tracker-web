@@ -9,12 +9,12 @@
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <!-- Search -->
-        <form th:action="@{/book/book-list}">
+        <form th:action="@{/books}" method="get">
             <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center">
                     <i class="bx bx-search fs-4 lh-0"></i>
-                    <input class="form-control border-0 shadow-none ps-1 ps-sm-2" name="search" placeholder="Search..."
-                           type="text"/>
+                    <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" name="query"
+                           placeholder="책 제목 검색"/>
                 </div>
             </div>
         </form>
