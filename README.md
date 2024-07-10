@@ -1,5 +1,7 @@
 # 📚 북카이브(BOOCHIVE) &mdash; 독서 기록 웹 플랫폼
 ### 독서 활동을 기록하고 관리할 수 있는 웹 플랫폼
+[[Notion] 프로젝트 일정 관리](https://ngkim.notion.site/Side-Project-38e6d223dcdb48e79b2316df505f4803?pvs=4)
+
 &nbsp;
 
 ## Main Feature
@@ -11,9 +13,17 @@
 &nbsp;
 
 ## Environment
+MacOS 14.5  
+
 Java 17  
+
 OpenJDK 17.0.11  
+
 Spring Boot 3.2.5  
+
+MariaDB 11.4.2  
+
+Docker 26.1.4  
 
 &nbsp;
 
