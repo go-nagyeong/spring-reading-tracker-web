@@ -16,14 +16,15 @@ import java.util.function.Function;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey;
+    private final SecretKey secretKey;
     private final long accessTokenExpiration; // 15분
     private final long refreshTokenExpiration; // 24시간
 
     public JwtTokenProvider(@Value("${security.jwt.secret}") String secretKey,
                             @Value("${security.jwt.access-token-expiration}") long accessTokenExpiration,
                             @Value("${security.jwt.refresh-token-expiration}") long refreshTokenExpiration) {
-        this.secretKey = secretKey;
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
@@ -57,16 +58,11 @@ public class JwtTokenProvider {
         Map<String, Object> claims = new HashMap<>();
 
         return Jwts.builder()
-//                .setClaims(claims) // deprecated
-//                .setSubject(userDetails.getUsername())
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-//                .signWith(SignatureAlgorithm.HS256, getSigningKey())
-                .claims(claims)
-                .subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey())
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -95,23 +91,10 @@ public class JwtTokenProvider {
      * 토큰에서 모든 클레임 추출
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-//                .setSigningKey(getSigningKey()) // deprecated
-//                .parseClaimsJws(token)
-//                .build()
-//                .getBody();
-                .verifyWith(getSigningKey())
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-    }
-
-    /**
-     * 서명에 사용할 Secret Key를 생성
-     */
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

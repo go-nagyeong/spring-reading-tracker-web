@@ -73,7 +73,6 @@ public class WebSecurityConfig {
         return source;
     }
 
-    @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtTokenProvider);
     }

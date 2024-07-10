@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -46,15 +48,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
-            handleJwtException(e, request, response);
+            handleJwtException(e, request, response, filterChain);
         }
     }
 
     /**
      * JWT 토큰 예외 처리
      */
-    private void handleJwtException(JwtException e, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        logger.error("JWT 필터 처리 중 오류 발생: " + e.getMessage());
+    private void handleJwtException(JwtException e, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
+        log.info("JWT 필터 처리 중 오류 발생: " + e.getMessage());
 
         // 토큰 만료 처리 >> 토큰 만료 여부 확인 후 Refresh Token을 통한 재발급 처리 (MPA 형태의 프론트 때문에 서버 측에서 자동 처리)
         if (e instanceof ExpiredJwtException) {
@@ -71,10 +73,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     cookie.setPath("/");      // 쿠키가 적용될 경로 설정
                     response.addCookie(cookie);
 
-                    // 토큰 재발급 후 클라이언트가 요청했던 URL로 리다이렉트
-                    response.sendRedirect(request.getRequestURI());
+                    // 토큰 재발급 후 클라이언트 요청을 재진행
+                    log.info("토큰 재발급 후 새로 발급된 토큰으로 원래 요청을 다시 처리");
+                    filterChain.doFilter(request, response);
                 } catch (Exception ex) {
-                    logger.error("JWT 재발급 중 오류 발생: " + ex.getMessage());
+                    log.info("JWT 재발급 중 오류 발생: " + ex.getMessage());
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Unauthorized: Failed to refresh access token");
                 }
