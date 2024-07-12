@@ -1,12 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.LoginForm;
 import com.readingtracker.boochive.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +10,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public User saveUser(User user) {
-        this.setEncodedPassword(user); // 비밀번호 해시 변환
-        return userRepository.save(user);
-    }
 
     public Optional<User> findUserById(Long id) {
         return userRepository.findById(id);
@@ -32,16 +23,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+    public User saveUser(User user) {
+        setEncodedPassword(user); // 비밀번호 해시 변환
+        return userRepository.save(user);
     }
 
-    public Boolean isMatchPassword(LoginForm form) {
-        Optional<User> user = userRepository.findByEmail(form.getEmail());
-        if (user.isPresent()) {
-            return passwordEncoder.matches(form.getPassword(), user.get().getPassword());
-        }
-        return false;
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
     }
 
     private void setEncodedPassword(User user) {
@@ -50,14 +38,5 @@ public class UserService implements UserDetailsService {
 
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(username);
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
-        }
-        return user.get();
     }
 }
