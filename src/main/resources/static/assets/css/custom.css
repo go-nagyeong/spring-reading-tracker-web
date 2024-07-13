@@ -338,6 +338,14 @@ input[type=color]::-moz-color-swatch {
 }
 
 /**
+ * ---- Bootstrap Component 3. Dropdown -----------------------
+ */
+.dropdown-toggle:after {
+    position: absolute;
+    right: 1rem;
+}
+
+/**
  * ---- Bootstrap Component 4. Popover -----------------------
  */
 .popover {
@@ -371,10 +379,29 @@ input[type=color]::-moz-color-swatch {
 /**
  * ---- Bootstrap Component 5. Spinner -----------------------
  */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.loading-overlay.show {
+    display: flex;
+}
+
 .spinner-wrap {
     display: none;
     text-align: center;
     padding: 1rem 0;
+}
+.spinner-wrap.show {
+    display: block;
 }
 
 .spinner-wrap > * {
@@ -664,6 +691,10 @@ form.edit-or-view-mode .lcslt-disabled:after {
     display: none;
     text-align: center;
     padding: 1rem 0;
+}
+
+.add-visible {
+    display: none;
 }
 
 /**

@@ -1,0 +1,83 @@
+<th:block th:fragment="button_group(responsibility)">
+    <div class="btn-group reading-btn-group">
+        <button th:if="${responsibility.equals('L')}" type="button"
+                class="btn btn-md btn-primary dropdown-toggle reading-list-btn"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <span>독서 목록에 추가</span>
+        </button>
+        <button th:if="${responsibility.equals('S')}" type="button"
+                class="btn btn-icon rounded-pill btn-primary dropdown-toggle hide-arrow reading-list-btn"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bx bxs-bookmark-plus"></i>
+        </button>
+
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-value="TO_READ">
+                    읽을 예정
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-value="READING">
+                    읽는 중
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-value="READ">
+                    읽음
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-value="PAUSED">
+                    잠시 중단
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-value="ABANDONED">
+                    독서 포기
+                </a>
+            </li>
+            <li class="add-visible">
+                <hr class="dropdown-divider">
+            </li>
+            <li class="add-visible">
+                <a class="dropdown-item text-danger delete-btn" href="javascript:void(0);">
+                    독서 목록에서 제거
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="btn-group collection-btn-group">
+        <button th:if="${responsibility.equals('L')}" type="button"
+                class="btn btn-md btn-outline-primary dropdown-toggle collection-btn"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <span>컬렉션에 추가</span>
+        </button>
+        <button th:if="${responsibility.equals('S')}" type="button"
+                class="btn btn-icon rounded-pill btn-outline-primary dropdown-toggle hide-arrow collection-btn"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bx bx-folder-plus"></i>
+        </button>
+
+        <ul class="dropdown-menu">
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item new-collection-modal-btn" href="javascript:void(0);"
+                   data-bs-toggle="modal" data-bs-target="#smallModal">
+                    새 컬렉션 생성
+                </a>
+            </li>
+            <li class="add-visible">
+                <hr class="dropdown-divider">
+            </li>
+            <li class="add-visible">
+                <a class="dropdown-item text-danger delete-btn" href="javascript:void(0);">
+                    컬렉션에서 제거
+                </a>
+            </li>
+        </ul>
+    </div>
+</th:block>
+
+

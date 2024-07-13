@@ -21,24 +21,24 @@
 
     <div class="card">
         <div class="card-body" id="contentCard">
-            <div th:replace="~{common/loading :: div}"></div>
+            <div th:replace="~{common/loading :: local}"></div>
             <div th:replace="~{common/result-message :: div}"></div>
 
             <ul id="bookSearchList" class="tp-list">
-                <li data-goods-no="" class="template-tag">
+                <li data-isbn="" class="template-tag">
                     <div class="item-unit row">
                         <div class="item-img">
-                            <span class="img-item">
-                                <a th:href="@{/book/book-detail}">
-                                    <img class="img-thumbnail" src="">
-                                </a>
-                            </span>
+                        <span class="img-item">
+                            <a th:href="@{/book/book-detail}">
+                                <img class="img-thumbnail" src="">
+                            </a>
+                        </span>
                         </div>
                         <div class="item-info">
                             <div class="info-num d-none d-md-block">
-                                <span class="badge bg-secondary fw-bold">
-                                    <!-- 태그 동적으로 추가될 때 입력 -->
-                                </span>
+                            <span class="badge bg-gray text-white fw-bold">
+                                <!-- 태그 동적으로 추가될 때 입력 -->
+                            </span>
                             </div>
 
                             <div class="info-name">
@@ -48,24 +48,24 @@
                             </div>
 
                             <div class="info-pub-grp">
-                                <span class="info-auth">
-                                    <a class="btn-link fw-medium" href=""><!-- 태그 동적으로 추가될 때 입력 --></a> 저
-                                    <span class="d-none">
-                                        <em class="text-body"><!-- 태그 동적으로 추가될 때 입력 --></em> 역
-                                    </span>
+                            <span class="info-auth">
+                                <a class="btn-link fw-medium" href=""><!-- 태그 동적으로 추가될 때 입력 --></a> 저
+                                <span class="d-none">
+                                    <em class="text-body"><!-- 태그 동적으로 추가될 때 입력 --></em> 역
                                 </span>
+                            </span>
                                 <span class="info-pub">
-                                    <span class="horizontal-divider"></span>
-                                    <a class="btn-link fw-medium" href="">
-                                        <!-- 태그 동적으로 추가될 때 입력 -->
-                                    </a>
-                                </span>
+                                <span class="horizontal-divider"></span>
+                                <a class="btn-link fw-medium" href="">
+                                    <!-- 태그 동적으로 추가될 때 입력 -->
+                                </a>
+                            </span>
                                 <span class="info-date d-none d-sm-inline-block">
-                                    <span class="horizontal-divider"></span>
-                                    <a>
-                                        <!-- 태그 동적으로 추가될 때 입력 -->
-                                    </a>
-                                </span>
+                                <span class="horizontal-divider"></span>
+                                <a>
+                                    <!-- 태그 동적으로 추가될 때 입력 -->
+                                </a>
+                            </span>
                             </div>
 
                             <div class="info-detail d-none d-md-block">
@@ -76,71 +76,38 @@
 
                             <div class="info-rating-wrap mt-auto">
                                 <div class="info-rating d-none d-sm-block">
-                                    <span class="sale-num">
-                                        독자수 <em>0<!-- 태그 동적으로 추가될 때 입력 --></em>
-                                    </span>
+                                <span class="sale-num">
+                                    독자수 <em>0<!-- 태그 동적으로 추가될 때 입력 --></em>
+                                </span>
                                     <span class="rating-rv-count me-1">
-                                        <span class="horizontal-divider"></span>
-                                        리뷰(<em class="text-primary">0<!-- 태그 동적으로 추가될 때 입력 --></em>건)
-                                    </span>
+                                    <span class="horizontal-divider"></span>
+                                    리뷰(<em class="text-primary">0<!-- 태그 동적으로 추가될 때 입력 --></em>건)
+                                </span>
                                     <span class="rating-grade">
-                                        <select class="star-rating star-rt-sm" data-value="" data-range="10" disabled>
-                                        </select>
-                                    </span>
+                                    <select class="star-rating star-rt-sm" data-value="" data-range="10" disabled>
+                                    </select>
+                                </span>
                                 </div>
 
                                 <div class="info-rating d-inline-block d-sm-none">
-                                    <span class="rating-grade">
-                                        <select class="star-rating star-rt-sm non-label" data-value="" data-range="10"
-                                                disabled>
-                                        </select>
-                                    </span>
+                                <span class="rating-grade">
+                                    <select class="star-rating star-rt-sm non-label" data-value="" data-range="10"
+                                            disabled>
+                                    </select>
+                                </span>
                                     <span class="rating-detail">
-                                        독자수 <em class="sale-num">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
-                                        리뷰수 <em class="rating-rv-count">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
-                                    </span>
+                                    독자수 <em class="sale-num">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
+                                    리뷰수 <em class="rating-rv-count">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
+                                </span>
                                 </div>
 
                                 <div class="item-btn-sm-col d-inline-block d-sm-none">
-                                    <div class="btn-group">
-                                        <button type="button"
-                                                class="btn btn-icon rounded-pill btn-primary dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bx bxs-bookmark-plus"></i>
-                                        </button>
-                                        <ul class="dropdown-menu" style="">
-                                            <!-- TODO: 상태에 따른 표시 목록
-                                                추가 전 : 읽을 예정 ~ 읽음
-                                                추가 후 : 읽을 예정 ~ 독서 포기 / 독서 목록에서 제거
-                                            -->
-                                            <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
-                                        </ul>
-                                    </div>
-                                    <button type="button" class="btn btn-icon rounded-pill btn-outline-primary toast-btn"
-                                            data-bs-toggle="toast" data-bs-target="#toastCont">
-                                        <i class="bx bx-folder"></i>
-                                    </button>
+                                    <div th:replace="~{common/reading-list-button :: button_group('S')}"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="item-btn-col d-none d-sm-flex">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-md btn-primary dropdown-toggle"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    독서 목록에 추가
-                                </button>
-                                <ul class="dropdown-menu" style="">
-                                    <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
-                                    <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>
-                                    <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
-                                </ul>
-                            </div>
-                            <button type="button" class="btn btn-md btn-outline-primary toast-btn"
-                                    data-bs-toggle="toast" data-bs-target="#toastCont">
-                                컬렉션에 추가
-                            </button>
+                            <div th:replace="~{common/reading-list-button :: button_group('L')}"></div>
                         </div>
                     </div>
                 </li>
@@ -154,17 +121,63 @@
 <script th:src="@{/assets/vendor/libs/star-rating/star-rating.js}"></script>
 <script th:src="@{/assets/js/custom-rating.js}"></script>
 <script>
-    // TODO: (임시) 백엔드 붙일 때 뒷단 프로세스가 성공하면 해당 처리
-    for (const el of document.getElementsByClassName('toast-btn')) {
-        el.addEventListener('click', function () {
-            const content = '컬렉션에 추가되었습니다.';
-            showToast(content, 'success');
-        })
-    }
-
     document.addEventListener('DOMContentLoaded', function (e) {
         searchBooks();
     });
+
+    const form = document.getElementById('readingListForm');
+
+    /**
+     * 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+     */
+    function setButtonEvents() {
+        // 독서 상태 버튼
+        const readingStatusButtonList = document.querySelectorAll('.reading-btn-group .dropdown-item');
+        readingStatusButtonList.forEach(el => {
+            el.addEventListener('click', function (e) {
+                const unitElement = el.closest('.tp-list > li');
+                const originData = unitElement.querySelector('.reading-btn-group').dataset;
+
+                if (el.classList.contains('delete-btn')) {
+                    deleteReadingBook(unitElement, originData.id);
+                } else {
+                    saveReadingBook(unitElement, {
+                        bookIsbn: unitElement.dataset.isbn,
+                        readingStatus: el.dataset.value,
+                        collectionId: originData.collectionId
+                    });
+                }
+            });
+        })
+
+        // 컬렉션 버튼
+        const collectionButtonList = document.querySelectorAll('.collection-btn-group .dropdown-item');
+        collectionButtonList.forEach(el => {
+            el.addEventListener('click', function (e) {
+                const unitElement = el.closest('.tp-list > li');
+                const originData = unitElement.querySelector('.reading-btn-group').dataset;
+
+                if (el.classList.contains('delete-btn')) {
+                    saveReadingBook(unitElement, {
+                        bookIsbn: unitElement.dataset.isbn,
+                        readingStatus: originData.readingStatus,
+                        collectionId: null
+                    });
+                } else if (el.classList.contains('new-collection-modal-btn')) {
+                    // 새 컬렉션 생성 모달 버튼
+                    const target = document.querySelector(el.dataset.bsTarget + ' .modal-content');
+                    loadHTML('/book/modal-new-collection', target);
+                } else {
+                    saveReadingBook(unitElement, {
+                        bookIsbn: unitElement.dataset.isbn,
+                        readingStatus: originData.readingStatus ?? 'TO_READ', // 신규 등록시 독서 상태 자동 세팅 (기본값: 읽을 예정)
+                        collectionId: el.dataset.value
+                    });
+                }
+            });
+        })
+    }
+
 
     /**
      * 책 검색 (쿼리스트링을 통해 파라미터 자동 처리)
@@ -172,22 +185,27 @@
     function searchBooks() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
         clearBookList(); // 이전 검색 결과 지우기
-        showLoading(); // 로딩 시작
+        localLoading(true);
 
         axios.get('/api/books' + window.location.search)
             .then(response => {
-                const data = response.data.data;
-                if (data.item.length) {
-                    appendBookElement(data);
-                    setPagination(data.startIndex, data.totalPages);
-                } else {
-                    showNoResultMessage();
+                const result = response.data;
+                if (result.success) {
+                    const data = result.data;
+                    const searchResult = data.searchResult;
+                    if (searchResult.item.length) {
+                        appendBookElement(data);
+                        setButtonEvents();
+                        setPagination(searchResult.startIndex, searchResult.totalPages);
+                    } else {
+                        showNoResultMessage();
+                    }
                 }
-                hideLoading();
+                localLoading(false);
             })
             .catch(error => {
                 console.error('axios 요청 오류:', error);
-                hideLoading();
+                localLoading(false);
             });
     }
 
@@ -195,16 +213,24 @@
      * 책 검색 결과 html 동적 추가
      */
     function appendBookElement(data) {
+        const { searchResult, collectionList, readingInfoList } = data;
         const bookListWrap = document.getElementById('bookSearchList');
         const templateTag = bookListWrap.querySelector('.template-tag');
+
         if (templateTag) {
-            data.item.forEach((item, idx) => {
+            searchResult.item.forEach((item, idx) => {
                 const li = templateTag.cloneNode(true);
                 li.removeAttribute("class");
 
-                li.setAttribute('data-goods-no', item.isbn);
+                // 사용자의 컬렉션 목록 세팅
+                if (collectionList.length) {
+                    setCollectionList(collectionList, li);
+                }
+
+                // 책 정보 세팅
+                li.setAttribute('data-isbn', item.isbn);
                 li.querySelector('.img-thumbnail').setAttribute('src', item.cover);
-                li.querySelector('.info-num span').textContent = calculateRowIndex(data.startIndex, data.itemsPerPage, idx+1);
+                li.querySelector('.info-num span').textContent = calculateRowIndex(searchResult.startIndex, searchResult.itemsPerPage, idx+1);
                 li.querySelector('.info-name a').textContent = item.title;
                 li.querySelector('.info-auth a').textContent = item.formatAuthor;
                 if (item.translator) {
@@ -214,6 +240,19 @@
                 li.querySelector('.info-pub a').textContent = item.publisher;
                 li.querySelector('.info-date a').textContent = item.pubDate;
                 li.querySelector('.info-detail .bk-intro').textContent = item.description;
+
+                // 사용자의 독서 목록 및 컬렉션 정보 세팅 + 버튼 UI 업데이트
+                const readingInfo = readingInfoList[item.isbn];
+                if (readingInfo) {
+                    const readingBtnGroup = li.querySelector('.reading-btn-group');
+                    readingBtnGroup.dataset.id = readingInfo.id;
+                    readingBtnGroup.dataset.readingStatus = readingInfo.readingStatus;
+                    readingBtnGroup.dataset.collectionId = readingInfo.collectionId;
+
+                    updateReadingListButtonUI(readingInfo.readingStatus, li);
+                    updateCollectionButtonUI(readingInfo.collectionId, li);
+                }
+
                 // TODO: 평점 정보 연결
                 // li.querySelector('.info-rating .sale-num em').textContent = '';
                 // li.querySelector('.info-rating .rating-detail em.sale-num').textContent = '';
@@ -221,15 +260,62 @@
                 // li.querySelector('.info-rating .rating-detail em.rating-rv-count').textContent = '';
                 // li.querySelector('.info-rating .rating-grade select').setAttribute('data-value', '');
 
-                bookListWrap.append(li);
+                bookListWrap.appendChild(li);
             })
         }
     }
+
     function clearBookList() {
         const bookListWrap = document.getElementById('bookSearchList');
         while (bookListWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
             bookListWrap.removeChild(bookListWrap.children[1]);
         }
+    }
+
+
+    /**
+     * 독서 목록 / 컬렉션에 책 추가
+     */
+    function saveReadingBook(el, data) {
+        axios.post('/api/user/reading-list', data)
+            .then(response => {
+                const result = response.data;
+                if (result.success) {
+                    const saveResult = result.data.saveResult;
+                    const readingBtnGroup = el.querySelector('.reading-btn-group');
+
+                    readingBtnGroup.dataset.id = saveResult.id;
+                    readingBtnGroup.dataset.readingStatus = saveResult.readingStatus;
+                    readingBtnGroup.dataset.collectionId = saveResult.collectionId;
+
+                    updateReadingListButtonUI(saveResult.readingStatus, el);
+                    updateCollectionButtonUI(saveResult.collectionId, el);
+
+                    showToast(result.message, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+            });
+    }
+
+    /**
+     * 독서 목록에서 책 삭제
+     */
+    function deleteReadingBook(el, id) {
+        axios.delete('/api/user/reading-list/'+id)
+            .then(response => {
+                const result = response.data;
+                if (result.success) {
+                    updateReadingListButtonUI(null, el);
+                    updateCollectionButtonUI(null, el);
+
+                    showToast(result.message, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+            });
     }
 </script>
 </body>

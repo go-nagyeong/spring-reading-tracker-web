@@ -41,7 +41,7 @@
   /*--bs-dark-rgb: 35, 52, 70;*/
   --bs-gray: #738495;
   --bs-primary: #DD4A48;
-  --bs-secondary: #83939D;
+  --bs-secondary: #d9dee1;
   --bs-success: #4CAF50;
   --bs-info: #4A90E2;
   --bs-warning: #FFC107;
@@ -50,7 +50,7 @@
   --bs-dark: #4A1E1B;
   --bs-gray-rgb: 115, 132, 149;
   --bs-primary-rgb: 221, 74, 72;
-  --bs-secondary-rgb: 131, 147, 157;
+  --bs-secondary-rgb: 217, 222, 225;
   --bs-success-rgb: 76, 175, 80;
   --bs-info-rgb: 74, 144, 226;
   --bs-warning-rgb: 255, 193, 7;
@@ -147,9 +147,10 @@
   --bs-link-hover-color-rgb: 192, 67, 65;
 
   /* 추가 */
-  --bs-link-active-color: #B53735; /* #595cd9 */
-  --bs-secondary-hover-color: #6E7E88; /* #788393 */
-  --bs-secondary-hover-color-rgb: 110, 126, 136; /* 120, 131, 147 */
+  --bs-secondary-hover-color: #d3d8db; /* #788393 */
+  --bs-secondary-hover-color-rgb: 211, 216, 219; /* 120, 131, 147 */
+  --bs-secondary-active-color: #a8b1b7; /* #717c8b */
+  --bs-secondary-active-color-rgb: 168, 177, 183; /* 113, 124, 139 */
 
   --bs-code-color: #e83e8c;
   --bs-highlight-color: var(--bs-body-color);
@@ -7197,28 +7198,28 @@ label.btn {
 }
 
 .btn-secondary {
-  color: #fff;
+  color: #000;
   background-color: var(--bs-secondary);
   border-color: var(--bs-secondary);
   box-shadow: 0 0.125rem 0.25rem 0 rgba(var(--bs-secondary-rgb), 0.4);
 }
 .btn-secondary:hover {
-  color: #fff !important;
+  color: #000 !important;
   background-color: var(--bs-secondary-hover-color) !important;
   border-color: var(--bs-secondary-hover-color) !important;
   transform: translateY(-1px) !important;
 }
 .btn-check:focus + .btn-secondary, .btn-secondary:focus, .btn-secondary.focus {
-  color: #fff;
+  color: #000;
   background-color: var(--bs-secondary-hover-color);
   border-color: var(--bs-secondary-hover-color);
   transform: translateY(0);
   box-shadow: none;
 }
 .btn-check:checked + .btn-secondary, .btn-check:active + .btn-secondary, .btn-secondary:active, .btn-secondary.active, .btn-secondary.show.dropdown-toggle, .show > .btn-secondary.dropdown-toggle {
-  color: #fff !important;
-  background-color: #717c8b !important;
-  border-color: #717c8b !important;
+  color: #000 !important;
+  background-color: var(--bs-secondary-active-color) !important;
+  border-color: var(--bs-secondary-active-color) !important;
 }
 .btn-check:checked + .btn-secondary:focus, .btn-check:active + .btn-secondary:focus, .btn-secondary:active:focus, .btn-secondary.active:focus, .btn-secondary.show.dropdown-toggle:focus, .show > .btn-secondary.dropdown-toggle:focus {
   box-shadow: none;
@@ -7251,8 +7252,8 @@ label.btn {
 }
 .btn-check:checked + .btn-outline-secondary, .btn-check:active + .btn-outline-secondary, .btn-outline-secondary:active, .btn-outline-secondary.active, .btn-outline-secondary.dropdown-toggle.show {
   color: #fff !important;
-  background-color: #717c8b !important;
-  border-color: #717c8b !important;
+  background-color: var(--bs-secondary-active-color) !important;
+  border-color: var(--bs-secondary-active-color) !important;
 }
 .btn-check:checked + .btn-outline-secondary:focus, .btn-check:active + .btn-outline-secondary:focus, .btn-outline-secondary:active:focus, .btn-outline-secondary.active:focus, .btn-outline-secondary.dropdown-toggle.show:focus {
   box-shadow: none;
@@ -7613,20 +7614,20 @@ label.btn {
 
 .btn-light {
   color: var(--bs-gray);
-  background-color: var(--bs-light);
-  border-color: var(--bs-light);
+  background-color: #fff;
+  border-color: var(--bs-gray);
   box-shadow: 0 0.125rem 0.25rem 0 rgba(var(--bs-light-rgb), 0.4);
 }
 .btn-light:hover {
   color: var(--bs-gray) !important;
-  background-color: var(--bs-light) !important;
-  border-color: var(--bs-light) !important;
+  background-color: #fff !important;
+  border-color: var(--bs-gray) !important;
   transform: translateY(-1px) !important;
 }
 .btn-check:focus + .btn-light, .btn-light:focus, .btn-light.focus {
   color: var(--bs-gray);
-  background-color: var(--bs-light);
-  border-color: var(--bs-light);
+  background-color: #fff !important;
+  border-color: var(--bs-gray) !important;
   transform: translateY(0);
   box-shadow: none;
 }

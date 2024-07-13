@@ -1,0 +1,49 @@
+<div class="modal-header">
+    <h5 class="modal-title">새 컬렉션 생성</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="newCollectionForm">
+        <input type="text" class="form-control" id="collectionName" name="collectionName" placeholder="컬렉션 이름">
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
+    <button type="button" class="btn btn-primary" id="newCollectionBtn">저장</button>
+</div>
+
+<script>
+    /**
+     * 컬렉션 추가
+     */
+    document.getElementById('newCollectionBtn').addEventListener('click', function(event) {
+        createCollection();
+    })
+    document.getElementById('newCollectionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        createCollection();
+    })
+
+    function createCollection() {
+        const form = document.getElementById('newCollectionForm');
+        const modalEl = document.querySelector('.modal');
+        const modal = bootstrap.Modal.getInstance(modalEl)
+
+        axios.post('/api/collection', formToJson(new FormData(form)))
+            .then(response => {
+                const result = response.data;
+                if (result.success) {
+                    const newCollection = result.data.newCollection;
+
+                    if (newCollection) {
+                        setCollectionList([newCollection], document.getElementById('bookSearchList'));
+                    }
+                    if (modal) modal.hide();
+                    showToast(result.message, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+            });
+    }
+</script>

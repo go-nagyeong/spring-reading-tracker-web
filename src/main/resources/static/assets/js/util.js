@@ -109,16 +109,16 @@ function showReadingTimerModal() {
 /**
  * 로딩 스피너 함수
  */
-function showLoading() {
-    const loadingSpinner = document.getElementById('loadingSpinner');
+function localLoading(bool) {
+    const loadingSpinner = document.getElementById('localLoading');
     if (loadingSpinner) {
-        loadingSpinner.style.display = 'block';
+        loadingSpinner.classList.toggle('show', bool);
     }
 }
-function hideLoading() {
-    const loadingSpinner = document.getElementById('loadingSpinner');
+function globalLoading(bool) {
+    const loadingSpinner = document.getElementById('globalLoading');
     if (loadingSpinner) {
-        loadingSpinner.style.display = 'none';
+        loadingSpinner.classList.toggle('show', bool);
     }
 }
 
@@ -193,4 +193,118 @@ function appendPageButton(pageButtonWrap, link, content, additionalClass = null)
  */
 function calculateRowIndex(curPage, rowsPerPage, currentRow) {
     return (curPage - 1) * rowsPerPage + currentRow;
+}
+
+/**
+ * [독서 목록에 추가] 버튼 UI 업데이트
+ */
+function updateReadingListButtonUI(status, element) {
+    const readingButtonGroups = element.querySelectorAll('.reading-btn-group'); // 반응형 엘리먼트 2개
+
+    console.log('status:', status);
+    for (const buttonGroup of readingButtonGroups) {
+        const addButton = buttonGroup.querySelector('button.reading-list-btn');
+        const statusButtonList = buttonGroup.querySelector('ul.dropdown-menu');
+
+        // 이전 독서 상태 비활성화
+        const activeStatusItem = statusButtonList.querySelector('.dropdown-item.active');
+        if (activeStatusItem) {
+            activeStatusItem.classList.remove('active');
+        }
+
+        // 독서 상태에 따른 버튼 UI 변경
+        if (status) {
+            const currentStatusItem = statusButtonList.querySelector(`[data-value="${status}"]`);
+            currentStatusItem.classList.add('active');
+            addButton.classList.replace('btn-primary', 'btn-secondary');
+
+            let buttonContent = '<i class="bx bx-check text-success"></i>';
+            if (!addButton.classList.contains('btn-icon')) {
+                buttonContent += `<span class="ms-1">${currentStatusItem.textContent}</span>`;
+            }
+            addButton.innerHTML = buttonContent;
+        } else {
+            console.log('삭제');
+            addButton.classList.replace('btn-secondary', 'btn-primary');
+
+            if (addButton.classList.contains('btn-icon')) {
+                addButton.innerHTML = '<i class="bx bxs-bookmark-plus"></i>';
+            } else {
+                addButton.innerHTML = '독서 목록에 추가';
+            }
+        }
+
+        // 독서 상태 선택 목록 변경
+        const visibleItemsOnlyAdded = statusButtonList.querySelectorAll('li.add-visible');
+        visibleItemsOnlyAdded.forEach(el => {
+            el.style.display = status ? 'block' : 'none';
+        })
+    }
+}
+
+/**
+ * 사용자 컬렉션 목록 세팅
+ */
+function setCollectionList(collectionList, element) {
+    const collectionButtonGroups = element.querySelectorAll('.collection-btn-group'); // 반응형 엘리먼트 2개
+
+    for (const buttonGroup of collectionButtonGroups) {
+        const collectionButtonList = buttonGroup.querySelector('ul.dropdown-menu');
+
+        // 컬렉션 목록 추가
+        for (const collection of collectionList) {
+            collectionButtonList.insertAdjacentHTML('afterbegin', `
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0);" data-value="${collection.id}">
+                        ${collection.collectionName}
+                    </a>
+                </li>
+            `)
+        }
+    }
+}
+
+/**
+ * [컬렉션에 추가] 버튼 UI 업데이트
+ */
+function updateCollectionButtonUI(collectionId, element) {
+    const collectionButtonGroups = element.querySelectorAll('.collection-btn-group'); // 반응형 엘리먼트 2개
+
+    for (const buttonGroup of collectionButtonGroups) {
+        const addButton = buttonGroup.querySelector('button.collection-btn');
+        const collectionButtonList = buttonGroup.querySelector('ul.dropdown-menu');
+
+        // 이전 컬렉션 비활성화
+        const activeCollectionItem = collectionButtonList.querySelector('.dropdown-item.active');
+        if (activeCollectionItem) {
+            activeCollectionItem.classList.remove('active');
+        }
+
+        // 컬렉션에 따른 버튼 UI 변경
+        if (collectionId) {
+            const currentCollectionItem = collectionButtonList.querySelector(`[data-value="${collectionId}"]`);
+            currentCollectionItem.classList.add('active');
+            addButton.classList.replace('btn-outline-primary', 'btn-primary');
+
+            if (addButton.classList.contains('btn-icon')) {
+                addButton.innerHTML = '<i class="bx bx-folder-minus"></i>';
+            } else {
+                addButton.innerHTML = '컬렉션에 추가됨';
+            }
+        } else {
+            addButton.classList.replace('btn-primary', 'btn-outline-primary');
+
+            if (addButton.classList.contains('btn-icon')) {
+                addButton.innerHTML = '<i class="bx bx-folder-plus"></i>';
+            } else {
+                addButton.innerHTML = '컬렉션에 추가';
+            }
+        }
+
+        // 컬렉션 선택 목록 변경
+        const visibleItemsOnlyAdded = collectionButtonList.querySelectorAll('li.add-visible');
+        visibleItemsOnlyAdded.forEach(el => {
+            el.style.display = collectionId ? 'block' : 'none';
+        })
+    }
 }

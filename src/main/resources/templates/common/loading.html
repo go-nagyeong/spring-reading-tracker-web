@@ -1,4 +1,4 @@
-<div th:fragment="div" class="spinner-wrap" id="loadingSpinner">
+<div th:fragment="local" class="spinner-wrap" id="localLoading">
     <div class="spinner-grow spinner-grow-xs text-secondary" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
@@ -13,5 +13,25 @@
     </div>
     <div class="spinner-grow spinner-grow-xs text-secondary" role="status">
         <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div th:fragment="global" class="loading-overlay" id="globalLoading">
+    <div class="spinner-wrap d-block" id="">
+        <div class="spinner-grow spinner-grow-sm text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow spinner-grow-sm text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow spinner-grow-sm text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow spinner-grow-sm text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow spinner-grow-sm text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 </div>
