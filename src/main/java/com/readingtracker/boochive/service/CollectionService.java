@@ -18,7 +18,7 @@ public class CollectionService {
         return collectionRepository.findById(id);
     }
 
-    public List<BookCollection> getCollections(Long userId) {
+    public List<BookCollection> getCollectionsByUser(Long userId) {
         return collectionRepository.findAllByUserId(userId);
     }
 
@@ -26,7 +26,7 @@ public class CollectionService {
         return collectionRepository.save(bookCollection);
     }
 
-    public void deleteCollection(BookCollection bookCollection) {
-        collectionRepository.delete(bookCollection);
+    public void deleteCollectionById(Long id) {
+        collectionRepository.deleteById(id);
     }
 }

@@ -18,11 +18,11 @@ public class ReadingListService {
         return readingListRepository.findById(id);
     }
 
-    public Optional<ReadingBook> findReadingBook(Long userId, String bookIsbn) {
+    public Optional<ReadingBook> findReadingBookByUserAndBook(Long userId, String bookIsbn) {
         return readingListRepository.findByUserIdAndBookIsbn(userId, bookIsbn);
     }
 
-    public List<ReadingBook> getReadingList(Long userId) {
+    public List<ReadingBook> getReadingListByUser(Long userId) {
         return readingListRepository.findAllByUserId(userId);
     }
 
@@ -40,7 +40,7 @@ public class ReadingListService {
         return readingListRepository.save(readingBook);
     }
 
-    public void deleteReadingBook(Long id) {
+    public void deleteReadingBookById(Long id) {
         readingListRepository.deleteById(id);
     }
 }

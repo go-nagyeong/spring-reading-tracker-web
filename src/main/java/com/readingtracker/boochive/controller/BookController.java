@@ -42,10 +42,10 @@ public class BookController {
         AladdinAPIResponseDto searchResult = aladdinOpenAPIHandler.searchBooks(page, query, QueryType.TITLE);
 
         // 사용자의 컬렉션 목록
-        List<BookCollection> collectionList = collectionService.getCollections(user.getId());
+        List<BookCollection> collectionList = collectionService.getCollectionsByUser(user.getId());
 
         // 사용자의 독서 상태 및 컬렉션 정보
-        List<ReadingBook> readingList = readingListService.getReadingList(user.getId());
+        List<ReadingBook> readingList = readingListService.getReadingListByUser(user.getId());
         Map<String, ReadingBook> readingInfoList = new HashMap<>();
         for (ReadingBook item : readingList) { // entity to map
             readingInfoList.put(item.getBookIsbn(), item);

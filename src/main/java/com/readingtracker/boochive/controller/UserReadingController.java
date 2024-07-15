@@ -25,6 +25,9 @@ public class UserReadingController {
     private final ReadingListService readingListService;
     private final CollectionService collectionService;
 
+    /**
+     * 사용자 독서 목록에 추가
+     */
     @PostMapping("/reading-list")
     public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@RequestBody ReadingBook readingBook,
                                                                     @AuthenticationPrincipal User user) {
@@ -41,9 +44,12 @@ public class UserReadingController {
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
 
-        return ApiResponse.success("성공적으로 추가되었습니다.", data);
+        return ApiResponse.success("독서 목록이 수정되었습니다.", data);
     }
 
+    /**
+     * 사용자 독서 목록에서 삭제
+     */
     @DeleteMapping("/reading-list/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteReadingBook(@PathVariable Long id) {
         Optional<ReadingBook> existReadingBook =
@@ -51,9 +57,9 @@ public class UserReadingController {
 
         if (existReadingBook.isPresent()) {
             ReadingBook readingBookToDelete = existReadingBook.get();
-            readingListService.deleteReadingBook(readingBookToDelete.getId());
+            readingListService.deleteReadingBookById(readingBookToDelete.getId());
         }
 
-        return ApiResponse.success("성공적으로 삭제되었습니다.");
+        return ApiResponse.success("독서 목록에서 삭제되었습니다.");
     }
 }
