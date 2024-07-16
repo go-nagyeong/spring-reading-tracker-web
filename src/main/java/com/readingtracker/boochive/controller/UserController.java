@@ -60,10 +60,11 @@ public class UserController {
         }
 
         // 회원 데이터 생성
-        User user = new User();
-        user.setEmail(form.getEmail());
-        user.setPassword(form.getPassword());
-        user.setName(form.getUsername());
+        User user = User.builder()
+                .email(form.getEmail())
+                .password(form.getPassword())
+                .name(form.getUsername())
+                .build();
         userService.saveUser(user);
 
         return ApiResponse.success("회원가입에 성공하였습니다.");

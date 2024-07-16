@@ -2,20 +2,22 @@ package com.readingtracker.boochive.domain;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reading_list")
-@SQLDelete(sql = "UPDATE reading_list SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
-@Where(clause = "deleted_at IS NULL")
 @Getter
-@Setter
-@DynamicInsert
-@DynamicUpdate
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "reading_list", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "book_isbn"})
+})
+@EntityListeners(AuditingEntityListener.class)
 public class ReadingBook {
 
     @Id
@@ -25,23 +27,49 @@ public class ReadingBook {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(length = 20, nullable = false)
     private String bookIsbn;
 
-    @Column
     private Long collectionId;
 
     @Enumerated(EnumType.STRING)
-    @Column
     private ReadingStatus readingStatus;
 
-    @Column
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    @Column
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    private LocalDateTime deletedAt;
+    /**
+     * 신규 등록 값 자동 세팅
+     * -> 컬렉션으로 신규 등록시 독서 상태 기본값 자동 세팅 (기본값: 읽을 예정)
+     */
+    @PrePersist
+    protected void prePersist() {
+        this.readingStatus = this.readingStatus == null ? ReadingStatus.TO_READ : this.readingStatus;
+    }
+
+    /**
+     * 사용자 변경
+     */
+    public void updateUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * 독서 상태 변경
+     */
+    public void updateReadingStatus(ReadingStatus readingStatus) {
+        this.readingStatus = readingStatus;
+    }
+
+    /**
+     * 컬렉션 변경
+     */
+    public void updateCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
 }

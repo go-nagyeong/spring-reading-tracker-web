@@ -2,20 +2,20 @@ package com.readingtracker.boochive.domain;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "collection")
-@SQLDelete(sql = "UPDATE collection SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
-@Where(clause = "deleted_at IS NULL")
 @Getter
-@Setter
-@DynamicInsert
-@DynamicUpdate
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "collection")
+@EntityListeners(AuditingEntityListener.class)
 public class BookCollection {
 
     @Id
@@ -28,13 +28,25 @@ public class BookCollection {
     @Column(nullable = false)
     private String collectionName;
 
-    @Column
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    @Column
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    private LocalDateTime deletedAt;
+    /**
+     * 사용자 변경
+     */
+    public void updateUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * 컬렉션명 변경
+     */
+    public void updateCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
 }

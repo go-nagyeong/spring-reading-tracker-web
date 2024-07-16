@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ReadingListRepository extends JpaRepository<ReadingBook, Long> {
 
-    List<ReadingBook> findAllByUserId(Long userId);
-
     Optional<ReadingBook> findByUserIdAndBookIsbn(Long userId, String bookIsbn);
+
+    List<ReadingBook> findAllByUserId(Long userId);
 }
