@@ -220,6 +220,24 @@ function setCollectionButtonEvent() {
 }
 
 /**
+ * 독서 상태에 따라 [책 상세 > 내 독서 관리 > 상단 Carousel 카드] UI 업데이트
+ */
+function updateReadingCarouselCardUI(readingStatus) {
+    const carousel = document.getElementById('readingStatusCarouselCard');
+    if (carousel) {
+        const carouselInner = carousel.querySelector('.carousel-inner');
+        carousel.style.display = 'block';
+        if (readingStatus === 'READING') {
+            loadHTML('/books/partials/carousel-reading-status-card', carouselInner);
+        } else if (readingStatus === 'READ') {
+            loadHTML('/books/partials/carousel-read-status-card', carouselInner);
+        } else {
+            carousel.style.display = 'none';
+        }
+    }
+}
+
+/**
  * 책 통계 데이터 업데이트 (독자 수, 리뷰 수, 평균 평점)
  */
 function updateBookStatistics(data, targetElement) {
@@ -250,7 +268,8 @@ function onUpdateReadingInfo(readingInfo, targetElement) {
     targetElement.dataset.readingStatus = readingInfo?.readingStatus || "";
     targetElement.dataset.collectionId = readingInfo?.collectionId || "";
 
-    // 독서 상태에 따른 버튼 UI 변경 (책 상세 페이지 > 내 독서 관리 > 하단 버튼 / 책 목록 > 우측 버튼)
+    // 독서 상태에 따른 UI 변경
     updateReadingListButtonUI(readingInfo?.readingStatus, targetElement);
     updateCollectionButtonUI(readingInfo?.collectionId, targetElement);
+    updateReadingCarouselCardUI(readingInfo?.readingStatus);
 }

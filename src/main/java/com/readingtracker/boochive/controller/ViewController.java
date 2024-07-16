@@ -67,17 +67,17 @@ public class ViewController {
      */
     @GetMapping("/books")
     public String showBookSearchList() {
-        return "book/book-list";
+        return "books/book-list";
     }
 
     @GetMapping("/books/{isbn}")
     public String showBookDetail() {
-        return "book/book-detail";
+        return "books/book-detail";
     }
 
     @GetMapping("/books/partials/{partial}")
     public String showBookPartial(@PathVariable String partial) {
-        return "book/"+partial;
+        return "books/partials/"+partial;
     }
 
     /**
