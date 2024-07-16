@@ -11,4 +11,6 @@ public interface ReadingListRepository extends JpaRepository<ReadingBook, Long> 
     Optional<ReadingBook> findByUserIdAndBookIsbn(Long userId, String bookIsbn);
 
     List<ReadingBook> findAllByUserId(Long userId);
+
+    List<ReadingBook> findAllByBookIsbn(String bookIsbn);
 }

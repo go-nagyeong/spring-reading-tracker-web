@@ -4,18 +4,57 @@
 </div>
 <div class="modal-body">
     <form id="reviewEditForm">
-        <div class="rating-grade mb-2">
-            <select class="star-rating" data-value="3" data-range="10"></select>
+        <input type="hidden" name="id">
+        <input type="hidden" name="bookIsbn">
+        <div class="rating-grade mb-3">
+            <select class="star-rating" data-value="" data-range="10"></select>
         </div>
-        <!-- TODO: 텍스트 에디터로 바꿀지? -->
-        <textarea class="form-control" rows="5">일류가 된다는 것은 결국 어떤 분야에서 달인이 되는 것이다. 달인이 된다는 것은 해당 분야를 숙달한다는 것이고 숙달하기 위해서는 기술을 훔치고, 요약하고, 추진해야 한다.</textarea>
+        <div class="form-border overflow-auto" style="height: 20vh;">
+            <div id="editorjs"></div>
+        </div>
     </form>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
-    <button type="button" class="btn btn-primary">저장</button>
+    <button type="button" class="btn btn-primary" id="saveReviewBtn">저장</button>
 </div>
 
 <script>
-    window.initializeStarRating(document.querySelector('#reviewEditForm .star-rating'));
+    document.getElementById('saveReviewBtn').addEventListener('click', function(event) {
+        saveReview();
+    })
+    document.getElementById('reviewEditForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveReview();
+    })
+
+    async function saveReview() {
+        globalLoading(true);
+
+        const form = document.getElementById('reviewEditForm');
+        const data = formToJson(new FormData(form));
+
+        data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
+        await reviewSimpleEditor.save().then(result => data['reviewText'] = result);
+
+        axios.post(`/api/books/${bookIsbn}/reviews`, data)
+            .then(response => {
+                const result = response.data;
+                if (result.success) {
+                    const newReview = result.data.saveResult;
+                    if (newReview) {
+                        loadReviewData();
+                    }
+                    closeUIComponents();
+                    showToast(result.message, 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+                globalLoading(false);
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+                globalLoading(false);
+            });
+    }
 </script>

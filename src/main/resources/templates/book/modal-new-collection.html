@@ -26,20 +26,20 @@
 
     function createCollection() {
         const form = document.getElementById('newCollectionForm');
-        const modalEl = document.querySelector('.modal');
-        const modal = bootstrap.Modal.getInstance(modalEl)
 
         axios.post('/api/collection', formToJson(new FormData(form)))
             .then(response => {
                 const result = response.data;
                 if (result.success) {
-                    const newCollection = result.data.newCollection;
-
+                    const newCollection = result.data.saveResult;
                     if (newCollection) {
-                        setCollectionList([newCollection], document.getElementById('bookSearchList'));
+                        setCollectionButtonOptions([newCollection]);
+                        setCollectionButtonEvent();
                     }
-                    if (modal) modal.hide();
+                    closeUIComponents();
                     showToast(result.message, 'success');
+                } else {
+                    showToast(result.message, 'error');
                 }
             })
             .catch(error => {

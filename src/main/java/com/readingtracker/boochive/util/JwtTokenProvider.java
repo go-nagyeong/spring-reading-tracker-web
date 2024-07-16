@@ -1,9 +1,12 @@
 package com.readingtracker.boochive.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
@@ -70,8 +74,18 @@ public class JwtTokenProvider {
      * 토큰이 유효한지 검사
      */
     public boolean isTokenValid(String token) {
-        boolean isTokenExpired = extractExpiration(token).before(new Date()); // 토큰 만료 여부
-        return !isTokenExpired;
+        try {
+            boolean isTokenExpired = extractExpiration(token).before(new Date()); // 토큰 만료 여부
+            return !isTokenExpired;
+        } catch (ExpiredJwtException e) {
+            // 토큰이 만료된 경우 false를 반환
+            log.info("Expired e: {}", e.getMessage());
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            // 기타 JWT 예외 처리
+            log.info("Etc e: {}", e.getMessage());
+            return false;
+        }
     }
 
     public String extractUsername(String token) {

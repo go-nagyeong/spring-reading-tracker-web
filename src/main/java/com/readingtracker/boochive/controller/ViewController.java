@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ViewController {
@@ -68,11 +70,21 @@ public class ViewController {
         return "book/book-list";
     }
 
+    @GetMapping("/books/{isbn}")
+    public String showBookDetail() {
+        return "book/book-detail";
+    }
+
+    @GetMapping("/books/partials/{partial}")
+    public String showBookPartial(@PathVariable String partial) {
+        return "book/"+partial;
+    }
+
     /**
      * TODO: 임시
      */
     @RequestMapping("/{page1}/{page2}")
-    public String custom2(@PathVariable("page1") String page1, @PathVariable("page2") String page2) {
+    public String custom1(@PathVariable("page1") String page1, @PathVariable("page2") String page2) {
         return page1+"/"+page2.replace(".html","");
     }
 }

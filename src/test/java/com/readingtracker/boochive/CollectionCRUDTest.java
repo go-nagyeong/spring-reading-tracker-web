@@ -1,7 +1,6 @@
 package com.readingtracker.boochive;
 
 import com.readingtracker.boochive.domain.BookCollection;
-import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.service.CollectionService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

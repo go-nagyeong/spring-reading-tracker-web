@@ -30,6 +30,23 @@ public class AladdinAPIResponseDto {
         private String pubDate;
         private String description;
         private String isbn;
+        private String isbn13;
         private String cover;
+        private String categoryName;
+        private List<String> categoryList; // 전처리 후 변수
+        private SubInfo subInfo;
+        // 이후 조회 변수
+        private int reviewCount;
+        private double averageRating;
+        private int readerCount;
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        public static class SubInfo {
+
+            private String subTitle;
+            private String itemPage;
+        }
     }
 }

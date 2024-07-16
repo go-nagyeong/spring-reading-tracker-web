@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -14,29 +15,31 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "reading_list", uniqueConstraints = {
+@EntityListeners(AuditingEntityListener.class)
+@Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "book_isbn"})
 })
-@EntityListeners(AuditingEntityListener.class)
-public class ReadingBook {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @PrimaryKeyJoinColumn
+    private User user;
 
     @Column(length = 20, nullable = false)
     private String bookIsbn;
 
-    private Long collectionId;
+    @Column(nullable = false)
+    private Integer rating;
 
-    @Enumerated(EnumType.STRING)
-    private ReadingStatus readingStatus;
+    private String reviewText;
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
@@ -44,32 +47,17 @@ public class ReadingBook {
     private LocalDateTime updatedAt;
 
     /**
-     * 신규 등록 전 값 자동 세팅
-     * -> 컬렉션으로 신규 등록시 독서 상태 기본값 자동 세팅 (기본값: 읽을 예정)
-     */
-    @PrePersist
-    protected void prePersist() {
-        this.readingStatus = this.readingStatus == null ? ReadingStatus.TO_READ : this.readingStatus;
-    }
-
-    /**
      * 사용자 변경
      */
-    public void updateUserId(Long userId) {
-        this.userId = userId;
+    public void updateUser(User user) {
+        this.user = user;
     }
 
     /**
-     * 독서 상태 변경
+     * 리뷰/평점 변경
      */
-    public void updateReadingStatus(ReadingStatus readingStatus) {
-        this.readingStatus = readingStatus;
-    }
-
-    /**
-     * 컬렉션 변경
-     */
-    public void updateCollectionId(Long collectionId) {
-        this.collectionId = collectionId;
+    public void updateReviewRatingAndText(Integer rating, String reviewText) {
+        this.rating = rating;
+        this.reviewText = reviewText;
     }
 }

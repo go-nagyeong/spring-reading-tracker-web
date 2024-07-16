@@ -33,6 +33,11 @@ public class ReadingListService {
         return readingListRepository.findAllByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
+    public List<ReadingBook> getReadingListByBook(String bookIsbn) {
+        return readingListRepository.findAllByBookIsbn(bookIsbn);
+    }
+
     /**
      * [C]R[U]D - CREATE/UPDATE
      */

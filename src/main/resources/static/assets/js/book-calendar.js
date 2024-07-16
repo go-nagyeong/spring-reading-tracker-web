@@ -94,7 +94,7 @@
             },
             eventDidMount: function (info) {
                 // 클릭시 상세 페이지 이동
-                info.el.href = '/book/book-detail';
+                info.el.href = '';
 
                 if (info.event.extendedProps.coverImage) {
                     // 북커버 UI 설정 구분 클래스 추가

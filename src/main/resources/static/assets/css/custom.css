@@ -302,6 +302,10 @@ input[type=color]::-moz-color-swatch {
     flex: 0 0 60%;
 }
 
+.flex-grow-all > * {
+    flex-grow: 1;
+}
+
 /**
  * ---- Bootstrap Component 1. Breadcrumb -----------------------
  */
@@ -340,6 +344,9 @@ input[type=color]::-moz-color-swatch {
 /**
  * ---- Bootstrap Component 3. Dropdown -----------------------
  */
+.dropdown-toggle:not(.btn-icon) {
+    justify-content: flex-start !important;
+}
 .dropdown-toggle:after {
     position: absolute;
     right: 1rem;
@@ -380,7 +387,7 @@ input[type=color]::-moz-color-swatch {
  * ---- Bootstrap Component 5. Spinner -----------------------
  */
 .loading-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;

@@ -190,18 +190,18 @@
 * 책 목록
 */
 .tp-list > li {
-    padding: 15px 0;
+    padding: 15px 0 30px 0;
 }
 .tp-list > li:not(.template-tag) + li {
-    padding: 30px 0;
+    padding-top: 30px;
     border-top: solid 1px #ebebeb;
 }
 @media (max-width: 767px) {
     .tp-list > li {
-        padding: 0;
+        padding: 10px 0 20px 0;
     }
     .tp-list > li:not(.template-tag) + li {
-        padding: 20px 0;
+        padding-top: 20px;
     }
 }
 
@@ -388,20 +388,32 @@
     font-size: .9rem;
 }
 
-.rv-content.ellipsis {
+.rv-content p {
+    margin-bottom: 0.15rem;
+}
+
+.rv-content .ellipsis {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.rv-content.ellipsis.line-clamp-2 {
+.rv-content .ellipsis.line-clamp-2 {
     -webkit-line-clamp: 2;
 }
-
-.rv-content.ellipsis.line-clamp-3 {
+.rv-content .ellipsis.line-clamp-3 {
     -webkit-line-clamp: 3;
+}
+
+.rv-content .more-btn {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--bs-muted-color);
+}
+.rv-content .more-btn:hover {
+    text-decoration-line: underline;
+    color: var(--bs-link-hover-color);
 }
 
 .rv-sub {
@@ -415,25 +427,19 @@
 
 /* 리뷰/평점 */
 .rv-list > li {
-    padding: 20px 0;
+    padding: 10px 0 20px 0;
 }
-
-.rv-list > li:first-child {
-    padding-top: 10px;
+.rv-list > li:not(.template-tag) + li {
+    padding-top: 20px;
+    border-top: solid 1px #ebebeb;
 }
-
 @media (max-width: 767px) {
     .rv-list > li {
-        padding: 15px 0;
+        padding: 0 0 15px 0;
     }
-
-    .rv-list > li:first-child {
-        padding-top: 0;
+    .rv-list > li:not(.template-tag) + li {
+        padding-top: 15px;
     }
-}
-
-.rv-list > li + li {
-    border-top: solid 1px #ebebeb;
 }
 
 .rv-list .rv-unit {
@@ -441,12 +447,11 @@
 }
 
 .rv-list .rv-left {
-    flex-shrink: 0;
     margin-right: .8rem;
 }
 
 .rv-list .rv-right {
-    /*flex-shrink: 1;*/
+    flex-grow: 1;
 }
 
 .rv-list .rv-user {
