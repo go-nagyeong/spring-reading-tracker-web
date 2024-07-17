@@ -2,8 +2,10 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.ReviewDto;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.util.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.Optional;
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Review", description = "Review API")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -29,10 +32,10 @@ public class ReviewController {
     @GetMapping("/book/{bookIsbn}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllReviews(@PathVariable String bookIsbn,
                                                                           @AuthenticationPrincipal User user) {
-        List<Review> reviewList = reviewService.getReviewsByBook(bookIsbn);
+        List<ReviewDto> reviewList = reviewService.getReviewsByBook(bookIsbn);
         // 사용자 리뷰
-        Optional<Review> userReview = reviewList.stream()
-                .filter(review -> review.getUser().getId().equals(user.getId()))
+        Optional<ReviewDto> userReview = reviewList.stream()
+                .filter(review -> review.getReviewerId().equals(user.getId()))
                 .findFirst();
 
         Map<String, Object> data = new HashMap<>();
@@ -46,9 +49,9 @@ public class ReviewController {
      * GET - 특정 책의 로그인 유저 리뷰 조회
      */
     @GetMapping("/book/{bookIsbn}/me")
-    public ResponseEntity<ApiResponse<Map<String, Review>>> getUserReview(@PathVariable String bookIsbn,
+    public ResponseEntity<ApiResponse<Map<String, ReviewDto>>> getUserReview(@PathVariable String bookIsbn,
                                                                           @AuthenticationPrincipal User user) {
-        Map<String, Review> data = new HashMap<>();
+        Map<String, ReviewDto> data = new HashMap<>();
 
         reviewService.findReviewByUserAndBook(user.getId(), bookIsbn)
                 .ifPresent(value -> data.put("review", value));
@@ -60,12 +63,12 @@ public class ReviewController {
      * POST - 리뷰 등록
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<Review>> createReview(@RequestBody Review review,
+    public ResponseEntity<ApiResponse<ReviewDto>> createReview(@RequestBody Review review,
                                                             @AuthenticationPrincipal User user) {
         validateReview(review);
 
         review.updateUser(user); // 사용자 ID 세팅
-        Review savedReview = reviewService.createReview(review);
+        ReviewDto savedReview = reviewService.createReview(review);
 
         return ApiResponse.success("리뷰가 등록되었습니다.", savedReview);
     }
@@ -74,11 +77,11 @@ public class ReviewController {
      * PUT - 리뷰 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Review>> updateReview(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<ReviewDto>> updateReview(@PathVariable Long id,
                                                             @RequestBody Review review) {
         validateReview(review);
 
-        Review savedReview = reviewService.updateReview(id, review);
+        ReviewDto savedReview = reviewService.updateReview(id, review);
 
         return ApiResponse.success("리뷰가 수정되었습니다.", savedReview);
     }
@@ -87,7 +90,7 @@ public class ReviewController {
      * DELETE - 리뷰 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Map<String, Review>>> deleteReview(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Object>> deleteReview(@PathVariable Long id) {
         reviewService.deleteReviewById(id);
 
         return ApiResponse.success("리뷰가 삭제되었습니다.");

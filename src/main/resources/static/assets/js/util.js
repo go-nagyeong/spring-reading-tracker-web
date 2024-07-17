@@ -225,10 +225,10 @@ function calculateRowIndex(curPage, rowsPerPage, currentRow) {
 /**
  * 사용자 프로필 이미지 세팅 함수
  */
-function setProfileImage(user, element) {
+function setProfileImage(profileImage, element) {
     element = element || document.getElementById('profileImage');
     const defaultAvatar = '/assets/img/default-profile.svg';
-    element.src = user.profileImage || defaultAvatar;
+    element.src = profileImage || defaultAvatar;
 }
 
 /**

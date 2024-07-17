@@ -2,9 +2,9 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.domain.ReadingBook;
-import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.AladdinAPIResponseDto;
+import com.readingtracker.boochive.dto.ReviewDto;
 import com.readingtracker.boochive.service.CollectionService;
 import com.readingtracker.boochive.service.ReadingBookService;
 import com.readingtracker.boochive.service.ReviewService;
@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -95,22 +97,21 @@ public class BookController {
      * (공통 메서드) 책 통계 데이터 세팅 - 리뷰 개수, 평균 평점, 독자 수
      */
     private void setBookStatistics(AladdinAPIResponseDto.Item book) {
-        List<Review> reviewList = reviewService.getReviewsByBook(book.getIsbn13());
+        List<ReviewDto> reviewList = reviewService.getReviewsByBook(book.getIsbn13());
 
         // 리뷰 개수
         book.setReviewCount(reviewList.size());
         // 평균 평점 = 0을 제외한 평점들의 평균
-        book.setAverageRating(
-                reviewList.stream()
-                        .mapToDouble(Review::getRating)
-                        .filter(rating -> rating != 0)
-                        .average()
-                        .orElse(0)
-        );
+        double averageRating = reviewList.stream()
+                .mapToDouble(ReviewDto::getRating)
+                .filter(rating -> rating != 0)
+                .average()
+                .orElse(0);
+        book.setAverageRating(BigDecimal.valueOf(averageRating).setScale(2, RoundingMode.HALF_UP));
 
         // 독자 수 = Unique(리뷰를 작성한 사용자 + 해당 책을 '읽음' 상태로 가지고 있는 사용자)
         Set<Long> readerList = new HashSet<>();
-        reviewList.forEach(review -> readerList.add(review.getUser().getId()));
+        reviewList.forEach(review -> readerList.add(review.getReviewerId()));
         readingListService.getReadingListByBook(book.getIsbn13())
                 .forEach(readingBook -> readerList.add(readingBook.getUserId()));
 

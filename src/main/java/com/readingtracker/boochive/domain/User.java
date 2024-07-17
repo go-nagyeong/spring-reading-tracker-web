@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,6 +60,9 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
 
     /**
      * 비밀번호 변경

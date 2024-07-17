@@ -1,6 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.Review;
+import com.readingtracker.boochive.dto.ReviewDto;
+import com.readingtracker.boochive.mapper.ReviewMapper;
 import com.readingtracker.boochive.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,43 +21,51 @@ public class ReviewService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<Review> findReviewById(Long id) {
-        return reviewRepository.findById(id);
+    public Optional<ReviewDto> findReviewById(Long id) {
+        return reviewRepository.findById(id)
+                .map(ReviewMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Review> findReviewByUserAndBook(Long userId, String bookIsbn) {
-        return reviewRepository.findByUserIdAndBookIsbn(userId, bookIsbn);
+    public Optional<ReviewDto> findReviewByUserAndBook(Long userId, String bookIsbn) {
+        return reviewRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
+                .map(ReviewMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getReviewsByUser(Long userId) {
-        return reviewRepository.findAllByUserId(userId);
+    public List<ReviewDto> getReviewsByUser(Long userId) {
+        return reviewRepository.findAllByUserId(userId)
+                .stream()
+                .map(ReviewMapper.INSTANCE::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getReviewsByBook(String bookIsbn) {
-        return reviewRepository.findAllByBookIsbnOrderByIdDesc(bookIsbn);
+    public List<ReviewDto> getReviewsByBook(String bookIsbn) {
+        return reviewRepository.findAllByBookIsbnOrderByIdDesc(bookIsbn)
+                .stream()
+                .map(ReviewMapper.INSTANCE::toDto)
+                .toList();
     }
 
     /**
      * [C]RUD - CREATE
      */
     @Transactional
-    public Review createReview(Review review) {
-        return reviewRepository.save(review);
+    public ReviewDto createReview(Review review) {
+        return ReviewMapper.INSTANCE.toDto(reviewRepository.save(review));
     }
 
     /**
      * CR[U]D - UPDATE
      */
     @Transactional
-    public Review updateReview(Long id, Review review) {
+    public ReviewDto updateReview(Long id, Review review) {
         Review existingReview = reviewRepository.findById(id).orElseThrow();
 
         existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());
 
-        return existingReview;
+        return ReviewMapper.INSTANCE.toDto(existingReview);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.readingtracker.boochive;
 
 import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.ReviewDto;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.service.UserService;
 import jakarta.transaction.Transactional;
@@ -34,11 +35,10 @@ public class ReviewCRUDTest {
                 .reviewText("test")
                 .build();
 
-        Review savedReview = service.createReview(review);
+        ReviewDto savedReview = service.createReview(review);
 
         /* when, then */
         assertThat(savedReview).isNotNull();
-        assertThat(savedReview.getBookIsbn()).isEqualTo("test");
         assertThat(savedReview.getRating()).isEqualTo(0);
         assertThat(savedReview.getReviewText()).isEqualTo("test");
     }
@@ -55,18 +55,17 @@ public class ReviewCRUDTest {
                 .reviewText("test")
                 .build();
 
-        Review createdReview = service.createReview(review);
+        ReviewDto createdReview = service.createReview(review);
 
         Review newReview = Review.builder()
                 .id(createdReview.getId())
                 .build();
         newReview.updateReviewRatingAndText(0, "test2");
-        service.updateReview(createdReview.getId(), newReview);
+        ReviewDto updatedReview = service.updateReview(createdReview.getId(), newReview);
 
         /* when, then */
-        assertThat(newReview).isNotNull();
-        assertThat(newReview.getBookIsbn()).isEqualTo("test");
-        assertThat(newReview.getRating()).isEqualTo(0);
-        assertThat(newReview.getReviewText()).isEqualTo("test2");
+        assertThat(updatedReview).isNotNull();
+        assertThat(updatedReview.getRating()).isEqualTo(0);
+        assertThat(updatedReview.getReviewText()).isEqualTo("test2");
     }
 }

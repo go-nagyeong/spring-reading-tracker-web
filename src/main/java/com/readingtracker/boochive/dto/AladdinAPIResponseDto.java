@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -37,7 +38,7 @@ public class AladdinAPIResponseDto {
         private SubInfo subInfo;
         // 이후 조회 변수
         private int reviewCount;
-        private double averageRating;
+        private BigDecimal averageRating;
         private int readerCount;
 
         @Getter

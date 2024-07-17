@@ -506,8 +506,8 @@
                 targetElement.classList.remove('template-tag');
 
                 // 리뷰 내용 및 사용자 정보
-                setProfileImage(item.user,  targetElement.querySelector('.rv-left img'))
-                targetElement.querySelector('.rv-user').textContent = item.user.name;
+                setProfileImage(item.reviewerProfile,  targetElement.querySelector('.rv-left img'))
+                targetElement.querySelector('.rv-user').textContent = item.reviewerName;
                 targetElement.querySelector('.rv-date').textContent = item.createdAt;
                 const reviewContent = targetElement.querySelector('.rv-content div');
                 reviewContent.innerHTML = item.reviewText;
@@ -599,7 +599,6 @@
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
      * 2. 사용자 구매/대여 이력 모달
      */
-    let initFormData
     function setHistoryModalFormData() {
         globalLoading(true);
 
