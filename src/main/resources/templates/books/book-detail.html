@@ -414,23 +414,15 @@
     function lookupBook() {
         globalLoading(true);
 
-        axios.get('/api/books/' + bookIsbn)
-            .then(response => {
-                const result = response.data;
-                console.log(result);
-                if (result.success) {
-                    const data = result.data;
-                    setBookData(data);
+        const promise = axios.get(`/api/books/${bookIsbn}`);
 
-                    // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                    setCollectionButtonEvent();
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
+        const onSuccess = (result) => {
+            setBookData(result.data);
+            // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+            setCollectionButtonEvent();
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 
     /**
@@ -449,7 +441,7 @@
         }
 
         // 책 정보 세팅
-        targetElement.dataset.isbn = item.isbn13;
+        targetElement.dataset.bookIsbn = item.isbn13;
         targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
         targetElement.querySelector('.info-name p').textContent = item.title;
         targetElement.querySelector('.info-auth > a').textContent = item.formatAuthor;
@@ -480,30 +472,25 @@
         clearReviewList();
         globalLoading(true);
 
-        axios.get(`/api/books/${bookIsbn}/reviews`)
-            .then(response => {
-                const result = response.data;
-                console.log(result);
-                if (result.success) {
-                    const { reviewList, userReview } = result.data;
+        const promise = axios.get(`/api/reviews/book/${bookIsbn}`);
 
-                    if (reviewList.length) {
-                        appendReviewElement(reviewList);
-                        // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                        setReviewButtonEvent();
-                    } else {
-                        showNoResultMessage();
-                    }
+        const onSuccess = (result) => {
+            const { reviewList, userReview } = result.data;
 
-                    // 사용자 리뷰 세팅
-                    setUserReviewSummaryData(userReview);
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
+            if (reviewList.length) {
+                appendReviewElement(reviewList);
+                // TODO: setPagination
+                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+                setReviewButtonEvent();
+            } else {
+                showNoResultMessage();
+            }
+
+            // 사용자 리뷰 세팅
+            setUserReviewSummaryData(userReview);
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 
     /**
@@ -587,73 +574,63 @@
     function setReviewModalFormData() {
         globalLoading(true);
 
-        axios.get(`/api/books/${bookIsbn}/reviews/me`)
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    const review = result.data.review;
-                    const modalForm = document.getElementById('reviewEditForm');
-                    const starRatingEl = modalForm.querySelector('.star-rating');
+        const promise = axios.get(`/api/reviews/book/${bookIsbn}/me`);
 
-                    reviewSimpleEditor = new SimpleEditor('editorjs'); // 에디터 플러그인 초기화
-                    modalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-                    if (review) {
-                        modalForm.querySelector('[name=id]').value = review.id;
-                        // 리뷰 내용
-                        reviewSimpleEditor.fill(review.reviewText);
-                        // 평점
-                        starRatingEl.dataset.value = review.rating;
-                    }
-                    initializeStarRating(starRatingEl); // 별점 플러그인 초기화
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
+        const onSuccess = (result) => {
+            const review = result.data.review;
+            const modalForm = document.getElementById('reviewEditForm');
+            const starRatingEl = modalForm.querySelector('.star-rating');
+
+            reviewSimpleEditor = new SimpleEditor('editorjs'); // 에디터 플러그인 초기화
+
+            modalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
+            if (review) {
+                modalForm.querySelector('[name=id]').value = review.id;
+                reviewSimpleEditor.fill(review.reviewText); // 리뷰 내용
+                starRatingEl.dataset.value = review.rating; // 평점
+            }
+            initializeStarRating(starRatingEl); // 별점 플러그인 초기화
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 
     /**
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
      * 2. 사용자 구매/대여 이력 모달
      */
+    let initFormData
     function setHistoryModalFormData() {
         globalLoading(true);
 
-        axios.get(`/api/books/${bookIsbn}/own-hist/me`)
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    const { purchaseHistory, rentalHistory } = result.data;
-                    const purchaseForm = document.getElementById('purchaseHistForm');
-                    const rentalForm = document.getElementById('rentalHistForm');
+        const promise = axios.get(`/api/own-histories/book/${bookIsbn}/me`);
 
-                    purchaseForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-                    rentalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-                    // 구매 이력
-                    if (purchaseHistory) {
-                        purchaseForm.querySelector('[name=id]').value = purchaseHistory.id;
-                        purchaseForm.querySelector('[name=purchaseDate]').value = purchaseHistory.purchaseDate;
-                        purchaseForm.querySelector('[name=purchaseFrom]').value = purchaseHistory.purchaseFrom;
-                        purchaseForm.querySelector('[name=price]').value = purchaseHistory.price;
-                        purchaseForm.querySelector('[name=memo]').value = purchaseHistory.memo;
-                    }
-                    // 대여 이력
-                    if (rentalHistory) {
-                        rentalForm.querySelector('[name=id]').value = rentalHistory.id;
-                        rentalForm.querySelector('[name=rentalDate]').value = rentalHistory.rentalDate;
-                        rentalForm.querySelector('[name=returnDate]').value = rentalHistory.returnDate;
-                        rentalForm.querySelector('[name=rentalFrom]').value = rentalHistory.rentalFrom;
-                        rentalForm.querySelector('[name=memo]').value = rentalHistory.memo;
-                    }
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
+        const onSuccess = (result) => {
+            const { purchaseHistory, rentalHistory } = result.data;
+            const purchaseForm = document.getElementById('purchaseHistForm');
+            const rentalForm = document.getElementById('rentalHistForm');
+
+            purchaseForm.querySelector('[name=bookIsbn]').value = bookIsbn;
+            rentalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
+            // 구매 이력
+            if (purchaseHistory) {
+                purchaseForm.querySelector('[name=id]').value = purchaseHistory.id;
+                purchaseForm.querySelector('[name=purchaseDate]').value = purchaseHistory.purchaseDate;
+                purchaseForm.querySelector('[name=purchaseFrom]').value = purchaseHistory.purchaseFrom;
+                purchaseForm.querySelector('[name=price]').value = purchaseHistory.price;
+                purchaseForm.querySelector('[name=memo]').value = purchaseHistory.memo;
+            }
+            // 대여 이력
+            if (rentalHistory) {
+                rentalForm.querySelector('[name=id]').value = rentalHistory.id;
+                rentalForm.querySelector('[name=rentalDate]').value = rentalHistory.rentalDate;
+                rentalForm.querySelector('[name=returnDate]').value = rentalHistory.returnDate;
+                rentalForm.querySelector('[name=rentalFrom]').value = rentalHistory.rentalFrom;
+                rentalForm.querySelector('[name=memo]').value = rentalHistory.memo;
+            }
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 </script>
 </body>

@@ -28,23 +28,28 @@ public class RentalHistoryService {
     }
 
     /**
-     * [C]R[U]D - CREATE/UPDATE
+     * [C]RUD - CREATE
      */
     @Transactional
-    public RentalHistory saveHistory(RentalHistory history) {
-        if (history.getId() != null) { // update
-            RentalHistory existingRentalHistory = rentalHistoryRepository.findById(history.getId()).orElseThrow();
+    public RentalHistory createHistory(RentalHistory history) {
+        return rentalHistoryRepository.save(history);
+    }
 
-            existingRentalHistory.updateHistory(
-                    history.getRentalDate(),
-                    history.getReturnDate(),
-                    history.getRentalFrom(),
-                    history.getMemo()
-            );
+    /**
+     * CR[U]D - UPDATE
+     */
+    @Transactional
+    public RentalHistory updateHistory(Long id, RentalHistory history) {
+        RentalHistory existingRentalHistory = rentalHistoryRepository.findById(id).orElseThrow();
 
-            return existingRentalHistory;
-        }
-        return rentalHistoryRepository.save(history); // insert
+        existingRentalHistory.updateHistory(
+                history.getRentalDate(),
+                history.getReturnDate(),
+                history.getRentalFrom(),
+                history.getMemo()
+        );
+
+        return existingRentalHistory;
     }
 
     /**

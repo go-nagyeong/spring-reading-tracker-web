@@ -83,8 +83,28 @@ public class ViewController {
     /**
      * TODO: 임시
      */
-    @RequestMapping("/{page1}/{page2}")
-    public String custom1(@PathVariable("page1") String page1, @PathVariable("page2") String page2) {
-        return page1+"/"+page2.replace(".html","");
+    @RequestMapping("/common/{page}")
+    public String custom1(@PathVariable("page") String page) {
+        return "common/"+page;
+    }
+
+    @RequestMapping("/notes/{page}")
+    public String custom2(@PathVariable("page") String page) {
+        return "notes/"+page;
+    }
+
+    @RequestMapping("/dashboard/{page}")
+    public String custom3(@PathVariable("page") String page) {
+        return "dashboard/"+page;
+    }
+
+    @RequestMapping("/mypage/{page}")
+    public String custom4(@PathVariable("page") String page) {
+        return "mypage/"+page;
+    }
+
+    @RequestMapping("/settings/{page}")
+    public String custom5(@PathVariable("page") String page) {
+        return "settings/"+page;
     }
 }

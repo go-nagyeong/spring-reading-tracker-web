@@ -1,7 +1,6 @@
 package com.readingtracker.boochive.domain;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "collection")
 @EntityListeners(AuditingEntityListener.class)
 public class BookCollection {
 

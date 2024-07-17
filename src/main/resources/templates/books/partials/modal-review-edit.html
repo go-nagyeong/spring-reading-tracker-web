@@ -25,65 +25,48 @@
 
 <script>
     document.getElementById('saveReviewBtn').addEventListener('click', function(event) {
-        saveReview();
+        handleReview();
     })
     document.getElementById('reviewEditForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        saveReview();
+        handleReview();
     })
     document.getElementById('deleteReviewBtn').addEventListener('click', function(event) {
-        deleteReview();
+        handleReview('D');
     })
 
-    async function saveReview() {
+    async function handleReview(action = 'C') {
         globalLoading(true);
 
+        // 폼 데이터 전처리
         const form = document.getElementById('reviewEditForm');
         const data = formToJson(new FormData(form));
-
         data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
         await reviewSimpleEditor.save().then(result => data['reviewText'] = result);
 
-        axios.post(`/api/books/${bookIsbn}/reviews`, data)
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    const newReview = result.data.saveResult;
-                    if (newReview) {
-                        loadReviewData();
-                    }
-                    closeUIComponents();
-                    showToast(result.message, 'success');
-                } else {
-                    showToast(result.message, 'error');
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
-    }
+        if (action === 'C' && data['id']) action = 'U';
 
-    function deleteReview() {
-        globalLoading(true);
+        let promise;
+        switch (action) {
+            case 'C':
+                promise = axios.post(`/api/reviews`, data);
+                break;
+            case 'U':
+                promise = axios.put(`/api/reviews/${data['id']}`, data);
+                break;
+            case 'D':
+                promise = axios.delete(`/api/reviews/${data['id']}`);
+                break;
+            default:
+                throw new Error('Invalid action type');
+        }
 
-        const id = document.querySelector('#reviewEditForm [name=id]').value;
-        axios.delete('/api/books/reviews/' + id)
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    loadReviewData();
-                    closeUIComponents();
-                    showToast(result.message, 'success');
-                } else {
-                    showToast(result.message, 'error');
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
+        const onSuccess = (result) => {
+            loadReviewData();
+            closeUIComponents();
+            showToast(result.message, 'success');
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 </script>

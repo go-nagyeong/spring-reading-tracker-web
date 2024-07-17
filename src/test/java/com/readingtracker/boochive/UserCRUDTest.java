@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Month;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +30,7 @@ public class UserCRUDTest {
                 .name("테스트 계정")
                 .build();
 
-        User savedUser = service.saveUser(user);
+        User savedUser = service.createUser(user);
 
         /* when, then */
         assertThat(savedUser).isNotNull();
@@ -44,11 +45,11 @@ public class UserCRUDTest {
                 .id(2L)
                 .build();
 
-        Date date = new Date();
-        date.setTime(907036813);
+        LocalDate date = LocalDate.of(1998, Month.SEPTEMBER, 29);
         user.updateProfile(null, "테스트 계정 변경", date, 1, "01012345678");
 
-        User savedUser = service.saveUser(user);
+        User savedUser = service.updateUser(2L
+                , user);
 
         /* when, then */
         assertThat(savedUser).isNotNull();

@@ -465,7 +465,7 @@
 }
 
 .rv-list .rv-info .rv-rating {
-    vertical-align: middle;
+    vertical-align: text-top;
 }
 
 .rv-list .rv-info .rv-date {

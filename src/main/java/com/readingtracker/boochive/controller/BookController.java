@@ -6,7 +6,7 @@ import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.AladdinAPIResponseDto;
 import com.readingtracker.boochive.service.CollectionService;
-import com.readingtracker.boochive.service.ReadingListService;
+import com.readingtracker.boochive.service.ReadingBookService;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.ApiResponse;
@@ -28,18 +28,16 @@ public class BookController {
 
     private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
     private final ReviewService reviewService;
-    private final ReadingListService readingListService;
+    private final ReadingBookService readingListService;
     private final CollectionService collectionService;
 
     /**
      * 책 검색
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<Map<String, Object>>> searchBooks(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "1") Integer page,
-            @AuthenticationPrincipal User user
-    ) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> searchBooks(@RequestParam String query,
+                                                                        @RequestParam(defaultValue = "1") Integer page,
+                                                                        @AuthenticationPrincipal User user) {
         // 책 검색 결과
         AladdinAPIResponseDto searchResult = aladdinOpenAPIHandler.searchBooks(page, query, QueryType.TITLE);
 
@@ -61,11 +59,11 @@ public class BookController {
         data.put("collectionList", collectionList);
         data.put("readingInfoList", readingInfoList);
 
-        return ApiResponse.success("", data);
+        return ApiResponse.success(null, data);
     }
 
     /**
-     * 책 상세
+     * 특정 책 상세
      */
     @GetMapping("/{isbn}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getBookDetails(@PathVariable String isbn,
@@ -90,11 +88,11 @@ public class BookController {
             data.put("readingInfo", readingInfo);
         }
 
-        return ApiResponse.success("", data);
+        return ApiResponse.success(null, data);
     }
 
     /**
-     * 책 통계 데이터 세팅 메서드 (리뷰 개수, 평균 평점, 독자 수)
+     * (공통 메서드) 책 통계 데이터 세팅 - 리뷰 개수, 평균 평점, 독자 수
      */
     private void setBookStatistics(AladdinAPIResponseDto.Item book) {
         List<Review> reviewList = reviewService.getReviewsByBook(book.getIsbn13());

@@ -25,7 +25,7 @@
             <div th:replace="~{common/result-message :: div(_)}"></div>
 
             <ul id="bookSearchList" class="tp-list">
-                <li data-isbn="" class="dataset-el template-tag">
+                <li data-book-isbn="" class="dataset-el template-tag">
                     <div class="item-unit row">
                         <div class="item-img">
                         <span class="img-item">
@@ -133,30 +133,25 @@
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
         localLoading(true);
 
-        axios.get('/api/books' + window.location.search)
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    const data = result.data;
-                    const searchResult = data.searchResult;
+        const promise = axios.get('/api/books'+window.location.search);
 
-                    if (searchResult.item.length) {
-                        appendBookElement(data);
-                        setPagination(searchResult.startIndex, searchResult.totalPages);
+        const onSuccess = (result) => {
+            const data = result.data;
+            const searchResult = result.data.searchResult;
 
-                        // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                        setReadingListButtonEvent();
-                        setCollectionButtonEvent();
-                    } else {
-                        showNoResultMessage();
-                    }
-                }
-                localLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                localLoading(false);
-            });
+            if (searchResult.item.length) {
+                appendBookElement(data);
+                setPagination(searchResult.startIndex, searchResult.totalPages);
+
+                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+                setReadingListButtonEvent();
+                setCollectionButtonEvent();
+            } else {
+                showNoResultMessage();
+            }
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 
     /**
@@ -178,7 +173,7 @@
                 }
 
                 // 책 정보 세팅
-                targetElement.dataset.isbn = item.isbn13;
+                targetElement.dataset.bookIsbn = item.isbn13;
                 targetElement.querySelector('.img-item a').setAttribute('href', '/books/'+item.isbn13);
                 targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
                 targetElement.querySelector('.info-num span').textContent = calculateRowIndex(searchResult.startIndex, searchResult.itemsPerPage, idx+1);

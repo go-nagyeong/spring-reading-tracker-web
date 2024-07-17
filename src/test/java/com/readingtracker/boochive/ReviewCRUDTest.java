@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +34,7 @@ public class ReviewCRUDTest {
                 .reviewText("test")
                 .build();
 
-        Review savedReview = service.saveReview(review);
+        Review savedReview = service.createReview(review);
 
         /* when, then */
         assertThat(savedReview).isNotNull();
@@ -56,13 +55,13 @@ public class ReviewCRUDTest {
                 .reviewText("test")
                 .build();
 
-        Review savedReview = service.saveReview(review);
+        Review createdReview = service.createReview(review);
 
         Review newReview = Review.builder()
-                .id(savedReview.getId())
+                .id(createdReview.getId())
                 .build();
         newReview.updateReviewRatingAndText(0, "test2");
-        service.saveReview(newReview);
+        service.updateReview(createdReview.getId(), newReview);
 
         /* when, then */
         assertThat(newReview).isNotNull();

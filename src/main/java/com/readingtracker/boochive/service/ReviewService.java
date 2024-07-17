@@ -35,22 +35,27 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<Review> getReviewsByBook(String bookIsbn) {
-        return reviewRepository.findAllByBookIsbn(bookIsbn);
+        return reviewRepository.findAllByBookIsbnOrderByIdDesc(bookIsbn);
     }
 
     /**
-     * [C]R[U]D - CREATE/UPDATE
+     * [C]RUD - CREATE
      */
     @Transactional
-    public Review saveReview(Review review) {
-        if (review.getId() != null) { // update
-            Review existingReview = reviewRepository.findById(review.getId()).orElseThrow();
+    public Review createReview(Review review) {
+        return reviewRepository.save(review);
+    }
 
-            existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());
+    /**
+     * CR[U]D - UPDATE
+     */
+    @Transactional
+    public Review updateReview(Long id, Review review) {
+        Review existingReview = reviewRepository.findById(id).orElseThrow();
 
-            return existingReview;
-        }
-        return reviewRepository.save(review); // insert
+        existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());
+
+        return existingReview;
     }
 
     /**

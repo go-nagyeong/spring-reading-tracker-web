@@ -27,23 +27,17 @@
     function createCollection() {
         const form = document.getElementById('newCollectionForm');
 
-        axios.post('/api/collection', formToJson(new FormData(form)))
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    const newCollection = result.data.saveResult;
-                    if (newCollection) {
-                        setCollectionButtonOptions([newCollection]);
-                        setCollectionButtonEvent();
-                    }
-                    closeUIComponents();
-                    showToast(result.message, 'success');
-                } else {
-                    showToast(result.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-            });
+        const promise = axios.post('/api/collections', formToJson(new FormData(form)));
+
+        const onSuccess = (result) => {
+            const newCollection = result.data;
+            if (newCollection) {
+                setCollectionButtonOptions([newCollection]);
+                setCollectionButtonEvent();
+            }
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 </script>

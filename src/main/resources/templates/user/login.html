@@ -84,19 +84,19 @@
     /**
      * 로그인 요청 (+ 유효성 검사)
      */
-    async function handleSubmit() {
-        await axios.post('/api/auth/login', formToJson(new FormData(form)))
-            .then(response => {
-                clearErrorMessages();
-                if (response.data.success) {
-                    location.href = '/';
-                } else {
-                    displayErrorMessages(response.data.data);
-                }
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-            });
+    function handleSubmit() {
+        clearErrorMessages();
+        globalLoading(true);
+
+        const promise = axios.post('/api/auth/login', formToJson(new FormData(form)));
+        const onSuccess = (result) => {
+            window.location.href = '/';
+        }
+        const onError = (result) => {
+            displayErrorMessages(result.data);
+        }
+
+        handleApiResponse(promise, onSuccess, onError);
     }
 
     function displayErrorMessages(errors) {

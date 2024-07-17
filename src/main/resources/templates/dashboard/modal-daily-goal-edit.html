@@ -8,7 +8,7 @@
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body" id="dailyGoalModal">
     <div class="list-group list-group-horizontal text-center" role="tablist">
         <a class="list-group-item list-group-item-md list-group-item-action active" data-bs-toggle="list"
            href="#horizontal-time" aria-selected="true" role="tab">시간</a>
@@ -51,8 +51,7 @@
 
 <script>
     var dailyGoalToggle = document.getElementById('dailyGoalToggle');
-    var listGroup = document.querySelector('.list-group');
-    var activeListItem = document.querySelector('.list-group-item.active');
+    var listItems = document.querySelectorAll('#dailyGoalModal .list-group-item');
 
     var dailyGoalForm = document.getElementById('dailyGoalForm');
     var dailyGoalInputs = dailyGoalForm.querySelectorAll('input');
@@ -62,14 +61,13 @@
     var dailyTimeHour = document.getElementById('dailyTimeHour');
     var dailyTimeMin = document.getElementById('dailyTimeMin');
 
-    // 리스트 그룹 클릭 이벤트
-    listGroup.addEventListener('click', function (event) {
-        if (!event.target.isSameNode(activeListItem)) {
+    // 탭 변경 시 이전 폼 초기화
+    listItems.forEach(el => {
+        el.addEventListener('hide.bs.tab', function (event) {
             dailyGoalToggle.checked = false;
             dailyGoalForm.reset();
-        }
-        activeListItem = event.target;
-    });
+        });
+    })
 
     // 목표 설정 폼 입력 이벤트
     dailyGoalInputs.forEach(el => {

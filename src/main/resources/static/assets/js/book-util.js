@@ -1,49 +1,30 @@
 /**
  * 사용자 독서 목록 / 컬렉션에 책 추가
  */
-function saveReadingBook(data, targetElement) {
+function handleReadingBook(action, data, targetElement) {
     globalLoading(true);
 
-    axios.post('/api/user/reading-list', data)
-        .then(response => {
-            const result = response.data;
-            if (result.success) {
-                onUpdateReadingInfo(result.data.saveResult , targetElement);
-                closeUIComponents();
-                showToast(result.message, 'success');
-            } else {
-                showToast(result.message, 'error');
-            }
-            globalLoading(false);
-        })
-        .catch(error => {
-            console.error('axios 요청 오류:', error);
-            globalLoading(false);
-        });
-}
+    let promise;
+    switch (action) {
+        case 'C':
+            promise = axios.post('/api/reading-books', data);
+            break;
+        case 'U':
+            promise = axios.put(`/api/reading-books/${data.id}`, data);
+            break;
+        case 'D':
+            promise = axios.delete(`/api/reading-books/${data.id}`);
+            break;
+        default:
+            throw new Error('Invalid action type');
+    }
 
-/**
- * 사용자 독서 목록에서 책 삭제
- */
-function deleteReadingBook(id, targetElement) {
-    globalLoading(true);
+    const onSuccess = (result) => {
+        onUpdateReadingInfo(result.data, targetElement);
+        closeUIComponents();
+    };
 
-    axios.delete('/api/user/reading-list/' + id)
-        .then(response => {
-            const result = response.data;
-            if (result.success) {
-                onUpdateReadingInfo(null, targetElement)
-                closeUIComponents();
-                showToast(result.message, 'success');
-            } else {
-                showToast(result.message, 'error');
-            }
-            globalLoading(false);
-        })
-        .catch(error => {
-            console.error('axios 요청 오류:', error);
-            globalLoading(false);
-        });
+    handleApiResponse(promise, onSuccess);
 }
 
 /**
@@ -100,18 +81,14 @@ function setReadingListButtonEvent() {
         el.addEventListener('click', function (e) {
             e.stopImmediatePropagation();
             const targetElement = el.closest('.dataset-el');
-            const originData = targetElement.dataset;
+            const originData = JSON.parse(JSON.stringify(targetElement.dataset));
 
             if (el.classList.contains('delete-btn')) {
-                deleteReadingBook(originData.id, targetElement);
+                handleReadingBook('D', originData, targetElement);
 
             } else {
-                saveReadingBook({
-                    id: originData.id || null,
-                    bookIsbn: targetElement.dataset.isbn,
-                    readingStatus: el.dataset.value,
-                    collectionId: originData.collectionId || null
-                }, targetElement);
+                originData['readingStatus'] = el.dataset.value;
+                handleReadingBook(originData.id ? 'U' : 'C', originData, targetElement);
             }
         });
     })
@@ -193,14 +170,11 @@ function setCollectionButtonEvent() {
         el.addEventListener('click', function (e) {
             e.stopImmediatePropagation();
             const targetElement = el.closest('.dataset-el');
-            const originData = targetElement.dataset;
+            const originData = JSON.parse(JSON.stringify(targetElement.dataset));
 
             if (el.classList.contains('delete-btn')) {
-                saveReadingBook({
-                    id: originData.id,
-                    readingStatus: originData.readingStatus,
-                    collectionId: null
-                }, targetElement);
+                originData['collectionId'] = null;
+                handleReadingBook('U', originData, targetElement);
 
             } else if (el.classList.contains('new-collection-modal-btn')) {
                 // 새 컬렉션 생성 모달 버튼
@@ -208,12 +182,9 @@ function setCollectionButtonEvent() {
                 loadHTML('/books/partials/modal-new-collection', target);
 
             } else {
-                saveReadingBook({
-                    id: originData.id || null,
-                    bookIsbn: targetElement.dataset.isbn,
-                    readingStatus: originData.readingStatus || null,
-                    collectionId: el.dataset.value
-                }, targetElement);
+                originData['collectionId'] = el.dataset.value;
+                originData['readingStatus'] ||= null; // Enum 객체로 받기 위해
+                handleReadingBook(originData.id ? 'U' : 'C', originData, targetElement);
             }
         });
     })

@@ -10,14 +10,14 @@
         <!-- 대시보드 -->
         <li class="menu-item" th:classappend="${page == 'dashboard' ? 'active' : ''}">
             <a th:href="@{/}" class="menu-link">
-                <div data-i18n="Dashboard1">대시보드 1</div>
+                <div data-i18n="Dashboard">대시보드</div>
             </a>
         </li>
 
         <!-- 마이페이지 -->
         <li class="menu-item" th:classappend="${#strings.startsWith(page, 'mypage') ? 'active' : ''}">
             <a th:href="@{/mypage/mypage}" class="menu-link">
-                <div data-i18n="Dashboard2">대시보드 2</div>
+                <div data-i18n="MyPage">마이페이지</div>
             </a>
         </li>
 

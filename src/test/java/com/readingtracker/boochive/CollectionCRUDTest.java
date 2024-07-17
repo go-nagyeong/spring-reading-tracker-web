@@ -26,7 +26,7 @@ public class CollectionCRUDTest {
                 .collectionName("test")
                 .build();
 
-        BookCollection savedCollection = service.saveCollection(collection);
+        BookCollection savedCollection = service.createCollection(collection);
 
         /* when, then */
         assertThat(savedCollection).isNotNull();
@@ -42,13 +42,13 @@ public class CollectionCRUDTest {
                 .collectionName("test")
                 .build();
 
-        BookCollection savedCollection = service.saveCollection(collection);
+        BookCollection createdCollection = service.createCollection(collection);
 
         BookCollection newCollection = BookCollection.builder()
-                .id(savedCollection.getId())
+                .id(createdCollection.getId())
                 .build();
         newCollection.updateCollectionName("test 변경");
-        BookCollection updatedCollection = service.saveCollection(newCollection);
+        BookCollection updatedCollection = service.updateCollection(createdCollection.getId(), newCollection);
 
         /* when, then */
         assertThat(updatedCollection).isNotNull();

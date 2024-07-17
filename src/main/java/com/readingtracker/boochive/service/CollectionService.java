@@ -29,19 +29,23 @@ public class CollectionService {
     }
 
     /**
-     * [C]R[U]D - CREATE/UPDATE
+     * [C]RUD - CREATE
      */
     @Transactional
-    public BookCollection saveCollection(BookCollection bookCollection) {
-        if (bookCollection.getId() != null) { // update
-            BookCollection existingBookCollection = collectionRepository.findById(bookCollection.getId()).orElseThrow();
+    public BookCollection createCollection(BookCollection bookCollection) {
+        return collectionRepository.save(bookCollection);
+    }
 
-            existingBookCollection.updateCollectionName(bookCollection.getCollectionName());
+    /**
+     * CR[U]D - UPDATE
+     */
+    @Transactional
+    public BookCollection updateCollection(Long id, BookCollection bookCollection) {
+        BookCollection existingBookCollection = collectionRepository.findById(id).orElseThrow();
 
-            return existingBookCollection;
-        }
+        existingBookCollection.updateCollectionName(bookCollection.getCollectionName());
 
-        return collectionRepository.save(bookCollection); // insert
+        return existingBookCollection;
     }
 
     /**

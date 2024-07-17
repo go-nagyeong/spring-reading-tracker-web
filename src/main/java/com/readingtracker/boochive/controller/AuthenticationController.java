@@ -28,7 +28,7 @@ import java.util.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+public class AuthenticationController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -38,7 +38,8 @@ public class UserController {
      * 회원가입
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterForm form, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterForm form,
+                                                                     BindingResult bindingResult) {
         // 추가 검증 (이메일 중복 확인, 비밀번호 확인 일치 여부)
         if (!bindingResult.hasFieldErrors("email")) {
             if (userService.findUserByEmail(form.getEmail()).isPresent()) {
@@ -65,7 +66,7 @@ public class UserController {
                 .password(form.getPassword())
                 .name(form.getUsername())
                 .build();
-        userService.saveUser(user);
+        userService.createUser(user);
 
         return ApiResponse.success("회원가입에 성공하였습니다.");
     }
@@ -74,7 +75,9 @@ public class UserController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginForm form, BindingResult bindingResult, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginForm form,
+                                                                  BindingResult bindingResult,
+                                                                  HttpServletResponse response) {
         // 유효성 검사 결과 전처리
         Map<String, String> errorMap = new LinkedHashMap<>();
         if (bindingResult.hasErrors()) {
@@ -113,7 +116,7 @@ public class UserController {
     }
 
     /**
-     * HttpOnly + Secure 쿠키 저장 메서드 (JWT 토큰 저장)
+     * (공통 메서드) HttpOnly + Secure 쿠키 저장 (JWT 토큰 저장)
      */
     private void setHttpOnlyCookie(String name, String value, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, value);
@@ -124,7 +127,7 @@ public class UserController {
     }
 
     /**
-     * 유효성 검사 결과 전처리 메서드
+     * (공통 메서드) 유효성 검사 결과 전처리
      */
     private Map<String, String> handleValidationErrors(BindingResult bindingResult) {
         // 유효성 검사 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)

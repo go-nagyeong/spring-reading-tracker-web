@@ -1,19 +1,20 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.ReadingBook;
-import com.readingtracker.boochive.repository.ReadingListRepository;
+import com.readingtracker.boochive.repository.ReadingBookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ReadingListService {
+public class ReadingBookService {
 
-    private final ReadingListRepository readingListRepository;
+    private final ReadingBookRepository readingListRepository;
 
     /**
      * C[R]UD - READ
@@ -39,20 +40,28 @@ public class ReadingListService {
     }
 
     /**
-     * [C]R[U]D - CREATE/UPDATE
+     * [C]RUD - CREATE
      */
     @Transactional
-    public ReadingBook saveReadingBook(ReadingBook readingBook) {
-        if (readingBook.getId() != null) { // update
-            ReadingBook existingReadingBook = readingListRepository.findById(readingBook.getId()).orElseThrow();
+    public ReadingBook createReadingBook(ReadingBook readingBook) {
+        return readingListRepository.save(readingBook);
+    }
 
+    /**
+     * CR[U]D - UPDATE
+     */
+    @Transactional
+    public ReadingBook updateReadingBook(Long id, ReadingBook readingBook) {
+        ReadingBook existingReadingBook = readingListRepository.findById(id).orElseThrow();
+
+        if (!existingReadingBook.getReadingStatus().equals(readingBook.getReadingStatus())) {
             existingReadingBook.updateReadingStatus(readingBook.getReadingStatus());
+        }
+        if (!Objects.equals(existingReadingBook.getCollectionId(), readingBook.getCollectionId())) {
             existingReadingBook.updateCollectionId(readingBook.getCollectionId());
-
-            return existingReadingBook;
         }
 
-        return readingListRepository.save(readingBook); // insert
+        return existingReadingBook;
     }
 
     /**

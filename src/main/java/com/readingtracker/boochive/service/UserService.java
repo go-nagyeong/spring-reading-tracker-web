@@ -30,34 +30,36 @@ public class UserService {
     }
 
     /**
-     * [C]R[U]D - CREATE/UPDATE
+     * [C]RUD - CREATE
      */
     @Transactional
-    public User saveUser(User user) {
+    public User createUser(User user) {
+        user.updatePassword(passwordEncoder.encode(user.getPassword())); // 비밀번호 해시 변환
+
+        return userRepository.save(user);
+    }
+
+    /**
+     * CR[U]D - UPDATE
+     */
+    @Transactional
+    public User updateUser(Long id, User user) {
+        User existingUser = userRepository.findById(id).orElseThrow();
+
         if (user.getPassword() != null) {
-            user.updatePassword(passwordEncoder.encode(user.getPassword())); // 비밀번호 해시 변환
+            existingUser.updatePassword(passwordEncoder.encode(user.getPassword()));
+        }
+        if (user.getName() != null) {
+            existingUser.updateProfile(
+                    user.getProfileImage(),
+                    user.getName(),
+                    user.getBirthdate(),
+                    user.getSex(),
+                    user.getPhoneNumber()
+            );
         }
 
-        if (user.getId() != null) { // update
-            User existingUser = userRepository.findById(user.getId()).orElseThrow();
-
-            if (user.getPassword() != null) {
-                existingUser.updatePassword(user.getPassword());
-            }
-            if (user.getName() != null) {
-                existingUser.updateProfile(
-                        user.getProfileImage(),
-                        user.getName(),
-                        user.getBirthdate(),
-                        user.getSex(),
-                        user.getPhoneNumber()
-                );
-            }
-
-            return existingUser;
-        }
-
-        return userRepository.save(user); // insert
+        return existingUser;
     }
 
     /**

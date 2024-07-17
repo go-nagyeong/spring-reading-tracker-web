@@ -4,7 +4,7 @@ import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.ReadingStatus;
 import com.readingtracker.boochive.service.CollectionService;
-import com.readingtracker.boochive.service.ReadingListService;
+import com.readingtracker.boochive.service.ReadingBookService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -16,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @Slf4j
-public class ReadingListCRUDTest {
+public class ReadingBookCRUDTest {
 
     @Autowired
-    private ReadingListService service;
+    private ReadingBookService service;
     @Autowired
     private CollectionService collectionService;
 
@@ -32,7 +32,7 @@ public class ReadingListCRUDTest {
                 .readingStatus(ReadingStatus.READING)
                 .build();
 
-        ReadingBook savedReadingBook = service.saveReadingBook(readingBook);
+        ReadingBook savedReadingBook = service.createReadingBook(readingBook);
 
         /* when, then */
         assertThat(savedReadingBook).isNotNull();
@@ -49,22 +49,22 @@ public class ReadingListCRUDTest {
                 .collectionName("test")
                 .build();
 
-        BookCollection savedCollection = collectionService.saveCollection(collection);
+        BookCollection createdCollection = collectionService.createCollection(collection);
 
         ReadingBook readingBook = ReadingBook.builder()
                 .userId(1L)
                 .bookIsbn("test")
-                .collectionId(savedCollection.getId())
+                .collectionId(createdCollection.getId())
                 .build();
 
-        ReadingBook savedReadingBook = service.saveReadingBook(readingBook);
+        ReadingBook savedReadingBook = service.createReadingBook(readingBook);
 
         /* when, then */
         assertThat(savedReadingBook).isNotNull();
         assertThat(savedReadingBook.getUserId()).isEqualTo(1L);
         assertThat(savedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(savedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.TO_READ);
-        assertThat(savedReadingBook.getCollectionId()).isEqualTo(savedCollection.getId());
+        assertThat(savedReadingBook.getCollectionId()).isEqualTo(createdCollection.getId());
     }
 
     @Test
@@ -75,30 +75,30 @@ public class ReadingListCRUDTest {
                 .collectionName("test")
                 .build();
 
-        BookCollection savedCollection = collectionService.saveCollection(collection);
+        BookCollection createdCollection = collectionService.createCollection(collection);
 
         ReadingBook readingBook = ReadingBook.builder()
                 .userId(1L)
                 .bookIsbn("test")
                 .readingStatus(ReadingStatus.READING)
-                .collectionId(savedCollection.getId())
+                .collectionId(createdCollection.getId())
                 .build();
 
-        ReadingBook savedReadingBook = service.saveReadingBook(readingBook);
+        ReadingBook createdReadingBook = service.createReadingBook(readingBook);
 
         ReadingBook newReadingBook = ReadingBook.builder()
-                .id(savedReadingBook.getId())
+                .id(createdReadingBook.getId())
                 .build();
         newReadingBook.updateReadingStatus(ReadingStatus.PAUSED);
         newReadingBook.updateCollectionId(readingBook.getCollectionId()); // 수정 필드가 아니더라도 기존 값 넣어줘야 함
-        ReadingBook updatedReadingBook = service.saveReadingBook(newReadingBook);
+        ReadingBook updatedReadingBook = service.updateReadingBook(createdReadingBook.getId(), newReadingBook);
 
         /* when, then */
         assertThat(updatedReadingBook).isNotNull();
         assertThat(updatedReadingBook.getUserId()).isEqualTo(1L);
         assertThat(updatedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(updatedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.PAUSED);
-        assertThat(updatedReadingBook.getCollectionId()).isEqualTo(savedCollection.getId());
+        assertThat(updatedReadingBook.getCollectionId()).isEqualTo(createdCollection.getId());
     }
 
     @Test
@@ -109,30 +109,30 @@ public class ReadingListCRUDTest {
                 .collectionName("test")
                 .build();
 
-        BookCollection savedCollection = collectionService.saveCollection(collection);
+        BookCollection createdCollection = collectionService.createCollection(collection);
 
         ReadingBook readingBook = ReadingBook.builder()
                 .userId(1L)
                 .bookIsbn("test")
                 .readingStatus(ReadingStatus.READING)
-                .collectionId(savedCollection.getId())
+                .collectionId(createdCollection.getId())
                 .build();
 
-        ReadingBook savedReadingBook = service.saveReadingBook(readingBook);
+        ReadingBook createdReadingBook = service.createReadingBook(readingBook);
 
         ReadingBook newReadingBook = ReadingBook.builder()
-                .id(savedReadingBook.getId())
+                .id(createdReadingBook.getId())
                 .build();
         newReadingBook.updateReadingStatus(readingBook.getReadingStatus()); // 수정 필드가 아니더라도 기존 값 넣어줘야 함
-        newReadingBook.updateCollectionId(savedCollection.getId());
-        ReadingBook updatedReadingBook = service.saveReadingBook(newReadingBook);
+        newReadingBook.updateCollectionId(createdCollection.getId());
+        ReadingBook updatedReadingBook = service.updateReadingBook(createdReadingBook.getId(), newReadingBook);
 
         /* when, then */
         assertThat(updatedReadingBook).isNotNull();
         assertThat(updatedReadingBook.getUserId()).isEqualTo(1L);
         assertThat(updatedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(updatedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.READING);
-        assertThat(updatedReadingBook.getCollectionId()).isEqualTo(savedCollection.getId());
+        assertThat(updatedReadingBook.getCollectionId()).isEqualTo(createdCollection.getId());
     }
 
 }

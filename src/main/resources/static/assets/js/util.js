@@ -50,6 +50,33 @@ function formToJson(data) {
 }
 
 /**
+ * 공통 API 응답 처리 함수
+ */
+function handleApiResponse(promise, onSuccess, onError = () => {}) {
+    promise
+        .then(response => {
+            const result = response.data;
+            onSuccess(result);
+            if (result.message) {
+                showToast(result.message, 'success');
+            }
+        })
+        .catch(error => {
+            console.error('axios 요청 오류:', error);
+
+            const result = error.response.data;
+            onError(result);
+            if (result.message) {
+                showToast(result.message, 'error');
+            }
+        })
+        .finally(() => {
+            globalLoading(false);
+            localLoading(false);
+        });
+}
+
+/**
  * HTML 코드 동적 로드 함수
  */
 function loadHTML(url, targetElement, callback = null) {

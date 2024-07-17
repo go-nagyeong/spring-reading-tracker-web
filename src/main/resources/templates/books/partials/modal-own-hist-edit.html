@@ -2,7 +2,7 @@
     <h5 class="modal-title">구매/대여 이력 기록</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body" id="ownHistoryModal">
     <div class="list-group list-group-horizontal text-center" role="tablist">
         <a class="list-group-item list-group-item-md list-group-item-action active" data-bs-toggle="list"
            href="#purchaseHistItem" aria-selected="false" role="tab" tabindex="-1">구매이력</a>
@@ -11,7 +11,7 @@
     </div>
 
     <div class="tab-content p-0 mt-3">
-        <div class="tab-pane fade active show" id="purchaseHistItem" role="tabpanel">
+        <div class="tab-pane fade active show" id="purchaseHistItem" role="tabpanel" data-target="purchase">
             <form id="purchaseHistForm" class="history-form">
                 <input type="hidden" name="id">
                 <input type="hidden" name="bookIsbn">
@@ -41,7 +41,7 @@
             </form>
         </div>
 
-        <div class="tab-pane fade" id="rentalHistItem" role="tabpanel">
+        <div class="tab-pane fade" id="rentalHistItem" role="tabpanel" data-target="rental">
             <form id="rentalHistForm" class="history-form">
                 <input type="hidden" name="id">
                 <input type="hidden" name="bookIsbn">
@@ -78,39 +78,34 @@
 
 <script>
     document.getElementById('saveHistoryBtn').addEventListener('click', function(event) {
-        saveHistory();
+        saveOwnHistory();
     })
     document.querySelectorAll('.history-form').forEach(el => {
         el.addEventListener('submit', function(event) {
             event.preventDefault();
-            saveHistory();
+            saveOwnHistory();
         })
     })
 
-    async function saveHistory() {
+    function saveOwnHistory() {
         globalLoading(true);
 
-        const purchaseForm = document.getElementById('purchaseHistForm');
-        const rentalForm = document.getElementById('rentalHistForm');
-        const data = {
-            purchase: formToJson(new FormData(purchaseForm)),
-            rental: formToJson(new FormData(rentalForm))
+        // 폼 데이터 전처리 (활성화되어 있는 탭의 폼만 저장)
+        const activeTab = document.querySelector('#ownHistoryModal .tab-pane.active');
+        const form = activeTab.querySelector('form');
+        const data = formToJson(new FormData(form));
+
+        const target = activeTab.dataset.target; // purchase / rental
+
+        const promise = data['id']
+            ? axios.put(`/api/own-histories/${target}/${data['id']}`, data)
+            : axios.post(`/api/own-histories/${target}`, data);
+
+        const onSuccess = (result) => {
+            closeUIComponents();
+            showToast(result.message, 'success');
         };
 
-        axios.post(`/api/books/${bookIsbn}/own-hist`, data)
-            .then(response => {
-                const result = response.data;
-                if (result.success) {
-                    closeUIComponents();
-                    showToast(result.message, 'success');
-                } else {
-                    showToast(result.message, 'error');
-                }
-                globalLoading(false);
-            })
-            .catch(error => {
-                console.error('axios 요청 오류:', error);
-                globalLoading(false);
-            });
+        handleApiResponse(promise, onSuccess);
     }
 </script>

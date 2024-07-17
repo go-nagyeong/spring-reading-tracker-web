@@ -2,11 +2,10 @@ package com.readingtracker.boochive.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Getter
-@Setter
 @RequiredArgsConstructor
 public class ApiResponse<T> {
 
@@ -23,10 +22,10 @@ public class ApiResponse<T> {
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> failure(String message) {
-        return  ResponseEntity.ok(new ApiResponse<>(false, message, null));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(false, message, null));
     }
 
     public static <T> ResponseEntity<ApiResponse<T>> failure(String message, T data) {
-        return  ResponseEntity.ok(new ApiResponse<>(false, message, data));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(false, message, data));
     }
 }

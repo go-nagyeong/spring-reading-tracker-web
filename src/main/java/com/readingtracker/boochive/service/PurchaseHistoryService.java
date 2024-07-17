@@ -28,23 +28,28 @@ public class PurchaseHistoryService {
     }
 
     /**
-     * [C]R[U]D - CREATE/UPDATE
+     * [C]RUD - CREATE
      */
     @Transactional
-    public PurchaseHistory saveHistory(PurchaseHistory history) {
-        if (history.getId() != null) { // update
-            PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(history.getId()).orElseThrow();
+    public PurchaseHistory createHistory(PurchaseHistory history) {
+        return purchaseHistoryRepository.save(history);
+    }
 
-            existingPurchaseHistory.updateHistory(
-                    history.getPurchaseDate(),
-                    history.getPurchaseFrom(),
-                    history.getPrice(),
-                    history.getMemo()
-            );
+    /**
+     * CR[U]D - UPDATE
+     */
+    @Transactional
+    public PurchaseHistory updateHistory(Long id, PurchaseHistory history) {
+        PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(id).orElseThrow();
 
-            return existingPurchaseHistory;
-        }
-        return purchaseHistoryRepository.save(history); // insert
+        existingPurchaseHistory.updateHistory(
+                history.getPurchaseDate(),
+                history.getPurchaseFrom(),
+                history.getPrice(),
+                history.getMemo()
+        );
+
+        return existingPurchaseHistory;
     }
 
     /**
