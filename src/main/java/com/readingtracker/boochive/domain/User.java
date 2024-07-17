@@ -10,9 +10,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -45,7 +45,7 @@ public class User implements UserDetails {
     @ColumnDefault("0")
     private Integer sex;
 
-    private Date birthdate;
+    private LocalDate birthdate;
 
     @Column(length = 15)
     private String phoneNumber;
@@ -70,7 +70,7 @@ public class User implements UserDetails {
     /**
      * 프로필 정보 변경
      */
-    public void updateProfile(String profileImage, String name, Date birthdate, Integer sex, String phoneNumber) {
+    public void updateProfile(String profileImage, String name, LocalDate birthdate, Integer sex, String phoneNumber) {
         this.profileImage = profileImage;
         this.name = name;
         this.birthdate = birthdate;

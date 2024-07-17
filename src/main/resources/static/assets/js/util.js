@@ -220,3 +220,9 @@ function closeUIComponents() {
     }
 }
 
+/**
+ * overflow hidden 영역에서 콘텐츠가 영역을 넘어갔는지 체크하는 함수
+ */
+function checkOverflow(element) {
+    return element.scrollHeight > element.clientHeight
+}

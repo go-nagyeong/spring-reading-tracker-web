@@ -9,54 +9,108 @@
         <a class="list-group-item list-group-item-md list-group-item-action" data-bs-toggle="list"
            href="#rentalHistItem" aria-selected="true" role="tab">대여이력</a>
     </div>
-    <form id="bookHistForm">
-        <div class="tab-content p-0 mt-3">
-            <div class="tab-pane fade active show" id="purchaseHistItem" role="tabpanel">
+
+    <div class="tab-content p-0 mt-3">
+        <div class="tab-pane fade active show" id="purchaseHistItem" role="tabpanel">
+            <form id="purchaseHistForm" class="history-form">
+                <input type="hidden" name="id">
+                <input type="hidden" name="bookIsbn">
+
+                <div class="text-end" style="margin-bottom: -0.8rem;">
+                    <input type="reset" class="btn btn-sm btn-outline-danger" value="초기화">
+                </div>
                 <div class="mb-2">
                     <label class="form-label">구매일자</label>
-                    <input type="date" class="form-control"
-                           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                    <input type="date" class="form-control" name="purchaseDate">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">구매처</label>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" name="purchaseFrom">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">가격</label>
                     <div class="input-group">
                         <span class="input-group-text">₩</span>
-                        <input type="number" class="form-control">
+                        <input type="number" class="form-control" name="price">
                     </div>
                 </div>
                 <div class="mb-2">
                     <label class="form-label">메모</label>
-                    <textarea class="form-control" rows="2"></textarea>
+                    <textarea class="form-control" rows="2" name="memo"></textarea>
                 </div>
-            </div>
-            <div class="tab-pane fade" id="rentalHistItem" role="tabpanel">
+            </form>
+        </div>
+
+        <div class="tab-pane fade" id="rentalHistItem" role="tabpanel">
+            <form id="rentalHistForm" class="history-form">
+                <input type="hidden" name="id">
+                <input type="hidden" name="bookIsbn">
+
+                <div class="text-end" style="margin-bottom: -0.8rem;">
+                    <input type="reset" class="btn btn-sm btn-outline-danger" value="초기화">
+                </div>
                 <div class="mb-2">
                     <label class="form-label">대여일자</label>
-                    <input type="date" class="form-control"
-                           th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                    <input type="date" class="form-control" name="rentalDate">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">반납기한</label>
-                    <input type="date" class="form-control">
+                    <input type="date" class="form-control" name="returnDate">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">대여처</label>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" name="rentalFrom">
                 </div>
                 <div class="mb-2">
                     <label class="form-label">메모</label>
-                    <textarea class="form-control" rows="2"></textarea>
+                    <textarea class="form-control" rows="2" name="memo"></textarea>
                 </div>
-            </div>
+            </form>
         </div>
-
-    </form>
+    </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
-    <button type="button" class="btn btn-primary">저장</button>
+    <div>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary" id="saveHistoryBtn">저장</button>
+    </div>
 </div>
+
+<script>
+    document.getElementById('saveHistoryBtn').addEventListener('click', function(event) {
+        saveHistory();
+    })
+    document.querySelectorAll('.history-form').forEach(el => {
+        el.addEventListener('submit', function(event) {
+            event.preventDefault();
+            saveHistory();
+        })
+    })
+
+    async function saveHistory() {
+        globalLoading(true);
+
+        const purchaseForm = document.getElementById('purchaseHistForm');
+        const rentalForm = document.getElementById('rentalHistForm');
+        const data = {
+            purchase: formToJson(new FormData(purchaseForm)),
+            rental: formToJson(new FormData(rentalForm))
+        };
+
+        axios.post(`/api/books/${bookIsbn}/own-hist`, data)
+            .then(response => {
+                const result = response.data;
+                if (result.success) {
+                    closeUIComponents();
+                    showToast(result.message, 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+                globalLoading(false);
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+                globalLoading(false);
+            });
+    }
+</script>

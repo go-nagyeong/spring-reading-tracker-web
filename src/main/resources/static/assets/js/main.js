@@ -236,6 +236,13 @@ let menu, animate;
         }
     });
 
+    // 버튼 클릭 후 자동 focus out(blur) 되게
+    document.addEventListener('click', function (event) {
+        if (event.target.closest('button')) {
+            event.target.closest('button').blur();
+        }
+    })
+
     // '서비스 준비중' alert 처리
     document.addEventListener('DOMContentLoaded', function (event) {
         document.querySelectorAll('.under-construction').forEach(el => {

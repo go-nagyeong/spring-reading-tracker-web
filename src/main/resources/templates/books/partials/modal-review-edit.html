@@ -6,6 +6,7 @@
     <form id="reviewEditForm">
         <input type="hidden" name="id">
         <input type="hidden" name="bookIsbn">
+
         <div class="rating-grade mb-3">
             <select class="star-rating" data-value="" data-range="10"></select>
         </div>
@@ -14,9 +15,12 @@
         </div>
     </form>
 </div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
-    <button type="button" class="btn btn-primary" id="saveReviewBtn">저장</button>
+<div class="modal-footer justify-content-between">
+    <button type="button" class="btn btn-outline-danger" id="deleteReviewBtn">삭제</button>
+    <div>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary" id="saveReviewBtn">저장</button>
+    </div>
 </div>
 
 <script>
@@ -26,6 +30,9 @@
     document.getElementById('reviewEditForm').addEventListener('submit', function(event) {
         event.preventDefault();
         saveReview();
+    })
+    document.getElementById('deleteReviewBtn').addEventListener('click', function(event) {
+        deleteReview();
     })
 
     async function saveReview() {
@@ -45,6 +52,28 @@
                     if (newReview) {
                         loadReviewData();
                     }
+                    closeUIComponents();
+                    showToast(result.message, 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+                globalLoading(false);
+            })
+            .catch(error => {
+                console.error('axios 요청 오류:', error);
+                globalLoading(false);
+            });
+    }
+
+    function deleteReview() {
+        globalLoading(true);
+
+        const id = document.querySelector('#reviewEditForm [name=id]').value;
+        axios.delete('/api/books/reviews/' + id)
+            .then(response => {
+                const result = response.data;
+                if (result.success) {
+                    loadReviewData();
                     closeUIComponents();
                     showToast(result.message, 'success');
                 } else {

@@ -87,4 +87,20 @@ public class BookReviewController {
 
         return ApiResponse.success("리뷰가 저장되었습니다.", data);
     }
+
+    /**
+     * 리뷰 삭제
+     */
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Review>>> deleteReview(@PathVariable Long id) {
+        try {
+            reviewService.deleteReviewById(id);
+        } catch (DataAccessException dae) {
+            return ApiResponse.failure("리뷰를 삭제하는 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            return ApiResponse.failure("리뷰를 삭제하는 중 알 수 없는 오류가 발생했습니다.");
+        }
+
+        return ApiResponse.success("리뷰가 삭제되었습니다.");
+    }
 }

@@ -54,6 +54,7 @@
             event.stopImmediatePropagation();
             playOrPause();
             window.applyTimerShortcutOnline();
+            el.blur();
         });
     }
 
@@ -64,6 +65,7 @@
         if (event.target.id === 'stopBtn' || event.target.id === 'closeBtn') {
             window.stopwatch.reset();
             window.applyTimerShortcutOnline();
+            event.target.blur();
         }
     });
 </script>
