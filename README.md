@@ -1,6 +1,8 @@
 # 📚 북카이브(BOOCHIVE) &mdash; 독서 기록 웹 플랫폼
 ### 독서 활동을 기록하고 관리할 수 있는 웹 플랫폼
-[[Notion] 프로젝트 일정 관리](https://ngkim.notion.site/Side-Project-38e6d223dcdb48e79b2316df505f4803?pvs=4)
+[[Notion] 프로젝트 일정 관리](https://ngkim.notion.site/Side-Project-38e6d223dcdb48e79b2316df505f4803?pvs=4)  
+
+[[Notion] 포트폴리오](https://ngkim.notion.site/Boochive-Book-Archive-6dcf75f8d44c4c32a9159b05122b2943?pvs=4)
 
 &nbsp;
 
