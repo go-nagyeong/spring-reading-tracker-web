@@ -101,7 +101,7 @@ function loadHTML(url, targetElement, callback = null) {
 function showToast(content, state = 'info') {
     const toastEl = document.querySelector('#toastCont');
     const toastBody = toastEl.querySelector('.toast-body');
-    toastEl.classList.add(state);
+    toastEl.dataset.status = state;
     toastBody.innerHTML = content;
 
     const toastBootstrap = new bootstrap.Toast(toastEl)
@@ -232,7 +232,7 @@ function setProfileImage(profileImage, element) {
 }
 
 /**
- * 모달, 드롭다운 close 함수 (서버 작업 success 후 일괄적으로 닫기 위해)
+ * 모달, 드롭다운, 오프캔버스 close 함수 (서버 작업 success 후 일괄적으로 닫기 위해)
  */
 function closeUIComponents() {
     const modalEl = document.querySelector('.modal.show');
@@ -244,6 +244,11 @@ function closeUIComponents() {
     if (dropdownEl) {
         const dropdownInstance = bootstrap.Dropdown.getInstance(dropdownEl.previousElementSibling);
         dropdownInstance.hide();
+    }
+    const offcanvasEl = document.querySelector('.offcanvas.show');
+    if (offcanvasEl) {
+        const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        offcanvasInstance.hide();
     }
 }
 

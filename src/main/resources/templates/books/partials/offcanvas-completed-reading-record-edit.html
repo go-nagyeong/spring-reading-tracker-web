@@ -1,0 +1,99 @@
+<div class="offcanvas-header">
+    <h5 class="offcanvas-title">완독일 변경</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body">
+    <div class="content mb-5" id="recordListWrap">
+        <div class="record-unit mb-3 template-tag">
+            <form>
+                <input type="hidden" name="id" disabled>
+                <input type="hidden" name="bookIsbn" disabled>
+                <input type="hidden" name="action" value="U" disabled>
+
+                <div class="label-group">
+                    <label class="form-label"><em class="read-num"></em>번째 독서</label>
+                    <div>
+                        <a href="javascript:void(0);" class="edit-btn me-1">
+                            <i class="bx bx-pencil"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="edit-btn del-action">
+                            <i class="bx bx-trash"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input class="form-control" type="date" name="startDate" disabled>
+                    <span class="input-group-text fw-medium fs-5">~</span>
+                    <input class="form-control" type="date" name="endDate" disabled>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="offcanvas-footer">
+    <button type="button" class="btn btn-primary mb-2 w-100" id="saveRecordBtn">저장</button>
+    <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="offcanvas">
+        취소
+    </button>
+</div>
+
+<script>
+    /**
+     * 독서 이력 최종 저장
+     */
+    document.getElementById('saveRecordBtn').addEventListener('click', function(event) {
+        handleReadingRecord();
+    })
+    document.querySelectorAll('#recordListWrap form').forEach(el => {
+        el.addEventListener('submit', function(event) {
+            event.preventDefault();
+        })
+    })
+
+    function handleReadingRecord() {
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const updateList = [];
+        const deleteList = [];
+        document.querySelectorAll('#recordListWrap form').forEach(el => {
+            const data = formToJson(new FormData(el));
+            if (data.id) {
+                if (data.action === 'U') {
+                    updateList.push(data);
+                } else { // 'D'
+                    deleteList.push(data);
+                }
+            }
+        })
+
+        if (updateList.length < 1 && deleteList.length < 1) {
+            globalLoading(false);
+            showToast('저장할 변경사항이 없습니다.', 'error');
+            return false;
+        }
+
+        const data = {
+            updateList: updateList,
+            deleteList: deleteList,
+        };
+        const promise = axios.post(`/api/reading-records/batch`, data);
+
+        const onSuccess = (result) => {
+            const remainingRecords = result.data;
+            let readingStatus = 'READ';
+
+            // 이력이 모두 삭제 됐을 경우, 자동으로 독서 상태 변경됨
+            if (remainingRecords.length < 1) {
+                readingStatus = 'TO_READ';
+                updateReadingListButtonUI(readingStatus, document.querySelector('.dataset-el'));
+            }
+
+            updateReadingCarouselCardUI(readingStatus);
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+</script>

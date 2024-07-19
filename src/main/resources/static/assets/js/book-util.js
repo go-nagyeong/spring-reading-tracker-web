@@ -198,15 +198,51 @@ function updateReadingCarouselCardUI(readingStatus) {
     if (carousel) {
         const carouselInner = carousel.querySelector('.carousel-inner');
         carousel.style.display = 'block';
-        if (readingStatus === 'READING') {
-            loadHTML('/books/partials/carousel-reading-status-card', carouselInner);
-        } else if (readingStatus === 'READ') {
-            loadHTML('/books/partials/carousel-read-status-card', carouselInner);
+
+        if (readingStatus === 'READING' || readingStatus === 'READ') {
+            let url, callback = null;
+            if (readingStatus === 'READING') {
+                callback = () => setReadingRecordCardData();
+                url = '/books/partials/carousel-reading-status-card';
+            } else {
+                callback = () => setReadRecordCardData();
+                url = '/books/partials/carousel-read-status-card';
+            }
+            loadHTML(url, carouselInner, callback);
         } else {
             carousel.style.display = 'none';
         }
     }
 }
+// (위 Carousel 카드 콘텐츠) 최근 독서 이력
+function setReadingRecordCardData() {
+    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest`);
+
+    const onSuccess = (result) => {
+        const latestReadingRecord = result.data.latestReadingRecord;
+        const cardEl = document.getElementById('readingDDayCard');
+        cardEl.querySelector('.start-date').textContent = latestReadingRecord.startDate;
+        cardEl.querySelector('.d-day').textContent = latestReadingRecord.dday;
+    }
+
+    handleApiResponse(promise, onSuccess);
+}
+// (위 Carousel 카드 콘텐츠) 완독 독서 이력
+function setReadRecordCardData() {
+    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/completed`);
+
+    const onSuccess = (result) => {
+        const completedReadingRecordList = result.data.completedReadingRecordList;
+        const latestRecord = completedReadingRecordList[completedReadingRecordList.length - 1]
+        const cardEl = document.getElementById('readDateCard');
+        cardEl.querySelector('.start-date').textContent = latestRecord.startDate;
+        cardEl.querySelector('.end-date').textContent = latestRecord.endDate;
+        cardEl.querySelector('.record-cnt').textContent = completedReadingRecordList.length;
+    }
+
+    handleApiResponse(promise, onSuccess);
+}
+
 
 /**
  * 책 통계 데이터 업데이트 (독자 수, 리뷰 수, 평균 평점)

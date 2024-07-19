@@ -1,19 +1,24 @@
 <div class="carousel-inner-top-bar">
     <i class="bx bxs-bookmark fs-2"></i>
 </div>
-<!-- 이전 독서 기간 + 기록 변경 버튼 -->
-<div class="carousel-item active">
-    <a href="#" id="readingDateEditCanvasBtn" data-bs-toggle="offcanvas"
-       data-bs-target="#offcanvasCont" aria-controls="offcanvasCont">
+
+<!-- 최근 독서 기간 및 독서 횟수 + 완독 이력 변경 버튼 -->
+<div class="carousel-item active" id="readDateCard">
+    <a href="javascript:void(0);" id="readDateEditBtn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCont"
+       aria-controls="offcanvasCont">
         <p class="text-muted">
-            <small>2023. 6. 1 ~ 2023. 6. 28</small>
+            <small>
+                <em class="start-date"><!-- 데이터 동적 로드 --></em>
+                ~
+                <em class="end-date"><!-- 데이터 동적 로드 --></em>
+            </small>
             <i class="bx bx-pencil bx-xxs"></i>
         </p>
         <p class="text-center">
-            <em class="text-primary fw-medium fs-4">1</em> 번 읽었습니다.
+            <em class="text-primary fw-medium fs-4 record-cnt"><!-- 데이터 동적 로드 --></em> 번 읽었습니다.
         </p>
         <p class="text-center text-muted">
-            <small>탭해서 완독일 변경</small>
+            <small>탭해서 완독 이력 변경</small>
         </p>
     </a>
 </div>

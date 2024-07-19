@@ -353,7 +353,30 @@ input[type=color]::-moz-color-swatch {
 }
 
 /**
- * ---- Bootstrap Component 4. Popover -----------------------
+ * ---- Bootstrap Component 4. Offcanvas -----------------------
+ */
+.offcanvas-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+}
+.offcanvas-footer {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--bs-offcanvas-padding-y) var(--bs-offcanvas-padding-x);
+    /*padding: calc(var(--bs-modal-padding) - var(--bs-modal-footer-gap) * 0.5);*/
+    /*background-color: var(--bs-modal-footer-bg);*/
+    /*border-top: var(--bs-modal-footer-border-width) solid var(--bs-modal-footer-border-color);*/
+    /*border-bottom-right-radius: var(--bs-modal-inner-border-radius);*/
+    /*border-bottom-left-radius: var(--bs-modal-inner-border-radius);*/
+}
+
+/**
+ * ---- Bootstrap Component 5. Popover -----------------------
  */
 .popover {
     --bs-popover-font-size: 0.875rem;
@@ -384,7 +407,7 @@ input[type=color]::-moz-color-swatch {
 }
 
 /**
- * ---- Bootstrap Component 5. Spinner -----------------------
+ * ---- Bootstrap Component 6. Spinner -----------------------
  */
 .loading-overlay {
     position: fixed;
@@ -421,7 +444,7 @@ input[type=color]::-moz-color-swatch {
 }
 
 /**
- * ---- Bootstrap Component 6. Toast -----------------------
+ * ---- Bootstrap Component 7. Toast -----------------------
  */
 .toast {
     --bs-toast-padding-x: 0.8rem;
@@ -498,29 +521,29 @@ input[type=color]::-moz-color-swatch {
     font-size: 0.875rem;
 }
 
-.info.toast, .info.bs-toast {
+.toast[data-status=info] {
     --bs-toast-color: var(--bs-info);
     --bs-toast-icon: '\edf4';
     --bs-toast-title: '알림';
 }
-.success.toast, .success.bs-toast {
+.toast[data-status=success] {
     --bs-toast-color: var(--bs-success);
     --bs-toast-icon: '\ed31';
     --bs-toast-title: '성공';
 }
-.error.toast, .error.bs-toast {
+.toast[data-status=error] {
     --bs-toast-color: var(--bs-danger);
     --bs-toast-icon: '\ef06';
     --bs-toast-title: '실패';
 }
-.warning.toast, .warning.bs-toast {
+.toast[data-status=warning] {
     --bs-toast-color: var(--bs-warning);
     --bs-toast-icon: '\eda4';
     --bs-toast-title: '경고';
 }
 
 /**
- * ---- Bootstrap Component 7. Tooltip -----------------------
+ * ---- Bootstrap Component 8. Tooltip -----------------------
  */
 .tooltip {
     --bs-tooltip-bg: var(--bs-primary);
