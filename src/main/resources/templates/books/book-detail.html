@@ -578,7 +578,7 @@
 
         const onSuccess = (result) => {
             const review = result.data.review;
-            const modalForm = document.getElementById('reviewEditForm');
+            const modalForm = document.getElementById('reviewForm');
             const starRatingEl = modalForm.querySelector('.star-rating');
 
             reviewSimpleEditor = new SimpleEditor('editorjs'); // 에디터 플러그인 초기화

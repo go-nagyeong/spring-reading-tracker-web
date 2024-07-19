@@ -2,8 +2,8 @@
     <h5 class="modal-title">내 리뷰 수정</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
-    <form id="reviewEditForm">
+<form id="reviewForm">
+    <div class="modal-body">
         <input type="hidden" name="id">
         <input type="hidden" name="bookIsbn">
 
@@ -13,21 +13,21 @@
         <div class="form-border overflow-auto" style="height: 20vh;">
             <div id="editorjs"></div>
         </div>
-    </form>
-</div>
-<div class="modal-footer justify-content-between">
-    <button type="button" class="btn btn-outline-danger" id="deleteReviewBtn">삭제</button>
-    <div>
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
-        <button type="button" class="btn btn-primary" id="saveReviewBtn">저장</button>
     </div>
-</div>
+    <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-danger" id="deleteReviewBtn">삭제</button>
+        <div>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+            <button type="submit" class="btn btn-primary">저장</button>
+        </div>
+    </div>
+</form>
 
 <script>
-    document.getElementById('saveReviewBtn').addEventListener('click', function(event) {
-        handleReview();
-    })
-    document.getElementById('reviewEditForm').addEventListener('submit', function(event) {
+    /**
+     * 리뷰 작성
+     */
+    document.getElementById('reviewForm').addEventListener('submit', function(event) {
         event.preventDefault();
         handleReview();
     })
@@ -39,7 +39,7 @@
         globalLoading(true);
 
         // 폼 데이터 전처리
-        const form = document.getElementById('reviewEditForm');
+        const form = document.getElementById('reviewForm');
         const data = formToJson(new FormData(form));
         data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
         await reviewSimpleEditor.save().then(result => data['reviewText'] = result);

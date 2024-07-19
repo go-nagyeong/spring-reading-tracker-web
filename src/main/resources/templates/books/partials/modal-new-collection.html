@@ -2,30 +2,27 @@
     <h5 class="modal-title">새 컬렉션 생성</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
-    <form id="newCollectionForm">
+<form id="collectionForm">
+    <div class="modal-body">
         <input type="text" class="form-control" id="collectionName" name="collectionName" placeholder="컬렉션 이름">
-    </form>
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
-    <button type="button" class="btn btn-primary" id="newCollectionBtn">저장</button>
-</div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
+        <button type="submit" class="btn btn-primary">저장</button>
+    </div>
+</form>
 
 <script>
     /**
      * 컬렉션 추가
      */
-    document.getElementById('newCollectionBtn').addEventListener('click', function(event) {
-        createCollection();
-    })
-    document.getElementById('newCollectionForm').addEventListener('submit', function(event) {
+    document.getElementById('collectionForm').addEventListener('submit', function(event) {
         event.preventDefault();
         createCollection();
     })
 
     function createCollection() {
-        const form = document.getElementById('newCollectionForm');
+        const form = document.getElementById('collectionForm');
 
         const promise = axios.post('/api/collections', formToJson(new FormData(form)));
 

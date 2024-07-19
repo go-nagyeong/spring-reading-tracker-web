@@ -2,24 +2,21 @@
     <h5 class="modal-title">독서 이력 수정</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
-    <form id="readingRecordForm">
+<form id="readingRecordForm">
+    <div class="modal-body">
         <input type="hidden" name="id">
         <input type="date" class="form-control" id="startDate" name="startDate">
-    </form>
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
-    <button type="button" class="btn btn-primary" id="saveRecordBtn">저장</button>
-</div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="submit" class="btn btn-primary">저장</button>
+    </div>
+</form>
 
 <script>
     /**
      * 독서 이력 수정
      */
-    document.getElementById('saveRecordBtn').addEventListener('click', function(event) {
-        handleReadingRecord();
-    })
     document.getElementById('readingRecordForm').addEventListener('submit', function(event) {
         event.preventDefault();
         handleReadingRecord();

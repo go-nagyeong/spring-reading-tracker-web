@@ -13,10 +13,9 @@ public interface ReviewMapper {
     ReviewMapper INSTANCE = Mappers.getMapper(ReviewMapper.class);
 
     @Mappings({
-        @Mapping(target = "id", source = "id"),
-        @Mapping(target = "reviewerId", expression = "java(review.getUser().getId())"),
-        @Mapping(target = "reviewerName", expression = "java(review.getUser().getName())"),
-        @Mapping(target = "reviewerProfile", expression = "java(review.getUser().getProfileImage())")
+        @Mapping(target = "reviewerId", source = "user.id"),
+        @Mapping(target = "reviewerName", source = "user.name"),
+        @Mapping(target = "reviewerProfile", source = "user.profileImage")
     })
     ReviewDto toDto(Review review);
 }
