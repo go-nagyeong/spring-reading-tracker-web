@@ -64,7 +64,6 @@
         const onSuccess = (result) => {
             loadReviewData();
             closeUIComponents();
-            showToast(result.message, 'success');
         };
 
         handleApiResponse(promise, onSuccess);

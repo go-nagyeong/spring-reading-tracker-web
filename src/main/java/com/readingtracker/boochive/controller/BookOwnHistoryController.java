@@ -3,7 +3,6 @@ package com.readingtracker.boochive.controller;
 import com.readingtracker.boochive.domain.PurchaseHistory;
 import com.readingtracker.boochive.domain.RentalHistory;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.OwnHistoryDto;
 import com.readingtracker.boochive.service.PurchaseHistoryService;
 import com.readingtracker.boochive.service.RentalHistoryService;
 import com.readingtracker.boochive.util.ApiResponse;
