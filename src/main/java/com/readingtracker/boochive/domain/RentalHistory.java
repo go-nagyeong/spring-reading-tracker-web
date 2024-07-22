@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -24,8 +25,10 @@ public class RentalHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
     @Column(length = 20, nullable = false)
     private String bookIsbn;
@@ -49,8 +52,8 @@ public class RentalHistory {
     /**
      * 사용자 변경
      */
-    public void updateUserId(Long userId) {
-        this.userId = userId;
+    public void updateUser(User user) {
+        this.user = user;
     }
 
     /**

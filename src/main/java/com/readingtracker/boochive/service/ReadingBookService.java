@@ -97,7 +97,7 @@ public class ReadingBookService {
         if (readingBook.getReadingStatus().equals(ReadingStatus.READING)) { // 읽는 중
             // 금일자가 독서시작일인 이력 찾기
             readingRecordService
-                    .findReadingRecordByUserAndBookAndStartDate(readingBook.getUserId(), readingBook.getBookIsbn(), today)
+                    .findReadingRecordByUserAndBookAndStartDate(readingBook.getUser().getId(), readingBook.getBookIsbn(), today)
                     .ifPresentOrElse(
                             record -> {
                                 // 이미 있는 경우, 완독일만 초기화
@@ -107,7 +107,7 @@ public class ReadingBookService {
                             () -> {
                                 // 없는 경우, 금일자를 독서시작일로 새로 생성
                                 ReadingRecord newReadingRecord = ReadingRecord.builder()
-                                        .userId(readingBook.getUserId())
+                                        .user(readingBook.getUser())
                                         .bookIsbn(readingBook.getBookIsbn())
                                         .startDate(today)
                                         .build();
@@ -118,7 +118,7 @@ public class ReadingBookService {
         } else if (readingBook.getReadingStatus().equals(ReadingStatus.READ)) { // 읽음
             // 가장 최근 독서 이력 찾기
             readingRecordService
-                    .findLatestReadingRecordByUserAndBook(readingBook.getUserId(), readingBook.getBookIsbn())
+                    .findLatestReadingRecordByUserAndBook(readingBook.getUser().getId(), readingBook.getBookIsbn())
                     .ifPresentOrElse(
                             record -> {
                                 // 있는 경우, 완독일을 금일자로 업데이트
@@ -128,7 +128,7 @@ public class ReadingBookService {
                             () -> {
                                 // 없는 경우, 금일자를 독서시작일/완독일로 새로 생성
                                 ReadingRecord newReadingRecord = ReadingRecord.builder()
-                                        .userId(readingBook.getUserId())
+                                        .user(readingBook.getUser())
                                         .bookIsbn(readingBook.getBookIsbn())
                                         .startDate(today)
                                         .endDate(today)

@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,8 +21,10 @@ public class BookCollection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
     @Column(nullable = false)
     private String collectionName;
@@ -37,8 +40,8 @@ public class BookCollection {
     /**
      * 사용자 변경
      */
-    public void updateUserId(Long userId) {
-        this.userId = userId;
+    public void updateUser(User user) {
+        this.user = user;
     }
 
     /**

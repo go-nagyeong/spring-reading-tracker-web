@@ -24,7 +24,7 @@ public class CollectionController {
                                                                         @AuthenticationPrincipal User user) {
         validateCollection(bookCollection);
 
-        bookCollection.updateUserId(user.getId()); // 사용자 ID 세팅
+        bookCollection.updateUser(user); // 사용자 ID 세팅
         BookCollection savedCollection = collectionService.createCollection(bookCollection);;
 
         return ApiResponse.success("컬렉션이 생성되었습니다.", savedCollection);

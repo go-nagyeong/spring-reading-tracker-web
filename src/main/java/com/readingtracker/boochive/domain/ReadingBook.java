@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -24,8 +25,10 @@ public class ReadingBook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
     @Column(length = 20, nullable = false)
     private String bookIsbn;
@@ -55,8 +58,8 @@ public class ReadingBook {
     /**
      * 사용자 변경
      */
-    public void updateUserId(Long userId) {
-        this.userId = userId;
+    public void updateUser(User user) {
+        this.user = user;
     }
 
     /**

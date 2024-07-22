@@ -61,7 +61,7 @@ public class ReadingRecordController {
     @PostMapping
     public ResponseEntity<ApiResponse<ReadingRecord>> createReadingRecord(@RequestBody ReadingRecord readingRecord,
                                                                           @AuthenticationPrincipal User user) {
-        readingRecord.updateUserId(user.getId()); // 사용자 ID 세팅
+        readingRecord.updateUser(user); // 사용자 ID 세팅
         ReadingRecord savedRecord = readingRecordService.createReadingRecord(readingRecord);
 
         return ApiResponse.success("독서 이력이 생성되었습니다.", savedRecord);

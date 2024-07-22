@@ -46,7 +46,7 @@ public class BookOwnHistoryController {
     @PostMapping("/purchase")
     public ResponseEntity<ApiResponse<Object>> createPurchaseHistory(@RequestBody PurchaseHistory purchaseHistory,
                                                                      @AuthenticationPrincipal User user) {
-        purchaseHistory.updateUserId(user.getId()); // 사용자 ID 세팅
+        purchaseHistory.updateUser(user); // 사용자 ID 세팅
         purchaseHistoryService.createHistory(purchaseHistory);
 
         return ApiResponse.success("구매 이력이 저장되었습니다.");
@@ -58,7 +58,7 @@ public class BookOwnHistoryController {
     @PostMapping("/rental")
     public ResponseEntity<ApiResponse<Object>> createRentalHistory(@RequestBody RentalHistory rentalHistory,
                                                                    @AuthenticationPrincipal User user) {
-        rentalHistory.updateUserId(user.getId()); // 사용자 ID 세팅
+        rentalHistory.updateUser(user); // 사용자 ID 세팅
         rentalHistoryService.createHistory(rentalHistory);
 
         return ApiResponse.success("대여 이력이 저장되었습니다.");

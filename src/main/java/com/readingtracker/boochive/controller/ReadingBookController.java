@@ -24,7 +24,7 @@ public class ReadingBookController {
     @PostMapping
     public ResponseEntity<ApiResponse<ReadingBook>> addReadingBook(@RequestBody ReadingBook readingBook,
                                                                    @AuthenticationPrincipal User user) {
-        readingBook.updateUserId(user.getId()); // 사용자 ID 세팅
+        readingBook.updateUser(user); // 사용자 ID 세팅
         ReadingBook savedReadingBook = readingListService.createReadingBook(readingBook);
 
         return ApiResponse.success("독서 목록에 추가되었습니다.", savedReadingBook);

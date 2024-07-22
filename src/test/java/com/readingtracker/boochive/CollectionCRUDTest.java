@@ -1,7 +1,10 @@
 package com.readingtracker.boochive;
 
 import com.readingtracker.boochive.domain.BookCollection;
+import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.mapper.UserMapper;
 import com.readingtracker.boochive.service.CollectionService;
+import com.readingtracker.boochive.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -17,12 +20,16 @@ public class CollectionCRUDTest {
 
     @Autowired
     private CollectionService service;
+    @Autowired
+    private UserService userService;
 
     @Test
     void createCollection() {
         /* given */
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
+
         BookCollection collection = BookCollection.builder()
-                .userId(2L)
+                .user(user)
                 .collectionName("test")
                 .build();
 
@@ -30,15 +37,17 @@ public class CollectionCRUDTest {
 
         /* when, then */
         assertThat(savedCollection).isNotNull();
-        assertThat(savedCollection.getUserId()).isEqualTo(2L);
+        assertThat(savedCollection.getUser().getId()).isEqualTo(2L);
         assertThat(savedCollection.getCollectionName()).isEqualTo("test");
     }
 
     @Test
     void updateCollection() {
         /* given */
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
+
         BookCollection collection = BookCollection.builder()
-                .userId(2L)
+                .user(user)
                 .collectionName("test")
                 .build();
 
@@ -52,7 +61,7 @@ public class CollectionCRUDTest {
 
         /* when, then */
         assertThat(updatedCollection).isNotNull();
-        assertThat(updatedCollection.getUserId()).isEqualTo(2L);
+        assertThat(updatedCollection.getUser().getId()).isEqualTo(2L);
         assertThat(updatedCollection.getCollectionName()).isEqualTo("test 변경");
     }
 }

@@ -113,7 +113,7 @@ public class BookController {
         Set<Long> readerList = new HashSet<>();
         reviewList.forEach(review -> readerList.add(review.getReviewerId()));
         readingListService.getReadingListByBook(book.getIsbn13())
-                .forEach(readingBook -> readerList.add(readingBook.getUserId()));
+                .forEach(readingBook -> readerList.add(readingBook.getUser().getId()));
 
         book.setReaderCount(readerList.size());
     }

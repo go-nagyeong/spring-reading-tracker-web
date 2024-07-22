@@ -3,8 +3,11 @@ package com.readingtracker.boochive;
 import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.ReadingStatus;
+import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.mapper.UserMapper;
 import com.readingtracker.boochive.service.CollectionService;
 import com.readingtracker.boochive.service.ReadingBookService;
+import com.readingtracker.boochive.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -21,13 +24,17 @@ public class ReadingBookCRUDTest {
     @Autowired
     private ReadingBookService service;
     @Autowired
+    private UserService userService;
+    @Autowired
     private CollectionService collectionService;
 
     @Test
     void createByReadingStatus() {
         /* given */
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
+
         ReadingBook readingBook = ReadingBook.builder()
-                .userId(1L)
+                .user(user)
                 .bookIsbn("test")
                 .readingStatus(ReadingStatus.READING)
                 .build();
@@ -36,7 +43,7 @@ public class ReadingBookCRUDTest {
 
         /* when, then */
         assertThat(savedReadingBook).isNotNull();
-        assertThat(savedReadingBook.getUserId()).isEqualTo(1L);
+        assertThat(savedReadingBook.getUser().getId()).isEqualTo(1L);
         assertThat(savedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(savedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.READING);
     }
@@ -44,15 +51,17 @@ public class ReadingBookCRUDTest {
     @Test
     void createByCollection() {
         /* given */
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
+
         BookCollection collection = BookCollection.builder()
-                .userId(1L)
+                .user(user)
                 .collectionName("test")
                 .build();
 
         BookCollection createdCollection = collectionService.createCollection(collection);
 
         ReadingBook readingBook = ReadingBook.builder()
-                .userId(1L)
+                .user(user)
                 .bookIsbn("test")
                 .collectionId(createdCollection.getId())
                 .build();
@@ -61,7 +70,7 @@ public class ReadingBookCRUDTest {
 
         /* when, then */
         assertThat(savedReadingBook).isNotNull();
-        assertThat(savedReadingBook.getUserId()).isEqualTo(1L);
+        assertThat(savedReadingBook.getUser().getId()).isEqualTo(1L);
         assertThat(savedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(savedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.TO_READ);
         assertThat(savedReadingBook.getCollectionId()).isEqualTo(createdCollection.getId());
@@ -70,15 +79,17 @@ public class ReadingBookCRUDTest {
     @Test
     void updateReadingStatus() {
         /* given */
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
+
         BookCollection collection = BookCollection.builder()
-                .userId(1L)
+                .user(user)
                 .collectionName("test")
                 .build();
 
         BookCollection createdCollection = collectionService.createCollection(collection);
 
         ReadingBook readingBook = ReadingBook.builder()
-                .userId(1L)
+                .user(user)
                 .bookIsbn("test")
                 .readingStatus(ReadingStatus.READING)
                 .collectionId(createdCollection.getId())
@@ -95,7 +106,7 @@ public class ReadingBookCRUDTest {
 
         /* when, then */
         assertThat(updatedReadingBook).isNotNull();
-        assertThat(updatedReadingBook.getUserId()).isEqualTo(1L);
+        assertThat(updatedReadingBook.getUser().getId()).isEqualTo(1L);
         assertThat(updatedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(updatedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.PAUSED);
         assertThat(updatedReadingBook.getCollectionId()).isEqualTo(createdCollection.getId());
@@ -104,15 +115,17 @@ public class ReadingBookCRUDTest {
     @Test
     void updateCollection() {
         /* given */
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
+
         BookCollection collection = BookCollection.builder()
-                .userId(1L)
+                .user(user)
                 .collectionName("test")
                 .build();
 
         BookCollection createdCollection = collectionService.createCollection(collection);
 
         ReadingBook readingBook = ReadingBook.builder()
-                .userId(1L)
+                .user(user)
                 .bookIsbn("test")
                 .readingStatus(ReadingStatus.READING)
                 .collectionId(createdCollection.getId())
@@ -129,7 +142,7 @@ public class ReadingBookCRUDTest {
 
         /* when, then */
         assertThat(updatedReadingBook).isNotNull();
-        assertThat(updatedReadingBook.getUserId()).isEqualTo(1L);
+        assertThat(updatedReadingBook.getUser().getId()).isEqualTo(1L);
         assertThat(updatedReadingBook.getBookIsbn()).isEqualTo("test");
         assertThat(updatedReadingBook.getReadingStatus()).isEqualTo(ReadingStatus.READING);
         assertThat(updatedReadingBook.getCollectionId()).isEqualTo(createdCollection.getId());
