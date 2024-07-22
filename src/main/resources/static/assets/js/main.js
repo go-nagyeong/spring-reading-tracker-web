@@ -183,8 +183,17 @@ let menu, animate;
     axios.defaults.responseType = 'json';
     axios.defaults.withCredentials = true; // 쿠키를 서버로 전송 (Jwt 토큰을 헤더에 담지 않고 쿠키로 전달 <- MPA 형식의 프론트 때문)
 
+
     // Custom helpers & misc
     // --------------------
+
+    // 로그인 유저 정보 세팅
+    document.addEventListener('DOMContentLoaded', function (event) {
+        getLoginUserDetail()
+            .then(userDetail => {
+                setGlobalLoginUserData(userDetail);
+            });
+    });
 
     // 숫자 input 값 전처리 1
     document.addEventListener('keydown', function (event) {
@@ -226,7 +235,7 @@ let menu, animate;
             if (input.value > parseInt(input.max)) {
                 input.value = input.max;
             }
-        }
+        }4
 
         // 휴대폰번호 input 값에 자동 하이픈
         if (input.classList.contains('phone-num')) {

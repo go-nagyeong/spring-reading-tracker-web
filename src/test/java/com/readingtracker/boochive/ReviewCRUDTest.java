@@ -3,6 +3,7 @@ package com.readingtracker.boochive;
 import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.ReviewDto;
+import com.readingtracker.boochive.mapper.UserMapper;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.service.UserService;
 import jakarta.transaction.Transactional;
@@ -26,7 +27,7 @@ public class ReviewCRUDTest {
     @Test
     void createReview() {
         /* given */
-        User user = userService.findUserById(1L).get();
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
 
         Review review = Review.builder()
                 .user(user)
@@ -46,7 +47,7 @@ public class ReviewCRUDTest {
     @Test
     void updateReview() {
         /* given */
-        User user = userService.findUserById(1L).get();
+        User user = userService.findUserById(1L).map(UserMapper.INSTANCE::toEntity).get();
 
         Review review = Review.builder()
                 .user(user)

@@ -1,6 +1,9 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.PasswordDto;
+import com.readingtracker.boochive.dto.UserDto;
+import com.readingtracker.boochive.mapper.UserMapper;
 import com.readingtracker.boochive.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,13 +23,15 @@ public class UserService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<User> findUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDto> findUserById(Long id) {
+        return userRepository.findById(id)
+                .map(UserMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<UserDto> findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(UserMapper.INSTANCE::toDto);
     }
 
     /**
@@ -43,23 +48,31 @@ public class UserService {
      * CR[U]D - UPDATE
      */
     @Transactional
-    public User updateUser(Long id, User user) {
+    public UserDto updateUser(Long id, UserDto user) {
         User existingUser = userRepository.findById(id).orElseThrow();
 
-        if (user.getPassword() != null) {
-            existingUser.updatePassword(passwordEncoder.encode(user.getPassword()));
-        }
-        if (user.getName() != null) {
-            existingUser.updateProfile(
-                    user.getProfileImage(),
-                    user.getName(),
-                    user.getBirthdate(),
-                    user.getSex(),
-                    user.getPhoneNumber()
-            );
+        existingUser.updateProfile(
+                user.getProfileImage(),
+                user.getUsername(),
+                user.getBirthdate(),
+                user.getSex(),
+                user.getPhoneNumber()
+        );
+
+        return UserMapper.INSTANCE.toDto(existingUser);
+    }
+
+    @Transactional
+    public void updatePassword(Long id, PasswordDto passwordDto) {
+        User existingUser = userRepository.findById(id).orElseThrow();
+
+        // 현재 비밀번호 검증
+        if (!passwordEncoder.matches(passwordDto.getOriginPassword(), existingUser.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
         }
 
-        return existingUser;
+        // 새 비밀번호 설정
+        existingUser.updatePassword(passwordEncoder.encode(passwordDto.getPassword()));
     }
 
     /**

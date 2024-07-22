@@ -61,9 +61,6 @@ public class User implements UserDetails {
 
     private LocalDateTime deletedAt;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Review> reviews = new ArrayList<>();
-
     /**
      * 비밀번호 변경
      */

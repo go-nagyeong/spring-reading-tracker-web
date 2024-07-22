@@ -24,87 +24,100 @@
         <!-- 회원정보 수정 -->
         <div class="col-lg-6">
             <div class="card mb-4">
-                <h5 class="card-header">회원정보 수정</h5>
-                <div class="card-body">
-                    <div class="d-flex align-items-start gap-3">
-                        <img class="img-thumbnail square rounded w-15 w-lg-20 min-w-px-100"
-                             th:src="@{/assets/img/book01.jpg}" id="uploadedAvatar"/>
-                        <div class="button-wrapper">
-                            <p class="fw-medium mt-1">홍길동</p>
-                            <small class="d-block text-muted mb-3">example@boochive.com</small>
-                            <div class="btn-group">
-                                <button class="btn btn-md btn-outline-primary dropdown-toggle"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    프로필 변경
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <label for="upload" class="dropdown-item">
-                                            <span>내 파일 선택</span>
-                                            <input type="file" id="upload" class="profile-img-input"
-                                                   accept="image/*"
-                                                   hidden/>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item profile-img-random" href="javascript:void(0);">
-                                            랜덤 프로필</a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item text-danger profile-img-reset" href="javascript:void(0);">
-                                            초기화
-                                        </a>
-                                    </li>
-                                </ul>
+                <form id="accountForm">
+                    <input type="hidden" name="id">
+
+                    <h5 class="card-header">회원정보 수정</h5>
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3">
+                            <img class="img-thumbnail square rounded w-15 w-lg-20 min-w-px-100 user-profile" src=""
+                                 id="uploadedAvatar"/>
+                            <div class="button-wrapper">
+                                <p class="fw-medium mt-1 user-name"><!-- 데이터 동적 로드 --></p>
+                                <small class="d-block text-muted mb-3 user-email"><!-- 데이터 동적 로드 --></small>
+                                <div class="btn-group">
+                                    <button class="btn btn-md btn-outline-primary dropdown-toggle"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        프로필 변경
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <label for="upload" class="dropdown-item">
+                                                <span>내 파일 선택</span>
+                                                <input type="hidden" name="profileImage">
+                                                <input type="file" id="upload" class="profile-img-input" accept="image/*" hidden/>
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item profile-img-random" href="javascript:void(0);">
+                                                랜덤 프로필</a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger profile-img-reset" href="javascript:void(0);">
+                                                초기화
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <hr class="my-0"/>
-                <div class="card-body">
-                    <form>
+                    <hr class="my-0"/>
+                    <div class="card-body">
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label text-primary" for="username">이름 (필수)</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="username" name="username"
                                        placeholder="홍길동">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" for="birthYear">생년월일</label>
-                            <div class="col-sm-10">
-                                <div class="input-group gap-2">
-                                    <div class="col">
-                                        <select class="select2 form-select" id="birthYear" name="birthYear">
-                                            <option>년도</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <select class="select2 form-select" id="birthMonth" name="birthMonth">
-                                            <option>월</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <select class="select2 form-select" id="birthDay" name="birthDay">
-                                            <option>일</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                <span class="form-text invalid-feedback error-username"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label">성별</label>
                             <div class="col-sm-10 d-flex align-items-center">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderMale"
-                                           value="M" checked>
-                                    <label class="form-check-label" for="genderMale">남자</label>
+                                    <input class="form-check-input" type="radio" name="sex" id="sexNotKnown"
+                                           value="0">
+                                    <label class="form-check-label" for="sexNotKnown">알 수 없음</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale"
-                                           value="F">
-                                    <label class="form-check-label" for="genderFemale">여자</label>
+                                    <input class="form-check-input" type="radio" name="sex" id="sexMale"
+                                           value="1">
+                                    <label class="form-check-label" for="sexMale">남</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sex" id="sexFemale"
+                                           value="2">
+                                    <label class="form-check-label" for="sexFemale">여</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sex" id="sexNotApplicable"
+                                           value="9">
+                                    <label class="form-check-label" for="sexNotApplicable">해당 사항 없음</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="birthYear">생년월일</label>
+                            <div class="col-sm-10">
+                                <div class="input-group gap-2">
+                                    <input type="hidden" name="birthdate">
+                                    <div class="col">
+                                        <select class="select2 form-select" name="birthYear" id="birthYear">
+                                            <option value="">년도</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="select2 form-select" name="birthMonth" id="birthMonth">
+                                            <option value="">월</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <select class="select2 form-select" name="birthDay" id="birthDay">
+                                            <option value="">일</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,10 +128,12 @@
                                     <div class="input-group">
                                         <input type="text" class="form-control phone-num" id="phoneNumber"
                                                name="phoneNumber" placeholder="010-1234-5678">
-                                        <button type="button" class="btn btn-outline-primary collapse-btn"
-                                                id="sendBtn" data-target="#collapseWrap">인증번호 전송
-                                        </button>
+                                        <!-- TODO: 휴대폰번호 인증 -->
+<!--                                        <button type="button" class="btn btn-outline-primary collapse-btn"-->
+<!--                                                id="sendBtn" data-target="#collapseWrap">인증번호 전송-->
+<!--                                        </button>-->
                                     </div>
+                                    <span class="form-text invalid-feedback error-phoneNumber"></span>
                                 </div>
                                 <div class="input-group form-collapse hide mt-2" id="collapseWrap">
                                     <div class="input-group input-group-merge w-auto">
@@ -154,10 +169,9 @@
 
                         <div class="pt-2">
                             <button type="submit" class="btn btn-primary me-2">변경사항 저장</button>
-                            <button type="reset" class="btn btn-outline-secondary">취소</button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -166,48 +180,54 @@
             <div class="card mb-4">
                 <h5 class="card-header">비밀번호 변경</h5>
                 <div class="card-body">
-                    <form>
+                    <form id="passwordForm">
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label">이메일</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control-plaintext" value="example@boochive.com"
-                                       readonly>
+                            <div class="col-sm-10 d-flex align-items-center">
+                                <p class="user-email"></p>
                             </div>
                         </div>
                         <div class="row mb-3 form-password-toggle">
-                            <label class="col-sm-2 col-form-label" for="password">현재 비밀번호</label>
+                            <label class="col-sm-2 col-form-label" for="originPassword">현재 비밀번호</label>
                             <div class="col-sm-10">
                                 <div class="input-group input-group-merge">
-                                    <input type="password" class="form-control" id="password" name="password"
+                                    <input type="password" class="form-control" id="originPassword" name="originPassword"
                                            placeholder="현재 비밀번호"/>
                                     <span class="input-group-text cursor-pointer">
-                                <i class="bx bx-hide"></i>
-                            </span>
+                                        <i class="bx bx-hide"></i>
+                                    </span>
                                 </div>
+                                <span class="form-text invalid-feedback error-originPassword"></span>
                             </div>
                         </div>
-                        <div class="row mb-3 form-password-toggle">
+                        <div class="row form-password-toggle">
                             <label class="col-sm-2 col-form-label" for="password">새 비밀번호</label>
                             <div class="col-sm-10">
                                 <div class="input-group input-group-merge">
-                                    <input type="password" class="form-control" id="newPassword"
-                                           name="newPassword" placeholder="새 비밀번호"/>
+                                    <input type="password" class="form-control" id="password"
+                                           name="password" placeholder="새 비밀번호"/>
                                     <span class="input-group-text cursor-pointer"><i
                                             class="bx bx-hide"></i></span>
                                 </div>
+                                <span class="form-text invalid-feedback error-password"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3 form-password-toggle">
+                            <label class="col-sm-2 col-form-label"></label>
+                            <div class="col-sm-10">
                                 <div class="input-group input-group-merge mt-2">
-                                    <input type="password" class="form-control" id="newPasswordConfirm"
-                                           name="newPasswordConfirm" placeholder="새 비밀번호 확인"/>
+                                    <input type="password" class="form-control" id="confirmPassword"
+                                           name="confirmPassword" placeholder="새 비밀번호 확인"/>
                                     <span class="input-group-text cursor-pointer">
-                                <i class="bx bx-hide"></i>
-                            </span>
+                                        <i class="bx bx-hide"></i>
+                                    </span>
                                 </div>
+                                <span class="form-text invalid-feedback error-confirmPassword"></span>
                             </div>
                         </div>
 
                         <div class="pt-2">
                             <button type="submit" class="btn btn-primary me-2">비밀번호 변경</button>
-                            <button type="reset" class="btn btn-outline-secondary">취소</button>
                         </div>
                     </form>
                 </div>
@@ -217,56 +237,274 @@
 
     <!-- 회원 탈퇴 -->
     <div class="card">
-                <h5 class="card-header">회원 탈퇴</h5>
-                <div class="card-body">
-                    <div class="mb-3 col-12 mb-0">
-                        <div class="alert alert-warning">
-                            <h6 class="alert-heading mb-1">정말 계정을 삭제하시겠습니까?</h6>
-                            <p>계정을 삭제할 경우 재사용 및 복구가 불가능합니다. 신중하게 선택하시기 바랍니다.</p>
-                        </div>
+        <h5 class="card-header">회원 탈퇴</h5>
+        <div class="card-body">
+            <form id="withdrawForm">
+                <div class="mb-3 col-12 mb-0">
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading mb-1">정말 계정을 삭제하시겠습니까?</h6>
+                        <p>계정을 삭제할 경우 재사용 및 복구가 불가능합니다. 신중하게 선택하시기 바랍니다.</p>
                     </div>
-                    <form id="formAccountDeactivation" onsubmit="return false">
-                        <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input" name="withdrawalConfirm"
-                                   id="withdrawalConfirm"/>
-                            <label class="form-check-label" for="withdrawalConfirm">계정 삭제를 동의합니다.</label>
-                        </div>
-                        <button type="submit" class="btn btn-danger deactivate-account">회원 탈퇴</button>
-                        <!-- TODO: 탈퇴 확인 모달 -->
-                    </form>
                 </div>
-            </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="isWithdrawalAgreed"/>
+                    <label class="form-check-label" for="isWithdrawalAgreed">계정 삭제를 동의합니다.</label>
+                </div>
+                <button type="submit" class="btn btn-danger">회원 탈퇴</button>
+                <!-- TODO: 탈퇴 확인 모달 -->
+            </form>
+        </div>
+    </div>
 </div>
 
 <script th:src="@{/assets/js/profile-image.js}"></script>
 <script>
-    // TODO: (임시) 백엔드 붙일 때 뒷단 프로세스가 성공하면 해당 처리
-    for (const el of document.getElementsByClassName('collapse-btn')) {
-        el.addEventListener('click', function () {
-            el.disabled = true;
-            document.querySelector(el.dataset.target).classList.remove('hide');
-        })
-    }
+    /**
+     * TODO: 휴대폰번호 인증
+     */
+    // for (const el of document.getElementsByClassName('collapse-btn')) {
+    //     el.addEventListener('click', function () {
+    //         el.disabled = true;
+    //         document.querySelector(el.dataset.target).classList.remove('hide');
+    //     })
+    // }
 
     /**
      * 인증번호 유효시간 타이머
      */
-    const sendBtn = document.getElementById('sendBtn');
-    const completeBtn = document.getElementById('completeBtn');
+    // const sendBtn = document.getElementById('sendBtn');
+    // const completeBtn = document.getElementById('completeBtn');
+    //
+    // const timerEl = document.getElementById('authTimer')
+    // const timer = new Timer(timerEl);
+    // timer.init(180);
+    //
+    // // TODO: 이건 사용자 UI 유효시간이고, DB에도 따로 저장해서 유효시간 검증 해야 함
+    // document.getElementById('sendBtn').addEventListener('click', function () {
+    //     timer.init(180); // 시간 초기화
+    //     timer.start(() => {
+    //         sendBtn.disabled = false;
+    //         completeBtn.disabled = true;
+    //     });
+    //     // TODO: 유효시간 만료되면 다음 프로세스가 어떻게 되는지 찾아보고 기능 수정 (인증번호 전송 버튼 다시 열어주기?)
+    // })
 
-    const timerEl = document.getElementById('authTimer')
-    const timer = new Timer(timerEl);
-    timer.init(180);
+    // ------------------------------------------------------------------------------------------------------
+    const accountForm = document.getElementById('accountForm');
+    const passwordForm = document.getElementById('passwordForm');
+    const withdrawForm = document.getElementById('withdrawForm');
+    let userId;
 
-    // TODO: 이건 사용자 UI 유효시간이고, DB에도 따로 저장해서 유효시간 검증 해야 함
-    document.getElementById('sendBtn').addEventListener('click', function () {
-        timer.init(180); // 시간 초기화
-        timer.start(() => {
-            sendBtn.disabled = false;
-            completeBtn.disabled = true;
-        });
-        // TODO: 유효시간 만료되면 다음 프로세스가 어떻게 되는지 찾아보고 기능 수정 (인증번호 전송 버튼 다시 열어주기?)
+    document.addEventListener('DOMContentLoaded', function() {
+        setBirthdateSelectOptions(); // 생년월일 선택 옵션 세팅
+        getLoginUserDetail()
+            .then(userDetail => {
+                userId = userDetail.id;
+                setAccountForm(userDetail);
+            });
     })
+
+    /**
+     * 회원정보 폼 데이터 동적 세팅
+     */
+    function setAccountForm(userDetail) {
+        document.querySelector('[name=id]').value = userId;
+        // 프로필 이미지
+        document.querySelector('[name=profileImage]').value = userDetail.profileImage;
+        // 이름
+        document.querySelector('[name=username]').value = userDetail.username;
+        // 성별
+        const sexCodeMap = {
+            0: 'sexNotKnown',
+            1: 'sexMale',
+            2: 'sexFemale',
+            9: 'sexNotApplicable',
+        };
+        document.getElementById(sexCodeMap[userDetail.sex]).checked = true;
+        // 생년월일
+        if (userDetail.birthdate) {
+            const birthDateSplit = userDetail.birthdate.split('-');
+            const changeEvent = new Event("change", {"bubbles":true, "cancelable":false});
+
+            document.getElementById('birthYear').value = birthDateSplit[0];
+            document.getElementById('birthYear').dispatchEvent(changeEvent); // month 옵션 세팅
+            document.getElementById('birthMonth').value = parseInt(birthDateSplit[1]);
+            document.getElementById('birthMonth').dispatchEvent(changeEvent); // day 옵션 세팅
+            document.getElementById('birthDay').value = parseInt(birthDateSplit[2]);
+
+            document.querySelector('[name=birthdate]').value = userDetail.birthdate;
+        }
+        // 휴대폰번호
+        const inputEvent = new Event("input", {"bubbles":true, "cancelable":false});
+        document.querySelector('[name=phoneNumber]').value = userDetail.phoneNumber;
+        document.querySelector('[name=phoneNumber]').dispatchEvent(inputEvent); // 휴대폰번호 포맷 형식 세팅
+    }
+
+    /**
+     * 회원정보 변경사항 저장
+     */
+    accountForm.addEventListener('submit', function(event) {
+        console.log('submit');
+        event.preventDefault();
+        uploadProfileImage();
+    })
+    // 프로필 이미지 업로드
+    function uploadProfileImage() {
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const data = new FormData();
+        const id = document.querySelector('[name=id]').value;
+        const file = document.getElementById('upload').files[0];
+        data.append("userId", id);
+        data.append("file", file);
+
+        // 업로드할 이미지 없으면 생략
+        if (!file) {
+            updateAccountInfo();
+            return false;
+        }
+        console.log('uploadProfileImage')
+
+        const promise = axios.post(`/api/users/profile-image`, data, {
+            headers: {'Content-Type': 'multipart/form-data'}
+        });
+
+        const onSuccess = (result) => {
+            const fileUrl = result.data;
+            document.querySelector('[name=profileImage]').value = fileUrl; // 이미지 저장 경로 세팅
+            updateAccountInfo(); // 이미지 업로드 먼저 수행 후 회원정보 업데이트
+        }
+
+        handleApiResponse(promise, onSuccess);
+    }
+    // 회원정보 업데이트
+    function updateAccountInfo() {
+        console.log('updateAccountInfo')
+        clearErrorMessages(accountForm);
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const data = formToJson(new FormData(accountForm));
+
+        const year = data['birthYear'];
+        const month = data['birthMonth'];
+        const day = data['birthDay'];
+        const dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const date = new Date(dateStr);
+
+        // 생년월일(날짜) 데이터 검증
+        if (year || month || day) {
+            if (!year || !month || !day) {
+                globalLoading(false);
+                showToast('생년월일을 모두 선택해 주세요.', 'error');
+                return false;
+            }
+            if (dateStr !== `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`) {
+                globalLoading(false);
+                showToast('생년월일이 올바르지 않습니다.', 'error');
+                return;
+            }
+        }
+
+        data['birthdate'] = dateStr;
+        data['phoneNumber'] = data['phoneNumber'].replaceAll('-', '');
+        console.log(data);
+        const promise = axios.put(`/api/users/${data.id}`, data);
+
+        const onSuccess = (result) => {
+            setGlobalLoginUserData(result.data);
+            setAccountForm(result.data);
+        }
+        const onError = (result) => {
+            displayErrorMessages(accountForm, result.errors);
+        }
+
+        handleApiResponse(promise, onSuccess, onError);
+    }
+
+
+    /**
+     * 비밀번호 변경
+     */
+    passwordForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        updatePassword();
+    })
+    function updatePassword() {
+        clearErrorMessages(passwordForm);
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const data = formToJson(new FormData(passwordForm));
+
+        const promise = axios.put(`/api/users/${userId}/password`, data);
+
+        const onSuccess = (result) => {
+            passwordForm.reset();
+        }
+        const onError = (result) => {
+            if (result.errors) {
+                displayErrorMessages(passwordForm, result.errors);
+            } else {
+                passwordForm.querySelector('[name=originPassword]').focus();
+            }
+        }
+
+        handleApiResponse(promise, onSuccess, onError);
+    }
+
+
+    /**
+     * 회원 탈퇴
+     */
+    withdrawForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        deleteAccount();
+    })
+    function deleteAccount() {
+        globalLoading(true);
+
+        const isWithdrawalAgreed = document.getElementById('isWithdrawalAgreed').checked;
+        if (!isWithdrawalAgreed) {
+            globalLoading(false);
+            showToast('계정 삭제를 하려면 동의가 필요합니다.', 'error');
+            return false;
+        }
+
+        const promise = axios.delete(`/api/users/${userId}`);
+        const onSuccess = (result) => {
+            window.location.href = '/';
+        }
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+
+    /**
+     * 검증 결과 처리 메서드
+     */
+    function displayErrorMessages(form, errors) {
+        Object.entries(errors).forEach(([field, message]) => {
+            const errorSpan = form.querySelector('.error-' + field);
+            if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.previousElementSibling.classList.add('invalid');
+            }
+        });
+        // input 자동 포커스
+        const firstInvalidInput = form.querySelector('input.invalid, .invalid input:not([type=hidden])');
+        if (firstInvalidInput) {
+            firstInvalidInput.focus();
+        }
+    }
+    function clearErrorMessages(form) {
+        const invalidList = form.querySelectorAll('.invalid');
+        invalidList.forEach(el => {
+            el.classList.remove('invalid');
+            el.nextElementSibling.textContent = '';
+        });
+    }
 </script>
 </body>
 </html>

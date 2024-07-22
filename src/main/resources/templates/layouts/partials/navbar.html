@@ -48,7 +48,7 @@
                 <a class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown"
                    href="javascript:void(0);">
                     <div class="avatar">
-                        <img class="w-px-40 h-auto rounded-circle" th:src="@{/assets/img/avatars/1.png}"/>
+                        <img class="w-px-40 rounded-circle img-thumbnail user-profile"/>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -57,13 +57,12 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar">
-                                        <img alt class="w-px-40 h-auto rounded-circle"
-                                             th:src="@{/assets/img/avatars/1.png}"/>
+                                        <img alt class="w-px-40 rounded-circle img-thumbnail user-profile"/>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <span class="fw-medium d-block">홍길동</span>
-                                    <small class="text-muted">example@boochive.com</small>
+                                    <span class="fw-medium d-block user-name"><!-- 데이터 동적 로드 --></span>
+                                    <small class="text-muted user-email"><!-- 데이터 동적 로드 --></small>
                                 </div>
                             </div>
                         </a>
@@ -107,3 +106,7 @@
         </ul>
     </div>
 </nav>
+
+<script>
+
+</script>

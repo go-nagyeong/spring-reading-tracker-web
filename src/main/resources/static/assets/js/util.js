@@ -227,7 +227,7 @@ function calculateRowIndex(curPage, rowsPerPage, currentRow) {
  */
 function setProfileImage(profileImage, element) {
     element = element || document.getElementById('profileImage');
-    const defaultAvatar = '/assets/img/default-profile.svg';
+    const defaultAvatar = '/assets/img/default-profile.jpg';
     element.src = profileImage || defaultAvatar;
 }
 
@@ -257,4 +257,47 @@ function closeUIComponents() {
  */
 function checkOverflow(element) {
     return element.scrollHeight > element.clientHeight
+}
+
+/**
+ * 생년월일 선택 옵션 목록 세팅
+ */
+function setBirthdateSelectOptions(targetElement) {
+    const yearSelect = document.getElementById('birthYear');
+    const monthSelect = document.getElementById('birthMonth');
+    const daySelect = document.getElementById('birthDay');
+    const newOption = (value) => `<option value=${value}>${value}</option>`;
+
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    const currentDay = today.getDate();
+
+    // 연
+    for (let year = currentYear; year >= currentYear-100; year--) {
+        yearSelect.insertAdjacentHTML('beforeend', newOption(year));
+    }
+    // 월
+    yearSelect.addEventListener('change', (event) => {
+        updateMonths();
+        updateDays();
+    })
+    monthSelect.addEventListener('change', (event) => {
+        updateDays();
+    })
+    const updateMonths = () => {
+        monthSelect.innerHTML = '<option value="">월</option>';
+        const maxMonth = yearSelect.value == currentYear ? currentMonth : 12;
+        for (let month = 1; month <= maxMonth; month++) {
+            monthSelect.insertAdjacentHTML('beforeend', newOption(month));
+        }
+    }
+    const updateDays = () => {
+        daySelect.innerHTML = '<option value="">일</option>';
+        const daysInMonth = new Date(yearSelect.value, monthSelect.value, 0).getDate();
+        const maxDay = (yearSelect.value == currentYear && monthSelect.value == currentMonth) ? currentDay : daysInMonth;
+        for (let day = 1; day <= maxDay; day++) {
+            daySelect.insertAdjacentHTML('beforeend', newOption(day));
+        }
+    }
 }
