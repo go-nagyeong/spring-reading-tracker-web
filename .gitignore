@@ -40,3 +40,6 @@ out/
 ### macOS ###
 # General
 .DS_Store
+
+### User Uploaded Files ###
+/uploads
