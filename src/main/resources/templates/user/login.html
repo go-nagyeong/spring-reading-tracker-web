@@ -93,7 +93,7 @@
             window.location.href = '/';
         }
         const onError = (result) => {
-            displayErrorMessages(result.data);
+            displayErrorMessages(result.errors);
         }
 
         handleApiResponse(promise, onSuccess, onError);

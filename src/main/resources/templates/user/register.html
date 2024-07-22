@@ -91,7 +91,7 @@
             window.location.href = '/login';
         }
         const onError = (result) => {
-            displayErrorMessages(result.data);
+gㄱ            displayErrorMessages(result.errors);
         }
 
         handleApiResponse(promise, onSuccess, onError);
