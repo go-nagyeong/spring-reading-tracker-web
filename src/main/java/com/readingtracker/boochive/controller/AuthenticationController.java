@@ -19,7 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -40,20 +39,6 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterForm form,
                                                                      BindingResult bindingResult) {
-        // 추가 검증 (이메일 중복 확인, 비밀번호 확인 일치 여부)
-        if (!bindingResult.hasFieldErrors("email")) {
-            if (userService.findUserByEmail(form.getEmail()).isPresent()) {
-                ObjectError newError = new ObjectError("email", "이미 존재하는 이메일입니다.");
-                bindingResult.addError(newError);
-            }
-        }
-        if (!bindingResult.hasFieldErrors("confirmPassword")) {
-            if (!form.getConfirmPassword().isBlank() && !form.getConfirmPassword().equals(form.getPassword())) {
-                ObjectError newError = new ObjectError("confirmPassword", "비밀번호가 일치하지 않습니다.");
-                bindingResult.addError(newError);
-            }
-        }
-
         // 유효성 검사 결과 전처리
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMap = handleValidationErrors(bindingResult);
@@ -68,7 +53,7 @@ public class AuthenticationController {
                 .build();
         userService.createUser(user);
 
-        return ApiResponse.success("회원가입에 성공하였습니다.");
+        return ApiResponse.success(null);
     }
 
     /**
@@ -93,11 +78,11 @@ public class AuthenticationController {
         } catch (BadCredentialsException e) {
             // 잘못된 인증 정보 (이메일 또는 비밀번호)
             errorMap.put("password", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            return ApiResponse.failure("", errorMap);
+            return ApiResponse.failure(null, errorMap);
         } catch (LockedException e) {
             // 계정이 잠겼을 경우
             errorMap.put("password", "사용자 계정이 잠겼습니다. 관리자에게 문의하세요.");
-            return ApiResponse.failure("", errorMap);
+            return ApiResponse.failure(null, errorMap);
         } catch (AuthenticationException e) {
             // 그 외의 인증 예외 처리
             log.error("인증 객체 생성 에러: {}", e.getMessage(), e);
@@ -112,7 +97,7 @@ public class AuthenticationController {
         setHttpOnlyCookie("access_token", accessToken, response);
         setHttpOnlyCookie("refresh_token", refreshToken, response); // TODO: (임시) 추후 Refresh Token은 Redis에 저장
 
-        return ApiResponse.success("로그인에 성공하였습니다.");
+        return ApiResponse.success(null);
     }
 
     /**
@@ -138,11 +123,11 @@ public class AuthenticationController {
 
         // <필드(key): 에러메세지(value)> 구조로 저장
         Map<String, String> errorMap = new LinkedHashMap<>(); // 순서 적용을 위해 LinkedHashMap 사용
+        bindingResult.getGlobalErrors().forEach(error -> { // @ConfirmPassword
+            errorMap.put("confirmPassword", error.getDefaultMessage());
+        });
         fieldErrors.forEach(error -> {
             errorMap.put(error.getField(), error.getDefaultMessage());
-        });
-        bindingResult.getGlobalErrors().forEach(error -> {
-            errorMap.put(error.getObjectName(), error.getDefaultMessage());
         });
 
         return errorMap;

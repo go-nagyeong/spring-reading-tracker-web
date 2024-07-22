@@ -1,15 +1,19 @@
 package com.readingtracker.boochive.dto;
 
+import com.readingtracker.boochive.validator.ConfirmPassword;
+import com.readingtracker.boochive.validator.NotDuplicateEmail;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@ConfirmPassword
 public class RegisterForm {
 
     @NotBlank(message = "이메일을 입력해 주세요.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
+    @NotDuplicateEmail
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해 주세요.")
@@ -26,4 +30,5 @@ public class RegisterForm {
 
     @AssertTrue(message = "회원가입을 완료하려면 이용약관에 동의해야 합니다.")
     private Boolean isTermsAgreed;
+
 }
