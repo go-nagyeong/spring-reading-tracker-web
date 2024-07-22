@@ -248,13 +248,13 @@ function setReadRecordCardData() {
  * 책 통계 데이터 업데이트 (독자 수, 리뷰 수, 평균 평점)
  */
 function updateBookStatistics(data, targetElement) {
-    const subInfoWraps = targetElement.querySelectorAll('.info-rating-wrap'); // 반응형 엘리먼트 2개
+    const subInfoWraps = targetElement.querySelectorAll('.info-rating'); // 반응형 엘리먼트 2개
 
     for (const subInfoWrap of subInfoWraps) {
         subInfoWrap.querySelector('em.sale-num, .sale-num em').textContent = data.readerCount;
         subInfoWrap.querySelector('em.rating-rv-count, .rating-rv-count em').textContent = data.reviewCount;
 
-        const ratingWrap = targetElement.querySelector('.rating-grade');
+        const ratingWrap = subInfoWrap.querySelector('.rating-grade');
         if (data.averageRating) {
             const newRatingEl = rebuildRatingEl(ratingWrap);
             newRatingEl.dataset.value = data.averageRating;
