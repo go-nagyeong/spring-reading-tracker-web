@@ -558,6 +558,7 @@
             reviewSimpleEditor = new SimpleEditor('editorjs'); // 에디터 플러그인 초기화
 
             modalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
+            modalForm.querySelector('#deleteReviewBtn').toggle(review);
             if (review) {
                 modalForm.querySelector('[name=id]').value = review.id;
                 reviewSimpleEditor.fill(review.reviewText); // 리뷰 내용

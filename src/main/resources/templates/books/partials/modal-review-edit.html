@@ -14,9 +14,9 @@
             <div id="editorjs"></div>
         </div>
     </div>
-    <div class="modal-footer justify-content-between">
+    <div class="modal-footer">
         <button type="button" class="btn btn-outline-danger" id="deleteReviewBtn">삭제</button>
-        <div>
+        <div class="ms-auto">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
             <button type="submit" class="btn btn-primary">저장</button>
         </div>
@@ -44,6 +44,10 @@
         data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
         await reviewSimpleEditor.save().then(result => data['reviewText'] = result);
 
+        if (action === 'D' && !data['id']) { // 삭제 예외 처리
+            globalLoading(false);
+            return false;
+        }
         if (action === 'C' && data['id']) action = 'U';
 
         let promise;
