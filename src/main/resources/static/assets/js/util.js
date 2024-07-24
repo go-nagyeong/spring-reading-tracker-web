@@ -52,28 +52,35 @@ function formToJson(data) {
 /**
  * 공통 API 응답 처리 함수
  */
-function handleApiResponse(promise, onSuccess, onError = () => {}) {
+function handleApiResponse(promise, onSuccess, onError = () => {}, useLoading = true) {
     promise
         .then(response => {
             const result = response.data;
+
             onSuccess(result);
+
             if (result.message) {
                 showToast(result.message, 'success');
+            }
+            if (useLoading) {
+                globalLoading(false);
+                localLoading(false);
             }
         })
         .catch(error => {
             console.error('axios 요청 오류:', error);
-
             const result = error.response.data;
-            onError(result);
+
+            onError(result)
+
             if (result.message) {
                 showToast(result.message, 'error');
             }
+            if (useLoading) {
+                globalLoading(false);
+                localLoading(false);
+            }
         })
-        .finally(() => {
-            globalLoading(false);
-            localLoading(false);
-        });
 }
 
 /**
@@ -214,6 +221,12 @@ function appendPageButton(pageButtonWrap, link, content, additionalClass = null)
 
     pageButtonWrap.appendChild(newButton);
 }
+function clearPageButtons() {
+    const pageButtonWrap = document.querySelector('.pagination');
+    while (pageButtonWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
+        pageButtonWrap.removeChild(pageButtonWrap.children[1]);
+    }
+}
 
 /**
  * 페이지네이션이 있는 목록의 행 인덱스 계산 함수
@@ -300,4 +313,31 @@ function setBirthdateSelectOptions(targetElement) {
             daySelect.insertAdjacentHTML('beforeend', newOption(day));
         }
     }
+}
+
+/**
+ * 토글 Hide/Show 함수
+ */
+Element.prototype.toggle = function(isShow) {
+    this.style.display = isShow ? 'revert' : 'none';
+};
+
+/**
+ * 삭제 확인 모달
+ */
+function confirmDelete(content = null) {
+    return new Promise(resolve => {
+        const modalEl = document.querySelector('#smallModal');
+        const target = document.querySelector('#smallModal .modal-content');
+        const callback = () => {
+            if (content) {
+                target.querySelector('#confirmContent').textContent = content;
+            }
+            target.querySelector('#confirmBtn').addEventListener('click', resolve);
+        }
+        loadHTML('/common/modal-delete-confirm', target, callback);
+
+        const modalBootstrap = new bootstrap.Modal(modalEl)
+        modalBootstrap.show();
+    })
 }

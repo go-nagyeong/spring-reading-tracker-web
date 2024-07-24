@@ -9,7 +9,7 @@
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <!-- Search -->
-        <form th:action="@{/books}" method="get" class="w-75" id="searchForm">
+        <form th:action="@{/books/search}" method="get" class="w-75" id="searchForm">
             <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center w-100">
                     <i class="bx bx-search fs-4 lh-0"></i>
@@ -71,7 +71,7 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" th:href="@{/settings/account-setting}">
+                        <a class="dropdown-item" th:href="@{/settings/account}">
                             <i class="bx bx-user me-2"></i>
                             <span class="align-middle">계정</span>
                         </a>

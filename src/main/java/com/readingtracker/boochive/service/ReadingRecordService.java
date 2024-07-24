@@ -3,7 +3,7 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.domain.ReadingStatus;
 import com.readingtracker.boochive.dto.BatchUpdateDto;
-import com.readingtracker.boochive.repository.ReadingBookRepository;
+import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.repository.ReadingRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class ReadingRecordService {
 
     private final ReadingRecordRepository readingRecordRepository;
-    private final ReadingBookRepository readingBookRepository;
+    private final ReadingBookJpaRepository readingBookRepository;
 
     /**
      * C[R]UD - READ

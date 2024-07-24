@@ -9,12 +9,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/collections")
 @RequiredArgsConstructor
 public class CollectionController {
 
     private final CollectionService collectionService;
+
+    /**
+     * GET - 사용자 컬렉션 목록 조회
+     */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Map<String, List<BookCollection>>>> getUserCollectionList(@AuthenticationPrincipal User user) {
+        List<BookCollection> collectionList = collectionService.getCollectionsByUser(user.getId());
+
+        Map<String, List<BookCollection>> data = new HashMap<>();
+        data.put("collectionList", collectionList);
+
+        return ApiResponse.success(null, data);
+    }
+
 
     /**
      * POST - 컬렉션 생성

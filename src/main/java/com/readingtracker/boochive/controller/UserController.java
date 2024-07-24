@@ -49,8 +49,8 @@ public class UserController {
      * POST - 프로필 이미지 업로드
      */
     @PostMapping("/profile-image")
-    public ResponseEntity<ApiResponse<String>> uploadProfileImage(@RequestParam("userId") Long userId,
-                                                                  @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<ApiResponse<String>> uploadProfileImage(@RequestParam Long userId,
+                                                                  @RequestParam MultipartFile file) throws IOException {
         String directory = "images/profile/"+userId;
         fileStorageUtil.clearDirectory(directory); // 업로드 전 기존 이미지 삭제
         String saveUrl = fileStorageUtil.upload(directory, file);

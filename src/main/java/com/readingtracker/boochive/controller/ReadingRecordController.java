@@ -79,7 +79,7 @@ public class ReadingRecordController {
     }
 
     /**
-     * POST - 독서 이력 Batch Update (여러 데이터를 한 번에 수정 및 삭제)
+     * POST - 독서 이력 Batch Update (일괄 수정 및 삭제)
      */
     @PostMapping("/batch")
     public ResponseEntity<ApiResponse<List<ReadingRecord>>> handleReadingRecords(@RequestBody BatchUpdateDto<ReadingRecord> batchUpdateDto,

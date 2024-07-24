@@ -3,8 +3,13 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.domain.ReadingStatus;
-import com.readingtracker.boochive.repository.ReadingBookRepository;
+import com.readingtracker.boochive.dto.BatchUpdateDto;
+import com.readingtracker.boochive.dto.ReadingBookFilterDto;
+import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
+import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +22,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReadingBookService {
 
-    private final ReadingBookRepository readingListRepository;
+    private final ReadingBookJpaRepository readingBookRepository;
+    private final ReadingBookDslRepositoryImpl readingBookDslRepository;
     private final ReadingRecordService readingRecordService;
 
     /**
@@ -25,30 +31,38 @@ public class ReadingBookService {
      */
     @Transactional(readOnly = true)
     public Optional<ReadingBook> findReadingBookById(Long id) {
-        return readingListRepository.findById(id);
+        return readingBookRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
     public Optional<ReadingBook> findReadingBookByUserAndBook(Long userId, String bookIsbn) {
-        return readingListRepository.findByUserIdAndBookIsbn(userId, bookIsbn);
+        return readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn);
     }
 
     @Transactional(readOnly = true)
-    public List<ReadingBook> getReadingListByUser(Long userId) {
-        return readingListRepository.findAllByUserId(userId);
+    public List<ReadingBook> getReadingListByUserAndBookList(Long userId, List<String> bookIsbnList) {
+        return readingBookRepository.findAllByUserIdAndBookIsbnIn(userId, bookIsbnList);
     }
 
     @Transactional(readOnly = true)
-    public List<ReadingBook> getReadingListByBook(String bookIsbn) {
-        return readingListRepository.findAllByBookIsbn(bookIsbn);
+    public List<ReadingBook> getReadingListByBookAndReadingStatus(String bookIsbn, ReadingStatus readingStatus) {
+        return readingBookRepository.findAllByBookIsbnAndReadingStatus(bookIsbn, readingStatus);
     }
+
+    @Transactional(readOnly = true)
+    public Page<ReadingBook> getReadingListByUserAndOtherFilter(Long userId,
+                                                                ReadingBookFilterDto filterDto,
+                                                                Pageable pageable) {
+        return readingBookDslRepository.getReadingBooksWithFilter(userId, filterDto, pageable);
+    }
+
 
     /**
      * [C]RUD - CREATE
      */
     @Transactional
     public ReadingBook createReadingBook(ReadingBook readingBook) {
-        ReadingBook createdReadingBook = readingListRepository.save(readingBook);
+        ReadingBook createdReadingBook = readingBookRepository.save(readingBook);
 
         // (이후 연계 작업) 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
         saveReadingRecord(createdReadingBook);
@@ -61,7 +75,7 @@ public class ReadingBookService {
      */
     @Transactional
     public ReadingBook updateReadingBook(Long id, ReadingBook readingBook) {
-        ReadingBook existingReadingBook = readingListRepository.findById(id).orElseThrow();
+        ReadingBook existingReadingBook = readingBookRepository.findById(id).orElseThrow();
 
         boolean readingStatusChanged = !existingReadingBook.getReadingStatus().equals(readingBook.getReadingStatus());
         if (readingStatusChanged) {
@@ -84,7 +98,17 @@ public class ReadingBookService {
      */
     @Transactional
     public void deleteReadingBookById(Long id) {
-        readingListRepository.deleteById(id);
+        readingBookRepository.deleteById(id);
+    }
+
+    /**
+     * CRU[D] - BATCH DELETE
+     */
+    @Transactional
+    public void batchDeleteReadingBooks(BatchUpdateDto<Long> batchUpdateDto) {
+        for (Long id : batchUpdateDto.getDeleteList()) {
+            readingBookRepository.deleteById(id);
+        }
     }
 
     /**

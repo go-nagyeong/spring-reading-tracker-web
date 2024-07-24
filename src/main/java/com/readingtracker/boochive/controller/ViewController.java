@@ -27,7 +27,7 @@ public class ViewController {
     }
 
     /**
-     * User
+     * Authentication
      */
     @GetMapping("/login")
     public String showLoginForm() {
@@ -65,12 +65,12 @@ public class ViewController {
     /**
      * Book
      */
-    @GetMapping("/books")
+    @GetMapping("/books/search")
     public String showBookSearchList() {
         return "books/book-list";
     }
 
-    @GetMapping("/books/{isbn}")
+    @GetMapping("/books/detail/{isbn}")
     public String showBookDetail() {
         return "books/book-detail";
     }
@@ -79,6 +79,23 @@ public class ViewController {
     public String showBookPartial(@PathVariable String partial) {
         return "books/partials/"+partial;
     }
+
+    /**
+     * Setting
+     */
+    @GetMapping("/settings/account")
+    public String showAccountSettingForm() {
+        return "settings/account-setting";
+    }
+
+    /**
+     * My Page
+     */
+    @GetMapping("/my/reading-books")
+    public String showMyBookList() {
+        return "mypage/my-book-list";
+    }
+
 
     /**
      * TODO: 임시

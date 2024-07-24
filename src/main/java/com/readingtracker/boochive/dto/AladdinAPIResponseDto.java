@@ -36,10 +36,14 @@ public class AladdinAPIResponseDto {
         private String categoryName;
         private List<String> categoryList; // 전처리 후 변수
         private SubInfo subInfo;
-        // 이후 조회 변수
-        private int reviewCount;
+        // 이후 조회 변수 (책 검색 결과 화면 데이터)
         private BigDecimal averageRating;
-        private int readerCount;
+        private Integer reviewCount;
+        private Integer readerCount;
+        // ----------  (유저 책장 화면 데이터)
+        private Integer userRating;
+        private Integer userNoteCount;
+        private Integer userReadCount;
 
         @Getter
         @Setter

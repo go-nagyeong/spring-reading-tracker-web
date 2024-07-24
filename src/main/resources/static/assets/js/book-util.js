@@ -20,8 +20,20 @@ function handleReadingBook(action, data, targetElement) {
     }
 
     const onSuccess = (result) => {
-        onUpdateReadingInfo(result.data, targetElement);
+        const data = result.data;
+
+        onUpdateReadingInfo(data?.saveResult || null, targetElement);
+        if (data.hasOwnProperty('readerCount')) {
+            updateBookStatistics(data, targetElement);
+        }
+        if (data.hasOwnProperty('userReadCount')) {
+            updateUserBookStatistics(data, targetElement);
+        }
         closeUIComponents();
+
+        if (action === 'D' && typeof commonReloadOnDelete == 'function') {
+            commonReloadOnDelete();
+        }
     };
 
     handleApiResponse(promise, onSuccess);
@@ -34,7 +46,9 @@ function updateReadingListButtonUI(status, targetElement) {
     const readingButtonGroups = targetElement.querySelectorAll('.reading-btn-group'); // 반응형 엘리먼트 2개
 
     for (const buttonGroup of readingButtonGroups) {
-        const addButton = buttonGroup.querySelector('button.reading-list-btn');
+        const toggleButton = buttonGroup.querySelector('button.reading-list-btn');
+        const toggleButtonIcon = buttonGroup.querySelector('i');
+        const toggleButtonText = buttonGroup.querySelector('span');
         const statusButtonList = buttonGroup.querySelector('ul.dropdown-menu');
 
         // 이전 독서 상태 비활성화
@@ -44,24 +58,33 @@ function updateReadingListButtonUI(status, targetElement) {
         }
 
         // 독서 상태에 따른 버튼 UI 변경
+        if (toggleButton.classList.contains('filter-btn')) { // filter 버튼
+            toggleButton.classList.toggle('active', status);
+        } else { // action 버튼
+            toggleButton.classList.toggle('btn-primary', !status);
+            toggleButton.classList.toggle('btn-secondary', status);
+        }
+
         if (status) {
             const currentStatusItem = statusButtonList.querySelector(`[data-value="${status}"]`);
+            if (!currentStatusItem) return;
             currentStatusItem.classList.add('active');
-            addButton.classList.replace('btn-primary', 'btn-secondary');
 
-            let buttonContent = '<i class="bx bx-check text-success"></i>';
-            if (!addButton.classList.contains('btn-icon')) {
-                buttonContent += `<span class="ms-1">${currentStatusItem.textContent}</span>`;
+            if (toggleButtonIcon) {
+                toggleButtonIcon.toggle(true);
+                toggleButtonIcon.classList.replace('bxs-bookmark-plus', 'bx-check');
+                toggleButtonIcon.classList.add('text-success');
             }
-            addButton.innerHTML = buttonContent;
+            toggleButtonText.toggle(!toggleButton.classList.contains('btn-icon'));
+            toggleButtonText.textContent = currentStatusItem.textContent;
         } else {
-            addButton.classList.replace('btn-secondary', 'btn-primary');
-
-            if (addButton.classList.contains('btn-icon')) {
-                addButton.innerHTML = '<i class="bx bxs-bookmark-plus"></i>';
-            } else {
-                addButton.innerHTML = '독서 목록에 추가';
+            if (toggleButtonIcon) {
+                toggleButtonIcon.toggle(toggleButton.classList.contains('btn-icon'));
+                toggleButtonIcon.classList.replace('bx-check', 'bxs-bookmark-plus');
+                toggleButtonIcon.classList.remove('text-success');
             }
+            toggleButtonText.toggle(!toggleButton.classList.contains('btn-icon'));
+            toggleButtonText.textContent = toggleButtonText.dataset.content;
         }
 
         // 독서 상태 선택 목록 변경
@@ -76,7 +99,7 @@ function updateReadingListButtonUI(status, targetElement) {
  * [독서 목록에 추가] 버튼 이벤트 세팅
  */
 function setReadingListButtonEvent() {
-    const readingStatusButtonList = document.querySelectorAll('.reading-btn-group .dropdown-item');
+    const readingStatusButtonList = document.querySelectorAll('.reading-btn-group.action .dropdown-item');
     readingStatusButtonList.forEach(el => {
         el.addEventListener('click', function (e) {
             e.stopImmediatePropagation();
@@ -123,7 +146,9 @@ function updateCollectionButtonUI(collectionId, targetElement) {
     const collectionButtonGroups = targetElement.querySelectorAll('.collection-btn-group'); // 반응형 엘리먼트 2개
 
     for (const buttonGroup of collectionButtonGroups) {
-        const addButton = buttonGroup.querySelector('button.collection-btn');
+        const toggleButton = buttonGroup.querySelector('button.collection-btn');
+        const toggleButtonIcon = buttonGroup.querySelector('i');
+        const toggleButtonText = buttonGroup.querySelector('span');
         const collectionButtonList = buttonGroup.querySelector('ul.dropdown-menu');
 
         // 이전 컬렉션 비활성화
@@ -133,24 +158,33 @@ function updateCollectionButtonUI(collectionId, targetElement) {
         }
 
         // 컬렉션에 따른 버튼 UI 변경
+        if (toggleButton.classList.contains('filter-btn')) { // filter 버튼
+            toggleButton.classList.toggle('active', collectionId);
+        } else { // action 버튼
+            toggleButton.classList.toggle('btn-outline-primary', !collectionId);
+            toggleButton.classList.toggle('btn-secondary', collectionId);
+        }
+
         if (collectionId) {
             const currentCollectionItem = collectionButtonList.querySelector(`[data-value="${collectionId}"]`);
+            if (!currentCollectionItem) return;
             currentCollectionItem.classList.add('active');
-            addButton.classList.replace('btn-outline-primary', 'btn-primary');
 
-            if (addButton.classList.contains('btn-icon')) {
-                addButton.innerHTML = '<i class="bx bx-folder-minus"></i>';
-            } else {
-                addButton.innerHTML = '컬렉션에 추가됨';
+            if (toggleButtonIcon) {
+                toggleButtonIcon.toggle(true);
+                toggleButtonIcon.className = toggleButtonIcon.className.replace('plus', 'minus');
+                toggleButtonIcon.classList.add('text-success');
             }
+            toggleButtonText.toggle(!toggleButton.classList.contains('btn-icon'));
+            toggleButtonText.textContent = currentCollectionItem.textContent;
         } else {
-            addButton.classList.replace('btn-primary', 'btn-outline-primary');
-
-            if (addButton.classList.contains('btn-icon')) {
-                addButton.innerHTML = '<i class="bx bx-folder-plus"></i>';
-            } else {
-                addButton.innerHTML = '컬렉션에 추가';
+            if (toggleButtonIcon) {
+                toggleButtonIcon.toggle(toggleButton.classList.contains('btn-icon'));
+                toggleButtonIcon.className = toggleButtonIcon.className.replace('minus', 'plus');
+                toggleButtonIcon.classList.remove('text-success');
             }
+            toggleButtonText.toggle(!toggleButton.classList.contains('btn-icon'));
+            toggleButtonText.textContent = toggleButtonText.dataset.content;
         }
 
         // 컬렉션 선택 목록 변경
@@ -165,7 +199,7 @@ function updateCollectionButtonUI(collectionId, targetElement) {
  * [컬렉션에 추가] 버튼 이벤트 세팅
  */
 function setCollectionButtonEvent() {
-    const collectionButtonList = document.querySelectorAll('.collection-btn-group .dropdown-item');
+    const collectionButtonList = document.querySelectorAll('.collection-btn-group.action .dropdown-item');
     collectionButtonList.forEach(el => {
         el.addEventListener('click', function (e) {
             e.stopImmediatePropagation();
@@ -251,19 +285,59 @@ function updateBookStatistics(data, targetElement) {
     const subInfoWraps = targetElement.querySelectorAll('.info-rating'); // 반응형 엘리먼트 2개
 
     for (const subInfoWrap of subInfoWraps) {
-        subInfoWrap.querySelector('em.sale-num, .sale-num em').textContent = data.readerCount;
-        subInfoWrap.querySelector('em.rating-rv-count, .rating-rv-count em').textContent = data.reviewCount;
+        const readerCntEl = subInfoWrap.querySelector('em.sale-num, .sale-num em');
+        const reviewCntEl = subInfoWrap.querySelector('em.rating-rv-count, .rating-rv-count em');
+
+        if (data.hasOwnProperty('readerCount') && readerCntEl) {
+            readerCntEl.textContent = data.readerCount;
+        }
+        if (data.hasOwnProperty('reviewCount') && reviewCntEl) {
+            reviewCntEl.textContent = data.reviewCount;
+        }
 
         const ratingWrap = subInfoWrap.querySelector('.rating-grade');
-        if (data.averageRating) {
+        if (data.hasOwnProperty('averageRating')) {
+            if (data.averageRating < 1) {
+                ratingWrap.innerHTML = '';
+                return false;
+            }
             const newRatingEl = rebuildRatingEl(ratingWrap);
             newRatingEl.dataset.value = data.averageRating;
             initializeStarRating(newRatingEl);
-        } else {
-            ratingWrap.innerHTML = '';
+        }
+
+    }
+}
+
+/**
+ * 책 통계 데이터 업데이트 (작성 평점, 노트 수, 완독 수)
+ */
+function updateUserBookStatistics(data, targetElement) {
+    const subInfoWrap = targetElement.querySelector('.info-rating');
+    const readCntEl = subInfoWrap.querySelector('em.read-cnt');
+    const noteCntEl = subInfoWrap.querySelector('em.note-cnt');
+
+    if (data.hasOwnProperty('userReadCount') && readCntEl) {
+        readCntEl.textContent = data.userReadCount;
+    }
+    if (data.hasOwnProperty('userNoteCount') && noteCntEl) {
+        noteCntEl.textContent = data.userNoteCount;
+    }
+
+    const ratingWraps = subInfoWrap.querySelectorAll('.rating-grade'); // 반응형 엘리먼트 2개
+    for (const ratingWrap of ratingWraps) {
+        if (data.hasOwnProperty('userRating')) {
+            if (data.userRating < 1) {
+                ratingWrap.innerHTML = '';
+                return false;
+            }
+            const newRatingEl = rebuildRatingEl(ratingWrap);
+            newRatingEl.dataset.value = data.userRating;
+            initializeStarRating(newRatingEl);
         }
     }
 }
+
 
 /**
  * 독서 상태 변경시 공통 업데이트 사항

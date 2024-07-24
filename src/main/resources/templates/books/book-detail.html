@@ -202,32 +202,6 @@
                     <div class="col-12">
                         <div class="card-body">
                             <div class="item-btn-col flex-row flex-grow-all">
-                                <!--                                <div class="btn-group flex-grow-1">-->
-                                <!--                                    <button type="button" class="btn btn-md btn-primary dropdown-toggle"-->
-                                <!--                                            data-bs-toggle="dropdown" aria-expanded="false">-->
-                                <!--                                        <i class="bx bx-check me-1"></i>읽을 예정-->
-                                <!--                                    </button>-->
-                                <!--                                    <ul class="dropdown-menu" style="">-->
-                                <!--                                        &lt;!&ndash; TODO: 상태에 따른 표시 목록-->
-                                <!--                                            추가 전 : 읽을 예정 ~ 읽음-->
-                                <!--                                            추가 후 : 읽을 예정 ~ 독서 포기 / 독서 목록에서 제거-->
-                                <!--                                        &ndash;&gt;-->
-                                <!--                                        <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>-->
-                                <!--                                        <li><a class="dropdown-item" href="javascript:void(0);">읽는 중</a></li>-->
-                                <!--                                        <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>-->
-                                <!--                                        <li><a class="dropdown-item" href="javascript:void(0);">잠시 중단</a></li>-->
-                                <!--                                        <li><a class="dropdown-item" href="javascript:void(0);">독서 포기</a></li>-->
-                                <!--                                        <li><hr class="dropdown-divider"></li>-->
-                                <!--                                        <li>-->
-                                <!--                                            <a class="dropdown-item text-danger" href="javascript:void(0);">-->
-                                <!--                                                독서 목록에서 제거-->
-                                <!--                                            </a>-->
-                                <!--                                        </li>-->
-                                <!--                                    </ul>-->
-                                <!--                                </div>-->
-                                <!--                                <button type="button" class="btn btn-md btn-outline-primary flex-grow-1">-->
-                                <!--                                    컬렉션에 추가-->
-                                <!--                                </button>-->
                                 <div th:replace="~{common/reading-list-button :: button_group('L')}"></div>
                                 <button type="button" class="btn btn-md btn-outline-dark w-100" id="ownHistEditModalBtn"
                                         data-bs-toggle="modal" data-bs-target="#smallModal">
@@ -414,7 +388,7 @@
     function lookupBook() {
         globalLoading(true);
 
-        const promise = axios.get(`/api/books/${bookIsbn}`);
+        const promise = axios.get(`/api/books/detail/${bookIsbn}`);
 
         const onSuccess = (result) => {
             setBookData(result.data);
@@ -435,11 +409,6 @@
         const item = lookupResult.item[0];
         const targetElement = document.querySelector('.dataset-el')
 
-        // 사용자의 컬렉션 목록 버튼 세팅
-        if (collectionList.length) {
-            setCollectionButtonOptions(collectionList);
-        }
-
         // 책 정보 세팅
         targetElement.dataset.bookIsbn = item.isbn13;
         targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
@@ -459,6 +428,11 @@
 
         // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
         updateBookStatistics(item, targetElement);
+
+        // 컬렉션 버튼 목록 세팅
+        if (collectionList.length) {
+            setCollectionButtonOptions(collectionList);
+        }
 
         // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 관련 UI 업데이트
         onUpdateReadingInfo(readingInfo, targetElement);

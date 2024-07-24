@@ -1,14 +1,10 @@
 <th:block th:fragment="button_group(responsibility)">
-    <div class="btn-group reading-btn-group">
-        <button th:if="${responsibility.equals('L')}" type="button"
-                class="btn btn-md btn-primary dropdown-toggle reading-list-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">
-            <span>독서 목록에 추가</span>
-        </button>
-        <button th:if="${responsibility.equals('S')}" type="button"
-                class="btn btn-icon rounded-pill btn-primary dropdown-toggle hide-arrow reading-list-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bx bxs-bookmark-plus"></i>
+    <div class="btn-group reading-btn-group action">
+        <button type="button" class="btn btn-primary dropdown-toggle reading-list-btn" data-bs-toggle="dropdown"
+                aria-expanded="false"
+                th:classappend="${responsibility.equals('L') ? 'btn-md' : 'btn-icon rounded-pill hide-arrow'}">
+            <i class="bx bx-check"></i>
+            <span class="mx-1" data-content="독서 목록에 추가">독서 목록에 추가</span>
         </button>
 
         <ul class="dropdown-menu">
@@ -48,16 +44,12 @@
         </ul>
     </div>
 
-    <div class="btn-group collection-btn-group">
-        <button th:if="${responsibility.equals('L')}" type="button"
-                class="btn btn-md btn-outline-primary dropdown-toggle collection-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">
-            <span>컬렉션에 추가</span>
-        </button>
-        <button th:if="${responsibility.equals('S')}" type="button"
-                class="btn btn-icon rounded-pill btn-outline-primary dropdown-toggle hide-arrow collection-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="btn-group collection-btn-group action">
+        <button type="button" class="btn btn-outline-primary dropdown-toggle collection-btn" data-bs-toggle="dropdown"
+                aria-expanded="false"
+                th:classappend="${responsibility.equals('L') ? 'btn-md' : 'btn-icon rounded-pill hide-arrow'}">
             <i class="bx bx-folder-plus"></i>
+            <span class="mx-1" data-content="컬렉션에 추가">컬렉션에 추가</span>
         </button>
 
         <ul class="dropdown-menu">

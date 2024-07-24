@@ -31,6 +31,9 @@
             if (newCollection) {
                 setCollectionButtonOptions([newCollection]);
                 setCollectionButtonEvent();
+                if (typeof setFilterButtonEvent == 'function') {
+                    setFilterButtonEvent();
+                }
             }
             closeUIComponents();
         };

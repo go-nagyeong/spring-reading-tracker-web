@@ -131,6 +131,19 @@ input[type='number'] {
     opacity: 0.6;
 }
 
+.btn-outline-secondary.filter-btn.active {
+    color: #000;
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+    box-shadow: 0 0.125rem 0.25rem 0 rgba(var(--bs-secondary-rgb), 0.4);
+}
+.btn-outline-primary.filter-btn.active {
+    color: #fff;
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    box-shadow: 0 0.125rem 0.25rem 0 rgba(var(--bs-primary-rgb), 0.4);
+}
+
 /**
  * ---- Image -----------------------
  */

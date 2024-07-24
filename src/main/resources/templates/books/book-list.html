@@ -36,9 +36,9 @@
                         </div>
                         <div class="item-info">
                             <div class="info-num d-none d-md-block">
-                            <span class="badge bg-gray text-white fw-bold">
-                                <!-- 데이터 동적 로드 -->
-                            </span>
+                                <span class="badge bg-gray text-white fw-bold">
+                                    <!-- 데이터 동적 로드 -->
+                                </span>
                             </div>
 
                             <div class="info-name">
@@ -54,15 +54,11 @@
                                 </span>
                                     <span class="info-pub">
                                     <span class="horizontal-divider"></span>
-                                    <a class="btn-link fw-medium" href="">
-                                        <!-- 데이터 동적 로드 -->
-                                    </a>
+                                    <a class="btn-link fw-medium" href=""><!-- 데이터 동적 로드 --></a>
                                 </span>
-                                    <span class="info-date d-none d-sm-inline-block">
+                                <span class="info-date d-none d-sm-inline-block">
                                     <span class="horizontal-divider"></span>
-                                    <a>
-                                        <!-- 데이터 동적 로드 -->
-                                    </a>
+                                    <a><!-- 데이터 동적 로드 --></a>
                                 </span>
                             </div>
 
@@ -120,8 +116,6 @@
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
 <script>
-    const form = document.getElementById('readingListForm');
-
     document.addEventListener('DOMContentLoaded', function (e) {
         searchBooks();
     });
@@ -131,14 +125,15 @@
      */
     function searchBooks() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
+        clearPageButtons(); // 페이지네이션 버튼 초기화
+        clearBookList(); // 이전 검색 결과 목록 초기화
         localLoading(true);
 
-        const promise = axios.get('/api/books'+window.location.search);
+        const promise = axios.get('/api/books/search'+window.location.search);
 
         const onSuccess = (result) => {
             const data = result.data;
-            const searchResult = result.data.searchResult;
-
+            const searchResult = data.searchResult;
             if (searchResult.item.length) {
                 appendBookElement(data);
                 setPagination(searchResult.startIndex, searchResult.totalPages);
@@ -167,17 +162,12 @@
                 const targetElement = templateTag.cloneNode(true);
                 targetElement.classList.remove('template-tag');
 
-                // 사용자의 컬렉션 목록 버튼 세팅
-                if (collectionList.length) {
-                    setCollectionButtonOptions(collectionList, targetElement);
-                }
-
                 // 책 정보 세팅
                 targetElement.dataset.bookIsbn = item.isbn13;
-                targetElement.querySelector('.img-item a').setAttribute('href', '/books/'+item.isbn13);
+                targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
                 targetElement.querySelector('.info-num span').textContent = calculateRowIndex(searchResult.startIndex, searchResult.itemsPerPage, idx+1);
-                targetElement.querySelector('.info-name a').setAttribute('href', '/books/'+item.isbn13);
+                targetElement.querySelector('.info-name a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.info-name a').textContent = item.title;
                 targetElement.querySelector('.info-auth > a').textContent = item.formatAuthor;
                 if (item.translator) {
@@ -191,12 +181,24 @@
                 // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
                 updateBookStatistics(item, targetElement);
 
+                // 컬렉션 버튼 목록 세팅
+                if (collectionList.length) {
+                    setCollectionButtonOptions(collectionList, targetElement);
+                }
+
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트
                 const readingInfo = readingInfoList[item.isbn13];
                 onUpdateReadingInfo(readingInfo, targetElement);
 
                 bookListWrap.appendChild(targetElement);
             })
+        }
+    }
+
+    function clearBookList() {
+        const bookListWrap = document.getElementById('bookSearchList');
+        while (bookListWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
+            bookListWrap.removeChild(bookListWrap.children[1]);
         }
     }
 </script>
