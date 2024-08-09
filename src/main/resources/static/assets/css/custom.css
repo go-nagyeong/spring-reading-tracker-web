@@ -214,7 +214,7 @@ img.square {
     margin-bottom: 0;
 }
 
-.form-collapse.hide {
+.form-collapse.hidden {
     display: none;
 }
 
@@ -569,6 +569,10 @@ input[type=color]::-moz-color-swatch {
 /**
  * ---- Etc. -----------------------
  */
+.hidden {
+    display: none !important;
+}
+
 .horizontal-divider {
     display: inline-block;
     margin: 0 .35rem;
@@ -734,9 +738,8 @@ form.edit-or-view-mode .lcslt-disabled:after {
 }
 
 .result-msg-wrap {
-    display: none;
     text-align: center;
-    padding: 1rem 0;
+    padding: 2rem 0;
 }
 
 .add-visible {

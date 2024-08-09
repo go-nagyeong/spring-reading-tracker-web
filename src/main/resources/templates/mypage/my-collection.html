@@ -8,186 +8,62 @@
 </head>
 
 <body th:replace="~{layouts/base :: _body('my-collection', ~{::div}, ~{::script}, true)}">
-<div class="container-xxl flex-grow-1 container-p-y" id="mypageContainer">
-    <div class="col-12 mb-4">
-        <div class="card">
-            <div class="card-header d-flex align-items-center flex-wrap">
-                <h5 class="order-first">컬렉션 없음 <em class="fs-6 text-primary">18</em></h5>
-                <div class="ms-auto">
-                    <div class="form-inline d-inline-block">
-                        <label for="bookListViewOption1" class="form-check-label">
-                            <i class="bx bx-library text-muted"></i>
-                        </label>
-                        <div class="form-check-inline form-switch mx-1 d-inline">
-                            <input type="checkbox" class="form-check-input book-list-view-option" name="bookListViewOption1"
-                                   id="bookListViewOption1" data-id="bookListView1" role="switch">
-                        </div>
-                        <label for="bookListViewOption1" class="form-check-label">
-                            <i class="bx bxs-book-alt text-muted"></i>
-                        </label>
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="card">
+        <div class="card-header d-flex align-items-center flex-wrap">
+            <h5>내 컬렉션</h5>
+            <div class="ms-auto">
+                <button type="button" class="btn btn-primary btn-sm collection-edit-modal-btn"
+                        data-bs-toggle="modal" data-bs-target="#smallModal">새 컬렉션</button>
+                <div class="form-inline d-inline-block ms-3">
+                    <label class="form-check-label" data-switch="off" data-value="spine">
+                        <i class="bx bx-library text-muted"></i>
+                    </label>
+                    <div class="form-check-inline form-switch mx-1 d-inline">
+                        <input type="checkbox" class="form-check-input" id="bookListViewOption" role="switch">
                     </div>
+                    <label class="form-check-label" data-switch="on" data-value="cover">
+                        <i class="bx bxs-book-alt text-muted"></i>
+                    </label>
                 </div>
-            </div>
 
-            <div class="card-body px-0">
-                <div class="bookshelf ui-library book-list-view" id="bookListView1">
-                    <div class="books">
-                        <th:block th:each="num : ${#numbers.sequence(1,7)}">
-                            <div class="book" data-width="143" data-height="210" data-depth="32">
-                                <div class="spine">
-                                    <span class="spine-title">배움의 발견</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book01.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="150" data-height="210" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">종의 기원</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book02.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="140" data-height="210" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">일류의 조건</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book03.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="135" data-height="200" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">무엇이 나를 행복하게 만드는가</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book04.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="125" data-height="188" data-depth="16">
-                                <div class="spine">
-                                    <span class="spine-title">나를 소모하지 않는 현명한 태도에 관하여</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book05.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="155" data-height="235" data-depth="40">
-                                <div class="spine">
-                                    <span class="spine-title">듄 1</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book06.jpg}">
-                                </div>
-                            </div>
-                        </th:block>
-                    </div>
-                    <div class="more">
-                        <a th:href="@{/mypage/my-book-list}" class="">
-                            <i class="bx bx-right-arrow-circle"></i>
-                            <span class="align-middle">더보기</span>
-                        </a>
-                    </div>
-                    <div class="shelf"></div>
-                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 mb-4">
-        <div class="card">
-            <div class="card-header d-flex align-items-center flex-wrap">
-                <h5 class="order-first">인생 책 <em class="fs-6 text-primary">18</em></h5>
-                <div class="ms-auto">
-                    <div class="form-inline d-inline-block">
-                        <label for="bookListViewOption2" class="form-check-label">
-                            <i class="bx bx-library text-muted"></i>
-                        </label>
-                        <div class="form-check-inline form-switch mx-1 d-inline">
-                            <input type="checkbox" class="form-check-input book-list-view-option" name="bookListViewOption2"
-                                   id="bookListViewOption2" data-id="bookListView2" role="switch">
+        <div id="collectionListWrap">
+            <div class="col-12 mb-4 collection-unit template-tag" data-col-id="">
+                <div class="card-header d-flex align-items-center flex-wrap">
+                    <h6 class="order-first col-title"><!-- 데이터 동적 로드 --></h6>
+                    <em class="fs-6 text-primary ms-2 book-cnt">0</em>
+                    <div class="ms-auto">
+                        <div class="dropdown d-inline-block ms-3">
+                            <button class="btn p-0" data-bs-toggle="dropdown">
+                                <i class="bx bx-dots-horizontal-rounded text-muted"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item collection-edit-modal-btn" href="javascript:void(0);"
+                                   data-bs-toggle="modal" data-bs-target="#smallModal">수정</a>
+                                <a class="dropdown-item text-danger collection-delete-btn" href="javascript:void(0);">삭제</a>
+                            </div>
                         </div>
-                        <label for="bookListViewOption2" class="form-check-label">
-                            <i class="bx bxs-book-alt text-muted"></i>
-                        </label>
                     </div>
                 </div>
-            </div>
 
-            <div class="card-body p-0">
-                <div class="bookshelf ui-library book-list-view" id="bookListView2">
-                    <div class="books">
-                        <th:block th:each="num : ${#numbers.sequence(1,7)}">
-                            <div class="book" data-width="143" data-height="210" data-depth="32">
-                                <div class="spine">
-                                    <span class="spine-title">배움의 발견</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book01.jpg}">
-                                </div>
+                <div class="card-body">
+                    <div class="bookshelf-cont">
+                        <div th:replace="~{common/result-message :: div('추가된 책이 없습니다.')}"></div>
+
+                        <div class="bookshelf ui-library">
+                            <div class="books">
                             </div>
-                            <div class="book" data-width="150" data-height="210" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">종의 기원</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book02.jpg}">
-                                </div>
+                            <div class="more">
+                                <a th:href="@{/my/reading-books}" class="">
+                                    <i class="bx bx-right-arrow-circle"></i>
+                                    <span class="align-middle">더보기</span>
+                                </a>
                             </div>
-                            <div class="book" data-width="140" data-height="210" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">일류의 조건</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book03.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="135" data-height="200" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">무엇이 나를 행복하게 만드는가</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book04.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="125" data-height="188" data-depth="16">
-                                <div class="spine">
-                                    <span class="spine-title">나를 소모하지 않는 현명한 태도에 관하여</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book05.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="155" data-height="235" data-depth="40">
-                                <div class="spine">
-                                    <span class="spine-title">듄 1</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book06.jpg}">
-                                </div>
-                            </div>
-                        </th:block>
+                        </div>
                     </div>
-                    <div class="more">
-                        <a th:href="@{/mypage/my-book-list}" class="">
-                            <i class="bx bx-right-arrow-circle"></i>
-                            <span class="align-middle">더보기</span>
-                        </a>
-                    </div>
-                    <div class="shelf"></div>
                 </div>
             </div>
         </div>
@@ -196,23 +72,190 @@
 
 <script th:src="@{/assets/js/bookshelf.js}"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function (e) {
+        setUserConfigViewOption(); // 책 목록 뷰 옵션 값 세팅
+        setViewOptionButtonEvent(); // 책 목록 뷰 옵션 토글 이벤트 세팅
+
+        getCollectionList(); // 컬렉션 목록 조회
+    });
+
     /**
-     * 책 목록 뷰 옵션 토글 이벤트
+     * 책 목록 뷰 옵션 유저 Config 값 세팅
      */
-    const viewOptionButtons = document.querySelectorAll('.book-list-view-option');
-    function toggleBookViewOption(el) {
-        const viewEl = document.getElementById(el.dataset.id);
-        viewEl.classList.toggle('ui-library', !el.checked);
-        viewEl.classList.toggle('ui-book-cover', el.checked);
-        hideOverflowingElement(viewEl);
+    function setUserConfigViewOption() {
+        const viewOptionButton = document.getElementById('bookListViewOption');
+        const configValue = getUserConfig('COLLECTION_BOOK_VIEW');
+        const labelEl = document.querySelector(`[data-value=${configValue}]`);
+
+        updateBookViewUI(configValue);
+        viewOptionButton.checked = labelEl.dataset.switch === 'on';
     }
-    viewOptionButtons.forEach(el => {
-        el.addEventListener('change', function (e) {
-            // TODO: 서버에서 책 데이터 다시 불러오기
-            const el = e.target;
-            toggleBookViewOption(el);
+
+    /**
+     * 책 목록 뷰 옵션 토글 이벤트 세팅 (UI 이벤트, 유저 Config 저장)
+     */
+    function setViewOptionButtonEvent() {
+        const viewOptionButton = document.getElementById('bookListViewOption');
+        viewOptionButton.addEventListener('change', function (e) {
+            const selectedOption = viewOptionButton.checked
+                ? userConfigValueDict.COLLECTION_BOOK_VIEW.OPTIONS.COVER
+                : userConfigValueDict.COLLECTION_BOOK_VIEW.OPTIONS.SPINE;
+            const data = {};
+            data[userConfigKeyDict.COLLECTION_BOOK_VIEW] = selectedOption;
+
+            updateBookViewUI(selectedOption);
+            saveUserConfig(data);
         })
-    })
+    }
+
+    function updateBookViewUI(option) {
+        const viewElements = document.querySelectorAll('.bookshelf');
+        viewElements.forEach(el => {
+            el.classList.toggle('ui-library', option === 'spine');
+            el.classList.toggle('ui-book-cover', option === 'cover');
+            hideOverflowingElement(el);
+        })
+    }
+
+
+    /**
+     * 사용자 컬렉션 목록 조회
+     */
+    function getCollectionList() {
+        hideNoResultsMessage(); // 조회 시작 시 결과 없음 메시지 숨김
+        clearCollectionList(); // 이전 목록 초기화
+        localLoading(true);
+
+        const promise = axios.get('/api/collections/with-books/me');
+
+        const onSuccess = async (result) => {
+            const collectionList = result.data.collectionList;
+
+            if (collectionList.length) {
+                await appendCollectionElement(collectionList);
+                // setPagination(searchResult.startIndex, searchResult.totalPages);
+
+                // 책장 UI 초기화
+                initializeBookshelfUI();
+
+                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+                setCollectionEditButtonEvent();
+            } else {
+                showNoResultMessage();
+            }
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    /**
+     * 컬랙션 목록 결과 html 동적 추가
+     */
+    async function appendCollectionElement(collectionList) {
+        const collectionListWrap = document.getElementById('collectionListWrap');
+        const templateTag = collectionListWrap.querySelector('.template-tag');
+
+        if (templateTag) {
+            for await (const item of collectionList) {
+                const targetElement = templateTag.cloneNode(true);
+                targetElement.classList.remove('template-tag');
+
+                // 컬렉션 정보 세팅
+                targetElement.setAttribute('data-col-id', item.id);
+                targetElement.querySelector('.col-title').textContent = item.collectionName;
+                targetElement.querySelector('.more a').setAttribute('href', '/my/reading-books?collectionId='+item.id);
+
+                // 컬렉션 책 목록 세팅
+                const bookList = item.books;
+                const resultMsgWrap = targetElement.querySelector('.result-msg-wrap');
+                const moreButtonWrap = targetElement.querySelector('.more');
+                resultMsgWrap.toggle(bookList.length < 1);
+                moreButtonWrap.toggle(bookList.length >= 1);
+
+                if (bookList.length) {
+                    targetElement.querySelector('.book-cnt').textContent = bookList.length;
+
+                    let html = '';
+                    bookList.forEach(item => html += bookElement(item));
+
+                    targetElement.querySelector('.books').innerHTML = html;
+                }
+
+                collectionListWrap.appendChild(targetElement);
+            }
+        }
+    }
+
+    function clearCollectionList() {
+        const collectionListWrap = document.getElementById('collectionListWrap');
+        while (collectionListWrap.children[1]) { // 첫ㅂ첫번째 엘리먼트는 기본 컬렉션('컬렉션 없음')이므로 제외
+            collectionListWrap.removeChild(collectionListWrap.children[1]);
+        }
+    }
+
+
+    /**
+     * 컬렉션 추가/수정/삭제 버튼 이벤트 세팅
+     */
+    function setCollectionEditButtonEvent() {
+        document.querySelectorAll('.collection-edit-modal-btn').forEach(el => {
+            el.addEventListener('click', function (e) {
+                const collectionUnitEl = el.closest('.collection-unit');
+
+                let callback = null;
+                if (collectionUnitEl) { // update
+                    callback = () => {
+                        const modalForm = document.getElementById('collectionForm');
+                        modalForm.querySelector('[name=id]').value = collectionUnitEl.dataset.colId;
+                        modalForm.querySelector('[name=collectionName]').value = collectionUnitEl.querySelector('.col-title').textContent;
+                    }
+                }
+                const target = document.querySelector(el.dataset.bsTarget + ' .modal-content');
+
+                loadHTML('/my/partials/modal-collection-form', target, callback);
+            });
+        })
+
+        document.querySelectorAll('.collection-delete-btn').forEach(el => {
+            el.addEventListener('click', function(e) {
+                const collectionUnitEl = el.closest('.collection-unit');
+                deleteCollection(collectionUnitEl);
+            });
+        })
+    }
+
+    // 컬렉션 생성/수정 시 업데이트 사항 (공통 모달에서 호출할 메서드)
+    function onCreateCollection(newCollection) {
+        getCollectionList();
+    }
+    function onUpdateCollection(updatedCollection) {
+        const collectionEl = document.querySelector(`[data-col-id="${updatedCollection.id}"]`);
+        if (collectionEl) {
+            collectionEl.querySelector('.col-title').textContent = updatedCollection.collectionName;
+        }
+    }
+
+    // 컬렉션 삭제
+    function deleteCollection(el) {
+        const id = el.dataset.colId;
+        const name = el.querySelector('.col-title').textContent;
+        const content = `${name} 컬렉션이 삭제됩니다.`;
+
+        confirmDelete(content)
+            .then(() => {
+                globalLoading(true);
+
+                const promise = axios.delete(`/api/collections/${id}`);
+
+                const onSuccess = (result) => {
+                    closeUIComponents();
+                    getCollectionList();
+                };
+
+                handleApiResponse(promise, onSuccess);
+            })
+    }
+
 </script>
 </body>
 </html>

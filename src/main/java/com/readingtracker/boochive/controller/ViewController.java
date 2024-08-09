@@ -96,6 +96,16 @@ public class ViewController {
         return "mypage/my-book-list";
     }
 
+    @GetMapping("/my/collections")
+    public String showMyCollectionList() {
+        return "mypage/my-collection";
+    }
+
+    @GetMapping("/my/partials/{partial}")
+    public String showMyPagePartial(@PathVariable String partial) {
+        return "mypage/partials/"+partial;
+    }
+
 
     /**
      * TODO: 임시

@@ -90,6 +90,7 @@
 
         const promise = axios.post('/api/auth/login', formToJson(new FormData(form)));
         const onSuccess = (result) => {
+            loadLoginUserConfig(); // 유저 config 정보 가져오기 (로컬 스토리지에 저장)
             window.location.href = '/';
         }
         const onError = (result) => {

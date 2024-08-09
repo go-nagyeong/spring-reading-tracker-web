@@ -234,7 +234,7 @@
 }
 
 [data-star-rating] .gl-star-rating--stars:not(.non-label) {
-    margin-right: 2.5rem;
+    margin-right: 1.5rem;
 }
 
 [data-star-rating] .gl-star-rating--stars[aria-label]::before  {

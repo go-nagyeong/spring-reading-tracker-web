@@ -8,4 +8,6 @@ import java.util.List;
 public interface CollectionRepository extends JpaRepository<BookCollection, Long> {
 
     List<BookCollection> findAllByUserId(Long userId);
+
+    List<BookCollection> findAllByUserIdOrderByIdDesc(Long userId);
 }

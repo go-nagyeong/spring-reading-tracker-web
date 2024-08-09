@@ -478,45 +478,73 @@
 /**
 * 마이페이지
 */
+.bookshelf-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 200px;
+}
+
 .bookshelf {
     width: 100%;
-    position: relative;
     overflow: visible;
-    border-bottom-left-radius: .5rem;
-    border-bottom-right-radius: .5rem;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height: 0;
+    box-sizing: border-box;
+    border-bottom: 16px solid #D2B48C;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    pointer-events: all;
+}
+.bookshelf:before {
+    content: "";
+    position: absolute;
+    top: 16px;
+    background-color: #D2B48C;
+    /*background: linear-gradient(90deg, #fafafa 0%, #ffffff 100%);*/
+    height: 20px;
+    width: calc(100% + 40px);
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.05),
+    0 4px 16px rgba(0, 0, 0, 0.25);
+    z-index: 2;
+}
+.bookshelf:after {
+    content: "";
+    height: 40px;
+    width: calc(100% + 40px);
+    position: absolute;
+    top: 36px;
+    display: block;
+    background: linear-gradient(180deg, #f3f3f3 0%, rgba(255, 255, 255, 0) 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 97% 100%, 3% 100%);
 }
 
 .bookshelf .books {
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    padding-left: 1.5rem;
-    width: 90%;
-}
-.bookshelf .more {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 10%;
-    height: 100%;
-    padding: 0 1rem;
-    display: flex;
-    align-items: center;
-}
-.bookshelf .shelf {
-    height: 1rem;
-    border-radius: 2px;
-    z-index: 1;
-    box-shadow: 0 -5px 3px 0 rgba(var(--bs-gray-rgb), 0.2),
-        0 15px 20px 0 rgba(var(--bs-gray-rgb), 0.7),
-        0 5px 5px 0 rgba(var(--bs-gray-rgb), 0.3);
+    padding-left: 0.25rem;
+    transform: translateY(-100%);
+    position: relative;
+    top: 10px;
 }
 
-/* 도서 디폴트 크기: 152*225*35 */
+.bookshelf .more {
+    width: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: -16px;
+}
+
 .bookshelf .book {
-    --book-width: 152px; /* 도서별 사이즈 => JS로 동적 세팅 */
-    --book-height: 225px;
-    --book-depth: 35px;
+    --book-width: calc(152px * 0.85);
+    --book-height: calc(225px * 0.85);
+    --book-depth: calc(35px * 0.85);
     position: relative;
     transform-style: preserve-3d;
     transform: translateZ(0) rotateY(0);
@@ -551,10 +579,9 @@
     height: 100%;
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     line-height: 0.875rem;
-    font-weight: 600;
+    font-weight: 500;
     color: #fff;
     writing-mode: vertical-lr;
     /*text-orientation: upright;*/

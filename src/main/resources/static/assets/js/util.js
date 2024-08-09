@@ -162,13 +162,13 @@ function globalLoading(bool) {
 function showNoResultMessage() {
     const resultMsg = document.getElementById('resultMsg');
     if (resultMsg) {
-        resultMsg.style.display = 'block';
+        resultMsg.toggle(true);
     }
 }
 function hideNoResultsMessage() {
     const resultMsg = document.getElementById('resultMsg');
     if (resultMsg) {
-        resultMsg.style.display = 'none';
+        resultMsg.toggle(false);
     }
 }
 
@@ -178,6 +178,8 @@ function hideNoResultsMessage() {
 function setPagination(curPage, lastPage) {
     const paginationWrap = document.getElementById('paginationWrap');
     if (paginationWrap) {
+        paginationWrap.toggle(lastPage > 0);
+
         const pageButtonWrap = paginationWrap.querySelector('.pagination');
         const searchParams = new URLSearchParams(window.location.search);
 
@@ -319,7 +321,7 @@ function setBirthdateSelectOptions(targetElement) {
  * 토글 Hide/Show 함수
  */
 Element.prototype.toggle = function(isShow) {
-    this.style.display = isShow ? 'revert' : 'none';
+    this.classList.toggle('hidden', !isShow)
 };
 
 /**

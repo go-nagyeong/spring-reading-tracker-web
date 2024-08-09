@@ -1,9 +1,10 @@
 <div class="modal-header">
-    <h5 class="modal-title">새 컬렉션 생성</h5>
+    <h5 class="modal-title">컬렉션 수정</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form id="collectionForm">
     <div class="modal-body">
+        <input type="hidden" name="id">
         <input type="text" class="form-control" id="collectionName" name="collectionName" placeholder="컬렉션 이름">
     </div>
     <div class="modal-footer">
@@ -18,21 +19,26 @@
      */
     document.getElementById('collectionForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        createCollection();
+        saveCollection();
     })
 
-    function createCollection() {
-        const form = document.getElementById('collectionForm');
+    function saveCollection() {
+        globalLoading(true);
 
-        const promise = axios.post('/api/collections', formToJson(new FormData(form)));
+        const form = document.getElementById('collectionForm');
+        const data = formToJson(new FormData(form));
+
+        const promise = data.id
+            ? axios.put(`/api/collections/${data.id}`, data)
+            : axios.post('/api/collections', data);
 
         const onSuccess = (result) => {
-            const newCollection = result.data;
-            if (newCollection) {
-                setCollectionButtonOptions([newCollection]);
-                setCollectionButtonEvent();
-                if (typeof setFilterButtonEvent == 'function') {
-                    setFilterButtonEvent();
+            const savedCollection = result.data;
+            if (savedCollection) {
+                if (!data.id && typeof onCreateCollection == 'function') {
+                    onCreateCollection(savedCollection);
+                } else if (data.id && typeof onUpdateCollection == 'function') {
+                    onUpdateCollection(savedCollection);
                 }
             }
             closeUIComponents();

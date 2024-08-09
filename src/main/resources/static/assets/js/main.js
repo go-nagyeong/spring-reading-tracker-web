@@ -235,7 +235,7 @@ let menu, animate;
             if (input.value > parseInt(input.max)) {
                 input.value = input.max;
             }
-        }4
+        }
 
         // 휴대폰번호 input 값에 자동 하이픈
         if (input.classList.contains('phone-num')) {
@@ -244,6 +244,21 @@ let menu, animate;
                 .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
         }
     });
+
+    // 양방향 switch label 클릭 이벤트
+    const labelElements = document.querySelectorAll('label');
+    labelElements.forEach(el => {
+        const parentEl = el.parentElement;
+        const switchEl = parentEl.querySelector('input');
+        const isSwitchLabel = switchEl.getAttribute('role') === 'switch';
+        const hasTwoLabels = parentEl.querySelectorAll('label').length === 2;
+        if (isSwitchLabel && hasTwoLabels) {
+            el.addEventListener('click', function() {
+                switchEl.checked = el.dataset.switch === 'on'; // data-switch = on/off
+                switchEl.dispatchEvent(new Event('change')); // change trigger
+            })
+        }
+    })
 
     // 버튼 클릭 후 자동 focus out(blur) 되게
     document.addEventListener('click', function (event) {

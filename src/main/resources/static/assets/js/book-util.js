@@ -213,7 +213,7 @@ function setCollectionButtonEvent() {
             } else if (el.classList.contains('new-collection-modal-btn')) {
                 // 새 컬렉션 생성 모달 버튼
                 const target = document.querySelector(el.dataset.bsTarget + ' .modal-content');
-                loadHTML('/books/partials/modal-new-collection', target);
+                loadHTML('/my/partials/modal-collection-form', target);
 
             } else {
                 originData['collectionId'] = el.dataset.value;
@@ -372,4 +372,15 @@ function onUpdateReadingInfo(readingInfo, targetElement) {
     updateReadingListButtonUI(readingInfo?.readingStatus, targetElement);
     updateCollectionButtonUI(readingInfo?.collectionId, targetElement);
     updateReadingCarouselCardUI(readingInfo?.readingStatus);
+}
+
+/**
+ * 컬렉션 생성 시 공통 업데이트 사항
+ */
+function onCreateCollection(newCollection) {
+    setCollectionButtonOptions([newCollection]); // 컬렉션 목록 다시 세팅
+    setCollectionButtonEvent(); // 버튼 이벤트 세팅
+    if (typeof setFilterButtonEvent == 'function') { // 컬렉션 필터 목록도 다시 세팅
+        setFilterButtonEvent();
+    }
 }

@@ -2,6 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.BookCollectionDto;
 import com.readingtracker.boochive.service.CollectionService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/collections")
@@ -24,15 +23,27 @@ public class CollectionController {
      * GET - 사용자 컬렉션 목록 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String, List<BookCollection>>>> getUserCollectionList(@AuthenticationPrincipal User user) {
-        List<BookCollection> collectionList = collectionService.getCollectionsByUser(user.getId());
+    public ResponseEntity<ApiResponse<Map<String, List<BookCollectionDto>>>> getUserCollectionList(@AuthenticationPrincipal User user) {
+        List<BookCollectionDto> collectionList = collectionService.getCollectionsByUser(user.getId());
 
-        Map<String, List<BookCollection>> data = new HashMap<>();
+        Map<String, List<BookCollectionDto>> data = new HashMap<>();
         data.put("collectionList", collectionList);
 
         return ApiResponse.success(null, data);
     }
 
+    /**
+     * GET - 사용자 컬렉션 목록 조회 (컬렉션 책 목록 포함)
+     */
+    @GetMapping("/with-books/me")
+    public ResponseEntity<ApiResponse<Map<String, List<BookCollectionDto>>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user) {
+        List<BookCollectionDto> collectionList = collectionService.getCollectionsByUserWithBooks(user.getId());
+
+        Map<String, List<BookCollectionDto>> data = new HashMap<>();
+        data.put("collectionList", collectionList);
+
+        return ApiResponse.success(null, data);
+    }
 
     /**
      * POST - 컬렉션 생성
@@ -59,6 +70,16 @@ public class CollectionController {
         BookCollection savedCollection = collectionService.updateCollection(id, bookCollection);
 
         return ApiResponse.success("컬렉션이 수정되었습니다.", savedCollection);
+    }
+
+    /**
+     * DELETE - 컬렉션 삭제
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Object>> deleteCollection(@PathVariable Long id) {
+        collectionService.deleteCollectionById(id);
+
+        return ApiResponse.success("컬렉션이 삭제되었습니다.");
     }
 
     /**
