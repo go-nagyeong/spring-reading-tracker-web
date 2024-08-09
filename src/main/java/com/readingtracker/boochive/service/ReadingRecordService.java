@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +40,12 @@ public class ReadingRecordService {
     @Transactional(readOnly = true)
     public List<ReadingRecord> getCompletedReadingRecordsByUserAndBook(Long userId, String bookIsbn) {
         return readingRecordRepository.findAllByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
+    }
+
+    // 로그인 유저의 책 완독 수 계산
+    @Transactional(readOnly = true)
+    public Integer getUserBookReadCount(Long userId, String bookIsbn) {
+        return readingRecordRepository.countByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
     }
 
     /**

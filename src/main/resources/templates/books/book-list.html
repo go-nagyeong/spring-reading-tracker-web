@@ -116,7 +116,11 @@
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
 <script>
+    let userCollectionList = [];
+
     document.addEventListener('DOMContentLoaded', function (e) {
+        // 로그인 유저 컬렉션 목록 가져오기
+        getUserCollectionList().then(list => userCollectionList = list);
         searchBooks();
     });
 
@@ -153,7 +157,7 @@
      * 책 검색 결과 html 동적 추가
      */
     function appendBookElement(data) {
-        const { searchResult, collectionList, readingInfoList } = data;
+        const { searchResult, readingInfoList } = data;
         const bookListWrap = document.getElementById('bookSearchList');
         const templateTag = bookListWrap.querySelector('.template-tag');
 
@@ -182,8 +186,8 @@
                 updateBookStatistics(item, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
-                if (collectionList.length) {
-                    setCollectionButtonOptions(collectionList, targetElement);
+                if (userCollectionList.length) {
+                    setCollectionButtonOptions(userCollectionList, targetElement);
                 }
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트

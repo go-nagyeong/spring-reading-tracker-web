@@ -16,4 +16,6 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
     List<ReadingRecord> findAllByUserIdAndBookIsbnAndEndDateIsNotNull(Long userId, String bookIsbn);
 
     List<ReadingRecord> findAllByUserIdAndBookIsbn(Long userId, String bookIsbn);
+
+    Integer countByUserIdAndBookIsbnAndEndDateIsNotNull(Long userId, String bookIsbn);
 }

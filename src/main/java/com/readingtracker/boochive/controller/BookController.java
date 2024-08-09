@@ -1,7 +1,8 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.AladdinAPIResponseDto;
+import com.readingtracker.boochive.dto.BookDto;
+import com.readingtracker.boochive.dto.PageableBookListDto;
 import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.ApiResponse;
@@ -23,9 +24,8 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
-    private final BookService bookService;
+    private final ReviewService reviewService;
     private final ReadingBookService readingBookService;
-    private final CollectionService collectionService;
 
     /**
      * 책 검색
@@ -34,24 +34,16 @@ public class BookController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> searchBooks(@RequestParam String query,
                                                                         @RequestParam(defaultValue = "1") Integer page,
                                                                         @AuthenticationPrincipal User user) {
-        Map<String, Object> data = new HashMap<>();
-
         // 책 검색 결과
-        AladdinAPIResponseDto searchResult = aladdinOpenAPIHandler.searchBooks(page, query, QueryType.TITLE);
+        PageableBookListDto searchResult = aladdinOpenAPIHandler.searchBooks(page, query, QueryType.TITLE);
 
-        // 책 관련 통계 (리뷰 개수, 평균 평점, 독자 수)
-        List<String> bookIsbnList = new ArrayList<>();
-        for (AladdinAPIResponseDto.Item book : searchResult.getItem()) {
-            Map<String, Object> bookSubInfo = bookService.getBookSubInfo(book.getIsbn13());
-            book.setReviewCount((Integer) bookSubInfo.get("reviewCount"));
-            book.setAverageRating((BigDecimal) bookSubInfo.get("averageRating"));
-            book.setReaderCount((Integer) bookSubInfo.get("readerCount"));
-
-            bookIsbnList.add(book.getIsbn13());
-        }
-
-        // 사용자의 컬렉션 목록
-        List<BookCollection> collectionList = collectionService.getCollectionsByUser(user.getId());
+        // 책 통계 정보 세팅
+        List<String> bookIsbnList = searchResult.getItem().stream()
+                .map(book -> {
+                    setBookStatistics(book);
+                    return book.getIsbn13();
+                })
+                .collect(Collectors.toList());
 
         // 사용자의 독서 상태 및 컬렉션 정보
         Map<String, ReadingBook> readingInfoList = readingBookService
@@ -59,8 +51,8 @@ public class BookController {
                 .stream()
                 .collect(Collectors.toMap(ReadingBook::getBookIsbn, readingBook -> readingBook));
 
+        Map<String, Object> data = new HashMap<>();
         data.put("searchResult", searchResult);
-        data.put("collectionList", collectionList);
         data.put("readingInfoList", readingInfoList);
 
         return ApiResponse.success(null, data);
@@ -72,30 +64,30 @@ public class BookController {
     @GetMapping("/detail/{isbn}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getBookDetails(@PathVariable String isbn,
                                                                            @AuthenticationPrincipal User user) {
-        Map<String, Object> data = new HashMap<>();
-
         // 책 조회 결과
-        AladdinAPIResponseDto lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
-        AladdinAPIResponseDto.Item book = lookupResult.getItem().get(0);
+        PageableBookListDto lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
+        BookDto book = lookupResult.getItem().get(0);
 
-        // 책 관련 통계 (리뷰 개수, 평균 평점, 독자 수)
-        Map<String, Object> bookSubInfo = bookService.getBookSubInfo(book.getIsbn13());
-        book.setReviewCount((Integer) bookSubInfo.get("reviewCount"));
-        book.setAverageRating((BigDecimal) bookSubInfo.get("averageRating"));
-        book.setReaderCount((Integer) bookSubInfo.get("readerCount"));
-
-        // 사용자의 컬렉션 목록
-        List<BookCollection> collectionList = collectionService.getCollectionsByUser(user.getId());
+        // 책 통계 정보 세팅
+        setBookStatistics(book);
 
         // 사용자의 독서 상태 및 컬렉션 정보
         Optional<ReadingBook> readingInfo = readingBookService.findReadingBookByUserAndBook(user.getId(), isbn);
 
+        Map<String, Object> data = new HashMap<>();
         data.put("lookupResult", lookupResult);
-        data.put("collectionList", collectionList);
-        if (readingInfo.isPresent()) {
-            data.put("readingInfo", readingInfo);
-        }
+        readingInfo.ifPresent(info -> data.put("readingInfo", info));
 
         return ApiResponse.success(null, data);
+    }
+
+    /**
+     * (공통 메서드) 책 통계 정보 세팅 - 리뷰 개수, 평균 평점, 독자 수
+     */
+    private void setBookStatistics(BookDto book) {
+        Map<String, Object> reviewInfo = reviewService.getBookReviewInfo(book.getIsbn13());
+        book.setReviewCount((Integer) reviewInfo.get("reviewCount"));
+        book.setAverageRating((BigDecimal) reviewInfo.get("averageRating"));
+        book.setReaderCount(readingBookService.getBookReaderCount(book.getIsbn13()));
     }
 }

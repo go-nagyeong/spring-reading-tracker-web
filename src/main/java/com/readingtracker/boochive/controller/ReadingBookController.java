@@ -1,12 +1,15 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.AladdinAPIResponseDto;
+import com.readingtracker.boochive.dto.BookDto;
+import com.readingtracker.boochive.dto.PageableBookListDto;
 import com.readingtracker.boochive.dto.BatchUpdateDto;
 import com.readingtracker.boochive.dto.ReadingBookFilterDto;
+import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.service.BookService;
 import com.readingtracker.boochive.service.ReadingBookService;
-import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
+import com.readingtracker.boochive.service.ReadingRecordService;
+import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +31,8 @@ public class ReadingBookController {
 
     private final ReadingBookService readingBookService;
     private final BookService bookService;
-    private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
+    private final ReviewService reviewService;
+    private final ReadingRecordService readingRecordService;
 
     /**
      * GET - 사용자 독서 목록 조회
@@ -38,31 +42,14 @@ public class ReadingBookController {
                                                                                    @PageableDefault(value = 3) Pageable pageable,
                                                                                    @AuthenticationPrincipal User user) {
         // 사용자의 독서 책 목록 (페이지네이션 적용)
-        Page<ReadingBook> pagingBookList = readingBookService
+        Page<ReadingBook> readingList = readingBookService
                 .getReadingListByUserAndOtherFilter(user.getId(), filterDto, pageable);
 
-        // TODO: 성능 문제 -> 조회할 때 API로 매번 불러오지 말고 책장에 책 추가할 때마다 백그라운드에서 DB에 데이터 저장하는 방식 사용하기
-        List<AladdinAPIResponseDto.Item> bookList = new ArrayList<>();
-        pagingBookList.forEach(readingBook -> {
-            AladdinAPIResponseDto lookupResult = aladdinOpenAPIHandler.lookupBook(readingBook.getBookIsbn());
-            bookList.add(lookupResult.getItem().get(0));
-        });
-        AladdinAPIResponseDto getListResult = new AladdinAPIResponseDto();
-        getListResult.setItem(bookList);
-
-        // 페이지네이션 정보 세팅
-        setPaginationInfo(getListResult, pagingBookList);
-
-        // 책 관련 통계 (평점, 완독 수, 노트 수)
-        for (AladdinAPIResponseDto.Item book : getListResult.getItem()) {
-            Map<String, Integer> bookSubInfo = bookService.getUserBookSubInfo(user.getId(), book.getIsbn13());
-            book.setUserRating(bookSubInfo.get("userRating"));
-            book.setUserReadCount(bookSubInfo.get("userReadCount"));
-            book.setUserNoteCount(bookSubInfo.get("userNoteCount"));
-        }
+        // 첵 목록 데이터 전처리
+        PageableBookListDto getListResult = createPageableBookListDto(readingList, user.getId());
 
         // 사용자의 독서 상태 정보
-        Map<String, ReadingBook> readingInfoList = pagingBookList
+        Map<String, ReadingBook> readingInfoList = readingList
                 .stream()
                 .collect(Collectors.toMap(ReadingBook::getBookIsbn, readingBook -> readingBook));
 
@@ -135,24 +122,52 @@ public class ReadingBookController {
     }
 
     /**
+     * (공통 메서드) 책 목록 데이터 전처리 > 페이지네이션 정보 세팅 및 DTO 변환
+     */
+    private PageableBookListDto createPageableBookListDto(Page<ReadingBook> readingList, Long userId) {
+        // DTO 변환
+        List<BookDto> bookList = readingList.stream()
+                .map(readingBook -> bookService.findBookByIsbn(readingBook.getBookIsbn())
+                        .map(BookMapper.INSTANCE::toDto)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .peek(book -> setReadingBookStatistics(book, userId)) // 책 통계 정보 세팅
+                .toList();
+
+        PageableBookListDto bookListDto = new PageableBookListDto();
+        bookListDto.setItem(bookList);
+
+        // 페이지네이션 정보 세팅
+        setPaginationInfo(bookListDto, readingList);
+
+        return bookListDto;
+    }
+
+    /**
      * (공통 메서드) 페이지네이션 정보 세팅
      */
-    private void setPaginationInfo(AladdinAPIResponseDto result, Page<ReadingBook> readingBookPage) {
-        result.setStartIndex(readingBookPage.getNumber() + 1);
-        result.setItemsPerPage(readingBookPage.getSize());
-        result.setTotalResults((int) readingBookPage.getTotalElements());
-        result.setTotalPages(readingBookPage.getTotalPages());
+    private void setPaginationInfo(PageableBookListDto result, Page<ReadingBook> readingBookPage) {
+        result.setStartIndex(readingBookPage.getNumber() + 1); // 현재 페이지
+        result.setItemsPerPage(readingBookPage.getSize()); // 페이지당 책 개수
+        result.setTotalResults((int) readingBookPage.getTotalElements()); // 전체 책 개수
+        result.setTotalPages(readingBookPage.getTotalPages()); // 전체 페이지 수
+    }
+
+    /**
+     * (공통 메서드) 책 통계 정보 세팅 - 리뷰 개수, 평균 평점, 독자 수
+     */
+    private void setReadingBookStatistics(BookDto book, Long userId) {
+        reviewService.findReviewByUserAndBook(userId, book.getIsbn13())
+                .ifPresent(review -> book.setUserRating(review.getRating()));
+        book.setUserReadCount(readingRecordService.getUserBookReadCount(userId, book.getIsbn13()));
+        book.setUserNoteCount(0); // TODO: 노트 수 추가 로직
     }
 
     /**
      * (공통 메서드) 독서 목록 업데이트 시 관련 데이터 리로드 (독자 수, 완독 수)
      */
     private void onUpdateReadingBook(Map<String, Object> data, String bookIsbn, Long userId) {
-        // 독자 수
-        Map<String, Object> bookSubInfo = bookService.getBookSubInfo(bookIsbn);
-        Map<String, Integer> userBookSubInfo = bookService.getUserBookSubInfo(userId, bookIsbn);
-
-        data.put("readerCount", bookSubInfo.get("readerCount"));
-        data.put("userReadCount", userBookSubInfo.get("userReadCount"));
+        data.put("readerCount", readingBookService.getBookReaderCount(bookIsbn)); // 책의 독자 수
+        data.put("userReadCount", readingRecordService.getUserBookReadCount(userId, bookIsbn)); // 유저의 완독 수
     }
 }

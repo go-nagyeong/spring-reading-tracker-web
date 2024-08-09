@@ -134,18 +134,18 @@
 
                                 <div class="info-rating-wrap mt-auto">
                                     <div class="info-rating">
-                                        <span class="rating-grade d-none d-sm-inline-block">
+                                        <span class="rating-grade mb-2 d-none d-sm-inline-block">
                                             <select class="star-rating star-rt-sm" data-value="" data-range="10" disabled>
                                             </select>
                                         </span>
-                                        <span class="rating-grade d-block d-sm-none">
+                                        <span class="rating-grade mb-2 d-block d-sm-none">
                                             <select class="star-rating star-rt-sm non-label" data-value="" data-range="10"
                                                     disabled></select>
                                         </span>
-                                        <span class="rating-detail">
-                                            <span class="me-1">노트 <em class="note-cnt">0</em></span>
+                                        <div class="rating-detail">
+                                            <span>노트 <em class="note-cnt">0</em></span>
                                             <span>완독 <em class="read-cnt">0</em></span>
-                                        </span>
+                                        </div>
                                     </div>
 
                                     <div class="item-btn-sm-col d-inline-block d-sm-none">
@@ -170,11 +170,14 @@
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
 <script>
+    let userCollectionList = [];
+
     document.addEventListener('DOMContentLoaded', function (e) {
-        // 컬렉션 필터 목록 세팅
+        // 로그인 유저 컬렉션 목록 가져오기
         getUserCollectionList()
             .then(list => {
-                if (list.length) {
+                userCollectionList = list;
+                if (list.length) { // 컬렉션 필터 목록 세팅
                     setCollectionButtonOptions(list, document.getElementById('filterWrap'));
                 }
                 // (컬렉션 목록 동적 로드 후) 필터 상태 UI 및 이벤트 세팅
@@ -270,26 +273,6 @@
     }
 
     /**
-     * 사용자 컬렉션 목록 조회
-     */
-    async function getUserCollectionList() {
-        const promise = axios.get('/api/collections/me');
-
-        let collectionList = null;
-
-        await new Promise((resolve, reject) => {
-            const onSuccess = (result) => {
-                collectionList = result.data.collectionList;
-                resolve();
-            };
-
-            handleApiResponse(promise, onSuccess);
-        })
-
-        return collectionList;
-    }
-
-    /**
      * 내 책 목록(책장) 조회 (쿼리스트링을 통해 파라미터 자동 처리)
      */
     const commonReloadOnDelete = getBookList; // 공통 메서드 콜백을 위해 (handleReadingBook 함수)
@@ -305,14 +288,13 @@
             const data = result.data;
             const getListResult = data.getListResult;
 
-            if (getListResult.item.length) {
-                await appendBookElement(data);
-                setPagination(getListResult.startIndex, getListResult.totalPages);
+            await appendBookElement(data);
+            setPagination(getListResult.startIndex, getListResult.totalPages);
+            // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+            setCollectionButtonEvent();
+            setReadingListButtonEvent();
 
-                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                setCollectionButtonEvent();
-                setReadingListButtonEvent();
-            } else {
+            if (getListResult.item.length < 1) {
                 showNoResultMessage();
             }
         };
@@ -327,10 +309,6 @@
         const { getListResult, readingInfoList } = data;
         const bookListWrap = document.getElementById('myBookList');
         const templateTag = bookListWrap.querySelector('.template-tag');
-
-        // 사용자 컬렉션 목록 조회
-        let collectionList = null;
-        await getUserCollectionList().then(list => collectionList = list);
 
         if (templateTag) {
             document.querySelector('.total-count').textContent = getListResult.totalResults;
@@ -360,8 +338,8 @@
                 updateUserBookStatistics(item, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
-                if (collectionList.length) {
-                    setCollectionButtonOptions(collectionList, targetElement);
+                if (userCollectionList.length) {
+                    setCollectionButtonOptions(userCollectionList, targetElement);
                 }
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트

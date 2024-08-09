@@ -316,8 +316,16 @@
 <script>
     const queryParameters = window.location.pathname.split('/');
     const bookIsbn = queryParameters[queryParameters.length - 1];
+    let userCollectionList = [];
 
     document.addEventListener('DOMContentLoaded', function (e) {
+        // 로그인 유저 컬렉션 목록 가져오기
+        getUserCollectionList().then(list => {
+            if (list.length) { // 컬렉션 버튼 목록 세팅
+                setCollectionButtonOptions(list);
+            }
+        })
+
         lookupBook(); // 책 상세 조회 결과 세팅
         loadReviewData(); // 리뷰 목록 및 사용자 리뷰 데이터 세팅
 
@@ -403,7 +411,7 @@
      * 책 조회 결과 html 동적 세팅
      */
     function setBookData(data) {
-        const { lookupResult, collectionList, readingInfo } = data;
+        const { lookupResult, readingInfo } = data;
         const categoryTag = (text) => `<span class="tag"><a href="javascript:void(0);">${text}</a></span>`;
 
         const item = lookupResult.item[0];
@@ -428,11 +436,6 @@
 
         // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
         updateBookStatistics(item, targetElement);
-
-        // 컬렉션 버튼 목록 세팅
-        if (collectionList.length) {
-            setCollectionButtonOptions(collectionList);
-        }
 
         // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 관련 UI 업데이트
         onUpdateReadingInfo(readingInfo, targetElement);

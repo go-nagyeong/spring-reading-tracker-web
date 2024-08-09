@@ -1,6 +1,6 @@
 package com.readingtracker.boochive;
 
-import com.readingtracker.boochive.dto.AladdinAPIResponseDto;
+import com.readingtracker.boochive.dto.PageableBookListDto;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.QueryType;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class OpenApiTest {
         AladdinOpenAPIHandler apiHandler = new AladdinOpenAPIHandler(restTemplate, apiUrl, apiKey);
 
         // 검색 결과를 가져옵니다.
-        AladdinAPIResponseDto result = apiHandler.searchBooks(1, "배움", QueryType.TITLE);
+        PageableBookListDto result = apiHandler.searchBooks(1, "배움", QueryType.TITLE);
 
         // 로그에 결과를 출력합니다.
         log.info(result.getStartIndex().toString());
@@ -58,7 +58,7 @@ public class OpenApiTest {
         AladdinOpenAPIHandler apiHandler = new AladdinOpenAPIHandler(restTemplate, apiUrl, apiKey);
 
         // 검색 결과를 가져옵니다.
-        AladdinAPIResponseDto result = apiHandler.lookupBook("9791193059289");
+        PageableBookListDto result = apiHandler.lookupBook("9791193059289");
 
         // 로그에 결과를 출력합니다.
 //        log.info(result);

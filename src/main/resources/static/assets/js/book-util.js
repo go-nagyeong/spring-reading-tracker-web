@@ -299,11 +299,11 @@ function updateBookStatistics(data, targetElement) {
         if (data.hasOwnProperty('averageRating')) {
             if (data.averageRating < 1) {
                 ratingWrap.innerHTML = '';
-                return false;
+            } else {
+                const newRatingEl = rebuildRatingEl(ratingWrap);
+                newRatingEl.dataset.value = data.averageRating;
+                initializeStarRating(newRatingEl);
             }
-            const newRatingEl = rebuildRatingEl(ratingWrap);
-            newRatingEl.dataset.value = data.averageRating;
-            initializeStarRating(newRatingEl);
         }
 
     }
@@ -329,15 +329,34 @@ function updateUserBookStatistics(data, targetElement) {
         if (data.hasOwnProperty('userRating')) {
             if (data.userRating < 1) {
                 ratingWrap.innerHTML = '';
-                return false;
+            } else {
+                const newRatingEl = rebuildRatingEl(ratingWrap);
+                newRatingEl.dataset.value = data.userRating;
+                initializeStarRating(newRatingEl);
             }
-            const newRatingEl = rebuildRatingEl(ratingWrap);
-            newRatingEl.dataset.value = data.userRating;
-            initializeStarRating(newRatingEl);
         }
     }
 }
 
+/**
+ * 로그인 유저 컬렉션 목록 가져오기
+ */
+async function getUserCollectionList() {
+    const promise = axios.get('/api/collections/me');
+
+    let collectionList = null;
+
+    await new Promise((resolve, reject) => {
+        const onSuccess = (result) => {
+            collectionList = result.data.collectionList;
+            resolve();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    })
+
+    return collectionList;
+}
 
 /**
  * 독서 상태 변경시 공통 업데이트 사항
