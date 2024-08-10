@@ -99,9 +99,7 @@ public class ReadingRecordService {
         if (remainingReadingRecords.isEmpty()) {
             // 독서 이력이 없으니 '읽을 예정' 상태로 복구
             readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
-                    .ifPresent(readingBook -> {
-                        readingBook.updateReadingStatus(ReadingStatus.TO_READ);
-                    });
+                    .ifPresent(readingBook -> readingBook.updateReadingStatus(ReadingStatus.TO_READ));
         }
 
         return remainingReadingRecords;

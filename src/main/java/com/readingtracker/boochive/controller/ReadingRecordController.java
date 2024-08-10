@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reading-records")
@@ -27,32 +25,26 @@ public class ReadingRecordController {
      * GET - 로그인 유저의 / 특정 책 / 완독 이력
      */
     @GetMapping("/book/{bookIsbn}/me/completed")
-    public ResponseEntity<ApiResponse<Map<String, List<ReadingRecord>>>> getCompletedReadingRecords(@PathVariable String bookIsbn,
-                                                                                                    @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<List<ReadingRecord>>> getCompletedReadingRecords(@PathVariable String bookIsbn,
+                                                                                       @AuthenticationPrincipal User user) {
         List<ReadingRecord> completedReadingRecordList =
                 readingRecordService.getCompletedReadingRecordsByUserAndBook(user.getId(), bookIsbn);
 
-        Map<String, List<ReadingRecord>> data = new HashMap<>();
-        data.put("completedReadingRecordList", completedReadingRecordList);
-
-        return ApiResponse.success(null, data);
+        return ApiResponse.success(null, completedReadingRecordList);
     }
 
     /**
      * GET - 로그인 유저의 / 특정 책 / 아직 읽는 중인 가장 최근 독서 이력
      */
     @GetMapping("/book/{bookIsbn}/me/latest")
-    public ResponseEntity<ApiResponse<Map<String, ReadingRecord>>> getLatestReadingRecord(@PathVariable String bookIsbn,
-                                                                                          @AuthenticationPrincipal User user) {
-        Map<String, ReadingRecord> data = new HashMap<>();
-
-        readingRecordService.findLatestReadingRecordByUserAndBook(user.getId(), bookIsbn)
-                .ifPresent(record -> {
+    public ResponseEntity<ApiResponse<ReadingRecord>> getLatestReadingRecord(@PathVariable String bookIsbn,
+                                                                             @AuthenticationPrincipal User user) {
+        return readingRecordService.findLatestReadingRecordByUserAndBook(user.getId(), bookIsbn)
+                .map(record -> {
                     record.updateDDay(calculateDDay(record.getStartDate()));
-                    data.put("latestReadingRecord", record);
-                });
-
-        return ApiResponse.success(null, data);
+                    return ApiResponse.success(null, record);
+                })
+                .orElseGet(() -> ApiResponse.success(null));
     }
 
     /**

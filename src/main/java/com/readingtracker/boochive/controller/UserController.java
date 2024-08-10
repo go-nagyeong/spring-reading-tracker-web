@@ -36,13 +36,10 @@ public class UserController {
      * GET - 로그인 유저 정보 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String, UserDto>>> getLoginUserDetail(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<UserDto>> getLoginUserDetail(@AuthenticationPrincipal User user) {
         UserDto userDto = UserMapper.INSTANCE.toDto(user);
 
-        Map<String, UserDto> data = new HashMap<>();
-        data.put("user", userDto);
-
-        return ApiResponse.success(null, data);
+        return ApiResponse.success(null, userDto);
     }
 
     /**
@@ -80,8 +77,8 @@ public class UserController {
      */
     @PutMapping("/{id}/password")
     public ResponseEntity<ApiResponse<Object>> updatePassword(@PathVariable Long id,
-                                                                           @Valid @RequestBody PasswordDto passwordDto,
-                                                                           BindingResult bindingResult) {
+                                                              @Valid @RequestBody PasswordDto passwordDto,
+                                                              BindingResult bindingResult) {
         // 유효성 검사
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMap = handleValidationErrors(bindingResult);
@@ -97,9 +94,9 @@ public class UserController {
      * DELETE - 계정 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Map<String, String>>> deleteAccount(@PathVariable Long id,
-                                                                          HttpServletRequest request,
-                                                                          HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<Object>> deleteAccount(@PathVariable Long id,
+                                                             HttpServletRequest request,
+                                                             HttpServletResponse response) {
         userService.deleteUserById(id);
         clearCookies(request, response);
 

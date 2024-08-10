@@ -129,7 +129,7 @@
         const promise = axios.get('/api/collections/with-books/me');
 
         const onSuccess = async (result) => {
-            const collectionList = result.data.collectionList;
+            const collectionList = result.data;
 
             if (collectionList.length) {
                 await appendCollectionElement(collectionList);

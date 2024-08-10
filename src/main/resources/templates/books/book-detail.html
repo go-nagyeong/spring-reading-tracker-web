@@ -554,7 +554,7 @@
         const promise = axios.get(`/api/reviews/book/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
-            const review = result.data.review;
+            const review = result.data;
             const modalForm = document.getElementById('reviewForm');
             const starRatingEl = modalForm.querySelector('.star-rating');
 
@@ -618,7 +618,7 @@
         const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest`);
 
         const onSuccess = (result) => {
-            const latestReadingRecord = result.data.latestReadingRecord;
+            const latestReadingRecord = result.data;
             const readingRecordForm = document.getElementById('readingRecordForm');
 
             if (latestReadingRecord) {
@@ -638,7 +638,7 @@
         const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/completed`);
 
         const onSuccess = (result) => {
-            const completedReadingRecordList = result.data.completedReadingRecordList;
+            const completedReadingRecordList = result.data;
             const recordListWrap = document.getElementById('recordListWrap');
             const templateTag = recordListWrap.querySelector('.template-tag');
 

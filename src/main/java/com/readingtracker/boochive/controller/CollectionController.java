@@ -23,26 +23,20 @@ public class CollectionController {
      * GET - 사용자 컬렉션 목록 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String, List<BookCollectionDto>>>> getUserCollectionList(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<List<BookCollectionDto>>> getUserCollectionList(@AuthenticationPrincipal User user) {
         List<BookCollectionDto> collectionList = collectionService.getCollectionsByUser(user.getId());
 
-        Map<String, List<BookCollectionDto>> data = new HashMap<>();
-        data.put("collectionList", collectionList);
-
-        return ApiResponse.success(null, data);
+        return ApiResponse.success(null, collectionList);
     }
 
     /**
      * GET - 사용자 컬렉션 목록 조회 (컬렉션 책 목록 포함)
      */
     @GetMapping("/with-books/me")
-    public ResponseEntity<ApiResponse<Map<String, List<BookCollectionDto>>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<List<BookCollectionDto>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user) {
         List<BookCollectionDto> collectionList = collectionService.getCollectionsByUserWithBooks(user.getId());
 
-        Map<String, List<BookCollectionDto>> data = new HashMap<>();
-        data.put("collectionList", collectionList);
-
-        return ApiResponse.success(null, data);
+        return ApiResponse.success(null, collectionList);
     }
 
     /**

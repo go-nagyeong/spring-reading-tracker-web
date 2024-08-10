@@ -32,7 +32,7 @@ public class ReviewController {
     @GetMapping("/book/{bookIsbn}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllReviews(@PathVariable String bookIsbn,
                                                                           @AuthenticationPrincipal User user) {
-        List<ReviewDto> reviewList = reviewService.getReviewsByBook(bookIsbn);
+        List<ReviewDto> reviewList = reviewService.getLatestReviewsByBook(bookIsbn);
         // 사용자 리뷰
         Optional<ReviewDto> userReview = reviewList.stream()
                 .filter(review -> review.getReviewerId().equals(user.getId()))
@@ -49,14 +49,11 @@ public class ReviewController {
      * GET - 특정 책의 로그인 유저 리뷰 조회
      */
     @GetMapping("/book/{bookIsbn}/me")
-    public ResponseEntity<ApiResponse<Map<String, ReviewDto>>> getUserReview(@PathVariable String bookIsbn,
-                                                                          @AuthenticationPrincipal User user) {
-        Map<String, ReviewDto> data = new HashMap<>();
-
-        reviewService.findReviewByUserAndBook(user.getId(), bookIsbn)
-                .ifPresent(value -> data.put("review", value));
-
-        return ApiResponse.success(null, data);
+    public ResponseEntity<ApiResponse<ReviewDto>> getUserReview(@PathVariable String bookIsbn,
+                                                                @AuthenticationPrincipal User user) {
+        return reviewService.findReviewByUserAndBook(user.getId(), bookIsbn)
+                .map(review -> ApiResponse.success(null, review))
+                .orElseGet(() -> ApiResponse.success(null));
     }
 
     /**
@@ -64,7 +61,7 @@ public class ReviewController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<ReviewDto>> createReview(@RequestBody Review review,
-                                                            @AuthenticationPrincipal User user) {
+                                                               @AuthenticationPrincipal User user) {
         validateReview(review);
 
         review.updateUser(user); // 사용자 ID 세팅
@@ -78,7 +75,7 @@ public class ReviewController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ReviewDto>> updateReview(@PathVariable Long id,
-                                                            @RequestBody Review review) {
+                                                               @RequestBody Review review) {
         validateReview(review);
 
         ReviewDto savedReview = reviewService.updateReview(id, review);

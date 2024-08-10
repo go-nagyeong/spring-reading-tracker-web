@@ -42,7 +42,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewDto> getReviewsByBook(String bookIsbn) {
+    public List<ReviewDto> getLatestReviewsByBook(String bookIsbn) {
         return reviewRepository.findAllByBookIsbnOrderByIdDesc(bookIsbn)
                 .stream()
                 .map(ReviewMapper.INSTANCE::toDto)

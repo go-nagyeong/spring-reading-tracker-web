@@ -253,7 +253,7 @@ function setReadingRecordCardData() {
     const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest`);
 
     const onSuccess = (result) => {
-        const latestReadingRecord = result.data.latestReadingRecord;
+        const latestReadingRecord = result.data;
         const cardEl = document.getElementById('readingDDayCard');
         cardEl.querySelector('.start-date').textContent = latestReadingRecord.startDate;
         cardEl.querySelector('.d-day').textContent = latestReadingRecord.dday;
@@ -266,7 +266,7 @@ function setReadRecordCardData() {
     const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/completed`);
 
     const onSuccess = (result) => {
-        const completedReadingRecordList = result.data.completedReadingRecordList;
+        const completedReadingRecordList = result.data;
         const latestRecord = completedReadingRecordList[completedReadingRecordList.length - 1]
         const cardEl = document.getElementById('readDateCard');
         cardEl.querySelector('.start-date').textContent = latestRecord.startDate;
@@ -348,7 +348,7 @@ async function getUserCollectionList() {
 
     await new Promise((resolve, reject) => {
         const onSuccess = (result) => {
-            collectionList = result.data.collectionList;
+            collectionList = result.data;
             resolve();
         };
 

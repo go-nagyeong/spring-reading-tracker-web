@@ -44,7 +44,7 @@ async function getLoginUserDetail() {
     // handleApiResponse를 호출하면서 성공 콜백을 정의
     await new Promise((resolve, reject) => {
         const onSuccess = (result) => {
-            loginUserDetail = result.data.user;
+            loginUserDetail = result.data;
             resolve();
         }
 
