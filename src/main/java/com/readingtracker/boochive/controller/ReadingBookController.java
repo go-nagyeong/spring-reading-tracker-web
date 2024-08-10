@@ -43,7 +43,7 @@ public class ReadingBookController {
                                                                                    @AuthenticationPrincipal User user) {
         // 사용자의 독서 책 목록 (페이지네이션 적용)
         Page<ReadingBook> readingList = readingBookService
-                .getReadingListByUserAndOtherFilter(user.getId(), filterDto, pageable);
+                .getReadingListByUserAndOtherFilter(filterDto, pageable, user);
 
         // 첵 목록 데이터 전처리
         PageableBookListDto getListResult = createPageableBookListDto(readingList, user.getId());

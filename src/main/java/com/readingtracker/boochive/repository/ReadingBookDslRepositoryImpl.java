@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.readingtracker.boochive.domain.QPurchaseHistory;
 import com.readingtracker.boochive.domain.QReadingBook;
 import com.readingtracker.boochive.domain.ReadingBook;
+import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.ReadingBookFilterDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,7 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ReadingBook> getReadingBooksWithFilter(Long userId,
-                                                       ReadingBookFilterDto filterDto,
-                                                       Pageable pageable) {
-
+    public Page<ReadingBook> getReadingBooksWithFilter(ReadingBookFilterDto filterDto, Pageable pageable, User user) {
         // QClass
         QReadingBook readingBook = QReadingBook.readingBook;
         QPurchaseHistory purchaseHistory = QPurchaseHistory.purchaseHistory;
@@ -36,6 +34,7 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
         JPQLQuery<ReadingBook> query = queryFactory
                 .selectFrom(readingBook)
                 .where(
+                        readingBook.user.eq(user),
                         equalsReadingStatus(readingBook, filterDto),
                         equalsCollectionId(readingBook, filterDto),
                         equalsOwn(purchaseHistory, filterDto)

@@ -1,9 +1,6 @@
 package com.readingtracker.boochive.service;
 
-import com.readingtracker.boochive.domain.Book;
-import com.readingtracker.boochive.domain.ReadingBook;
-import com.readingtracker.boochive.domain.ReadingRecord;
-import com.readingtracker.boochive.domain.ReadingStatus;
+import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
@@ -53,9 +50,9 @@ public class ReadingBookService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReadingBook> getReadingListByUserAndOtherFilter(Long userId, ReadingBookFilterDto filterDto,
-                                                                Pageable pageable) {
-        return readingBookDslRepository.getReadingBooksWithFilter(userId, filterDto, pageable);
+    public Page<ReadingBook> getReadingListByUserAndOtherFilter(ReadingBookFilterDto filterDto, Pageable pageable,
+                                                                User user) {
+        return readingBookDslRepository.getReadingBooksWithFilter(filterDto, pageable, user);
     }
 
     // 책 독자 수 계산
