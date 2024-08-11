@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class BookDto {
+public class BookParameter {
 
     private String title;
     private String author;
@@ -24,21 +24,21 @@ public class BookDto {
     private List<String> categoryList; // API 조회 결과 전처리 변수
     private SubInfo subInfo;
 
-    // 이후 조회 변수 (책 검색 결과 화면 데이터)
-    private BigDecimal averageRating;
-    private Integer reviewCount;
-    private Integer readerCount;
-
-    // ----------  (유저 책장 화면 데이터)
-    private Integer userRating;
-    private Integer userNoteCount;
-    private Integer userReadCount;
-
     @Getter
     @Setter
     public static class SubInfo {
 
         private String subTitle;
         private String itemPage;
+
+        // 이후 조회 변수 (책 검색 결과 화면 데이터)
+        private BigDecimal averageRating;
+        private Integer reviewCount;
+        private Integer readerCount;
+
+        // ---------- (유저 책장 화면 데이터)
+        private Integer userRating;
+        private Integer userNoteCount;
+        private Integer userReadCount;
     }
 }

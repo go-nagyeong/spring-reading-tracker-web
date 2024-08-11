@@ -1,11 +1,7 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.BookDto;
-import com.readingtracker.boochive.dto.PageableBookListDto;
-import com.readingtracker.boochive.dto.BatchUpdateDto;
-import com.readingtracker.boochive.dto.ReadingBookFilterDto;
-import com.readingtracker.boochive.mapper.BookMapper;
+import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.service.BookService;
 import com.readingtracker.boochive.service.ReadingBookService;
 import com.readingtracker.boochive.service.ReadingRecordService;
@@ -38,20 +34,19 @@ public class ReadingBookController {
      * GET - 사용자 독서 목록 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserReadingBookList(ReadingBookFilterDto filterDto,
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserReadingBookList(ReadingBookCondition condition,
                                                                                    @PageableDefault(value = 3) Pageable pageable,
                                                                                    @AuthenticationPrincipal User user) {
-        // 사용자의 독서 책 목록 (페이지네이션 적용)
-        Page<ReadingBook> readingList = readingBookService
-                .getReadingListByUserAndOtherFilter(filterDto, pageable, user);
+        // 사용자의 독서 책 목록
+        Page<ReadingBookDetailResponse> readingList = readingBookService
+                .getReadingListWithBookDetailByUserAndFilters(user, condition, pageable);
 
-        // 첵 목록 데이터 전처리
-        PageableBookListDto getListResult = createPageableBookListDto(readingList, user.getId());
+        // 데이터 전처리 (Page<ReadingBookDetailResponse> -> PageableBookListResponse)
+        PageableBookListResponse getListResult = createPageableBookList(readingList, user.getId());
 
         // 사용자의 독서 상태 정보
-        Map<String, ReadingBook> readingInfoList = readingList
-                .stream()
-                .collect(Collectors.toMap(ReadingBook::getBookIsbn, readingBook -> readingBook));
+        Map<String, ReadingBookDetailResponse> readingInfoList = readingList.stream()
+                .collect(Collectors.toMap(ReadingBookDetailResponse::getBookIsbn, readingBook -> readingBook));
 
         Map<String, Object> data = new HashMap<>();
         data.put("getListResult", getListResult);
@@ -67,7 +62,7 @@ public class ReadingBookController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@RequestBody ReadingBook readingBook,
                                                                            @AuthenticationPrincipal User user) {
         readingBook.updateUser(user); // 사용자 ID 세팅
-        ReadingBook savedReadingBook = readingBookService.createReadingBook(readingBook);
+        ReadingBookDetailResponse savedReadingBook = readingBookService.createReadingBook(readingBook);
 
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
@@ -84,7 +79,7 @@ public class ReadingBookController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> updateReadingBook(@PathVariable Long id,
                                                                               @RequestBody ReadingBook readingBook,
                                                                               @AuthenticationPrincipal User user) {
-        ReadingBook savedReadingBook = readingBookService.updateReadingBook(id, readingBook);
+        ReadingBookDetailResponse savedReadingBook = readingBookService.updateReadingBook(id, readingBook);
 
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
@@ -100,7 +95,7 @@ public class ReadingBookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteReadingBook(@PathVariable Long id,
                                                                               @AuthenticationPrincipal User user) {
-        ReadingBook existing = readingBookService.findReadingBookById(id).orElseThrow();
+        ReadingBookDetailResponse existing = readingBookService.findReadingBookById(id).orElseThrow();
         String bookIsbn = existing.getBookIsbn();
 
         readingBookService.deleteReadingBookById(id);
@@ -115,52 +110,47 @@ public class ReadingBookController {
      * POST - 독서 목록에서 Batch Delete (일괄 삭제)
      */
     @PostMapping("/batch")
-    public ResponseEntity<ApiResponse<Object>> batchDeleteReadingBooks(@RequestBody BatchUpdateDto<Long> batchUpdateDto) {
-        readingBookService.batchDeleteReadingBooks(batchUpdateDto);
+    public ResponseEntity<ApiResponse<Object>> batchDeleteReadingBooks(@RequestBody BatchUpdateRequest<Long> request) {
+        readingBookService.batchDeleteReadingBooks(request);
 
         return ApiResponse.success("독서 목록에서 삭제되었습니다.");
     }
 
     /**
-     * (공통 메서드) 책 목록 데이터 전처리 > 페이지네이션 정보 세팅 및 DTO 변환
+     * (공통 메서드) 책 목록 데이터 전처리 > DTO 변환
      */
-    private PageableBookListDto createPageableBookListDto(Page<ReadingBook> readingList, Long userId) {
-        // DTO 변환
-        List<BookDto> bookList = readingList.stream()
-                .map(readingBook -> bookService.findBookByIsbn(readingBook.getBookIsbn())
-                        .map(BookMapper.INSTANCE::toDto)
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .peek(book -> setReadingBookStatistics(book, userId)) // 책 통계 정보 세팅
-                .toList();
-
-        PageableBookListDto bookListDto = new PageableBookListDto();
-        bookListDto.setItem(bookList);
+    private PageableBookListResponse createPageableBookList(Page<ReadingBookDetailResponse> readingList, Long userId) {
+        PageableBookListResponse pageableBookList = new PageableBookListResponse();
 
         // 페이지네이션 정보 세팅
-        setPaginationInfo(bookListDto, readingList);
+        pageableBookList.setStartIndex(readingList.getNumber() + 1); // 현재 페이지
+        pageableBookList.setItemsPerPage(readingList.getSize()); // 페이지당 책 개수
+        pageableBookList.setTotalResults((int) readingList.getTotalElements()); // 전체 책 개수
+        pageableBookList.setTotalPages(readingList.getTotalPages()); // 전체 페이지 수
 
-        return bookListDto;
-    }
+        // 책 목록 세팅
+        List<BookParameter> bookList = readingList.stream()
+                .map(readingBook -> {
+                    BookParameter book = readingBook.getBookInfo();
+                    setReadingBookStatistics(book, userId); // 책 통계 정보 세팅
+                    return book;
+                })
+                .toList();
+        pageableBookList.setItem(bookList);
 
-    /**
-     * (공통 메서드) 페이지네이션 정보 세팅
-     */
-    private void setPaginationInfo(PageableBookListDto result, Page<ReadingBook> readingBookPage) {
-        result.setStartIndex(readingBookPage.getNumber() + 1); // 현재 페이지
-        result.setItemsPerPage(readingBookPage.getSize()); // 페이지당 책 개수
-        result.setTotalResults((int) readingBookPage.getTotalElements()); // 전체 책 개수
-        result.setTotalPages(readingBookPage.getTotalPages()); // 전체 페이지 수
+        return pageableBookList;
     }
 
     /**
      * (공통 메서드) 책 통계 정보 세팅 - 리뷰 개수, 평균 평점, 독자 수
      */
-    private void setReadingBookStatistics(BookDto book, Long userId) {
+    private void setReadingBookStatistics(BookParameter book, Long userId) {
+        BookParameter.SubInfo subInfo = book.getSubInfo();
+
         reviewService.findReviewByUserAndBook(userId, book.getIsbn13())
-                .ifPresent(review -> book.setUserRating(review.getRating()));
-        book.setUserReadCount(readingRecordService.getUserBookReadCount(userId, book.getIsbn13()));
-        book.setUserNoteCount(0); // TODO: 노트 수 추가 로직
+                .ifPresent(review -> subInfo.setUserRating(review.getRating()));
+        subInfo.setUserReadCount(readingRecordService.getUserBookReadCount(userId, book.getIsbn13()));
+        subInfo.setUserNoteCount(0); // TODO: 노트 수 추가 로직
     }
 
     /**

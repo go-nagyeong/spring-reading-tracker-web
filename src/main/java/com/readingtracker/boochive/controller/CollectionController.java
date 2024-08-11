@@ -2,7 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.BookCollectionDto;
+import com.readingtracker.boochive.dto.CollectionDetailResponse;
 import com.readingtracker.boochive.service.CollectionService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,8 @@ public class CollectionController {
      * GET - 사용자 컬렉션 목록 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<List<BookCollectionDto>>> getUserCollectionList(@AuthenticationPrincipal User user) {
-        List<BookCollectionDto> collectionList = collectionService.getCollectionsByUser(user.getId());
+    public ResponseEntity<ApiResponse<List<CollectionDetailResponse>>> getUserCollectionList(@AuthenticationPrincipal User user) {
+        List<CollectionDetailResponse> collectionList = collectionService.getCollectionsByUser(user.getId());
 
         return ApiResponse.success(null, collectionList);
     }
@@ -33,8 +33,8 @@ public class CollectionController {
      * GET - 사용자 컬렉션 목록 조회 (컬렉션 책 목록 포함)
      */
     @GetMapping("/with-books/me")
-    public ResponseEntity<ApiResponse<List<BookCollectionDto>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user) {
-        List<BookCollectionDto> collectionList = collectionService.getCollectionsByUserWithBooks(user.getId());
+    public ResponseEntity<ApiResponse<List<CollectionDetailResponse>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user) {
+        List<CollectionDetailResponse> collectionList = collectionService.getCollectionsWithBooksByUser(user.getId());
 
         return ApiResponse.success(null, collectionList);
     }
@@ -43,12 +43,12 @@ public class CollectionController {
      * POST - 컬렉션 생성
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<BookCollection>> createCollection(@RequestBody BookCollection bookCollection,
-                                                                        @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<CollectionDetailResponse>> createCollection(@RequestBody BookCollection bookCollection,
+                                                                                  @AuthenticationPrincipal User user) {
         validateCollection(bookCollection);
 
         bookCollection.updateUser(user); // 사용자 ID 세팅
-        BookCollection savedCollection = collectionService.createCollection(bookCollection);;
+        CollectionDetailResponse savedCollection = collectionService.createCollection(bookCollection);;
 
         return ApiResponse.success("컬렉션이 생성되었습니다.", savedCollection);
     }
@@ -57,11 +57,11 @@ public class CollectionController {
      * PUT - 컬렉션 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<BookCollection>> updateCollection(@PathVariable Long id,
-                                                                        @RequestBody BookCollection bookCollection) {
+    public ResponseEntity<ApiResponse<CollectionDetailResponse>> updateCollection(@PathVariable Long id,
+                                                                                  @RequestBody BookCollection bookCollection) {
         validateCollection(bookCollection);
 
-        BookCollection savedCollection = collectionService.updateCollection(id, bookCollection);
+        CollectionDetailResponse savedCollection = collectionService.updateCollection(id, bookCollection);
 
         return ApiResponse.success("컬렉션이 수정되었습니다.", savedCollection);
     }

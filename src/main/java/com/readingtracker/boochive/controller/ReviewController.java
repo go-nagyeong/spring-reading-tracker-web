@@ -2,7 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.ReviewDto;
+import com.readingtracker.boochive.dto.ReviewResponse;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.util.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,9 +32,9 @@ public class ReviewController {
     @GetMapping("/book/{bookIsbn}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllReviews(@PathVariable String bookIsbn,
                                                                           @AuthenticationPrincipal User user) {
-        List<ReviewDto> reviewList = reviewService.getLatestReviewsByBook(bookIsbn);
+        List<ReviewResponse> reviewList = reviewService.getLatestReviewsByBook(bookIsbn);
         // 사용자 리뷰
-        Optional<ReviewDto> userReview = reviewList.stream()
+        Optional<ReviewResponse> userReview = reviewList.stream()
                 .filter(review -> review.getReviewerId().equals(user.getId()))
                 .findFirst();
 
@@ -49,8 +49,8 @@ public class ReviewController {
      * GET - 특정 책의 로그인 유저 리뷰 조회
      */
     @GetMapping("/book/{bookIsbn}/me")
-    public ResponseEntity<ApiResponse<ReviewDto>> getUserReview(@PathVariable String bookIsbn,
-                                                                @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<ReviewResponse>> getUserReview(@PathVariable String bookIsbn,
+                                                                     @AuthenticationPrincipal User user) {
         return reviewService.findReviewByUserAndBook(user.getId(), bookIsbn)
                 .map(review -> ApiResponse.success(null, review))
                 .orElseGet(() -> ApiResponse.success(null));
@@ -60,12 +60,12 @@ public class ReviewController {
      * POST - 리뷰 등록
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<ReviewDto>> createReview(@RequestBody Review review,
-                                                               @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(@RequestBody Review review,
+                                                                    @AuthenticationPrincipal User user) {
         validateReview(review);
 
         review.updateUser(user); // 사용자 ID 세팅
-        ReviewDto savedReview = reviewService.createReview(review);
+        ReviewResponse savedReview = reviewService.createReview(review);
 
         return ApiResponse.success("리뷰가 등록되었습니다.", savedReview);
     }
@@ -74,11 +74,11 @@ public class ReviewController {
      * PUT - 리뷰 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ReviewDto>> updateReview(@PathVariable Long id,
-                                                               @RequestBody Review review) {
+    public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(@PathVariable Long id,
+                                                                    @RequestBody Review review) {
         validateReview(review);
 
-        ReviewDto savedReview = reviewService.updateReview(id, review);
+        ReviewResponse savedReview = reviewService.updateReview(id, review);
 
         return ApiResponse.success("리뷰가 수정되었습니다.", savedReview);
     }

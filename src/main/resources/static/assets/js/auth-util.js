@@ -36,36 +36,36 @@ const userConfigValueDict = {
 /**
  * 로그인 유저 정보 가져오기
  */
-async function getLoginUserDetail() {
-    const promise = axios.get(`/api/users/me`);
+async function getLoginUserInfo() {
+    const promise = axios.get(`/api/auth/logged-in-user`);
 
-    let loginUserDetail = null;
+    let loginUserInfo = null;
 
     // handleApiResponse를 호출하면서 성공 콜백을 정의
     await new Promise((resolve, reject) => {
         const onSuccess = (result) => {
-            loginUserDetail = result.data;
+            loginUserInfo = result.data;
             resolve();
         }
 
         handleApiResponse(promise, onSuccess);
     });
 
-    return loginUserDetail;
+    return loginUserInfo;
 }
 
 /**
  * 로그인 유저 정보 세팅 (공통 레이아웃)
  */
-function setGlobalLoginUserData(loginUserDetail) {
+function setGlobalLoginUserData(loginUserInfo) {
     document.querySelectorAll('.user-profile').forEach(el => {
-        setProfileImage(loginUserDetail.profileImage, el);
+        setProfileImage(loginUserInfo.profileImage, el);
     })
     document.querySelectorAll('.user-name').forEach(el => {
-        el.textContent = loginUserDetail.username;
+        el.textContent = loginUserInfo.name;
     })
     document.querySelectorAll('.user-email').forEach(el => {
-        el.textContent = loginUserDetail.email;
+        el.textContent = loginUserInfo.email;
     })
 }
 

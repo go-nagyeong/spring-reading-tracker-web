@@ -7,7 +7,7 @@ import com.readingtracker.boochive.domain.QPurchaseHistory;
 import com.readingtracker.boochive.domain.QReadingBook;
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.ReadingBookFilterDto;
+import com.readingtracker.boochive.dto.ReadingBookCondition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ReadingBook> getReadingBooksWithFilter(ReadingBookFilterDto filterDto, Pageable pageable, User user) {
+    public Page<ReadingBook> findAllByUserAndFilters(User user, ReadingBookCondition condition, Pageable pageable) {
         // QClass
         QReadingBook readingBook = QReadingBook.readingBook;
         QPurchaseHistory purchaseHistory = QPurchaseHistory.purchaseHistory;
@@ -35,9 +35,9 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
                 .selectFrom(readingBook)
                 .where(
                         readingBook.user.eq(user),
-                        equalsReadingStatus(readingBook, filterDto),
-                        equalsCollectionId(readingBook, filterDto),
-                        equalsOwn(purchaseHistory, filterDto)
+                        equalsReadingStatus(readingBook, condition),
+                        equalsCollectionId(readingBook, condition),
+                        equalsOwn(purchaseHistory, condition)
                 )
                 .orderBy(readingBook.id.desc())
                 .leftJoin(purchaseHistory)
@@ -56,21 +56,21 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
         return new PageImpl<>(list, pageable, totalCount);
     }
 
-    private BooleanExpression equalsReadingStatus(QReadingBook readingBook, ReadingBookFilterDto filterDto) {
-        return filterDto.getReadingStatus() != null
-                ? readingBook.readingStatus.eq(filterDto.getReadingStatus())
+    private BooleanExpression equalsReadingStatus(QReadingBook readingBook, ReadingBookCondition condition) {
+        return condition.getReadingStatus() != null
+                ? readingBook.readingStatus.eq(condition.getReadingStatus())
                 : null;
     }
 
-    private BooleanExpression equalsCollectionId(QReadingBook readingBook, ReadingBookFilterDto filterDto) {
-        return filterDto.getCollectionId() != null
-                ? readingBook.collectionId.eq(filterDto.getCollectionId())
+    private BooleanExpression equalsCollectionId(QReadingBook readingBook, ReadingBookCondition condition) {
+        return condition.getCollectionId() != null
+                ? readingBook.collectionId.eq(condition.getCollectionId())
                 : null;
     }
 
-    private BooleanExpression equalsOwn(QPurchaseHistory purchaseHistory, ReadingBookFilterDto filterDto) {
-        return filterDto.getIsOwned() != null
-                ? (filterDto.getIsOwned() ? purchaseHistory.id.isNotNull() : purchaseHistory.isNull())
+    private BooleanExpression equalsOwn(QPurchaseHistory purchaseHistory, ReadingBookCondition condition) {
+        return condition.getIsOwned() != null
+                ? (condition.getIsOwned() ? purchaseHistory.id.isNotNull() : purchaseHistory.isNull())
                 : null;
     }
 

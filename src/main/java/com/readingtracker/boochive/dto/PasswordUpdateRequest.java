@@ -5,11 +5,13 @@ import com.readingtracker.boochive.validator.NewPassword;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NewPassword
 @ConfirmPassword
-public class PasswordDto {
+public class PasswordUpdateRequest {
 
     @NotBlank(message = "현재 비밀번호를 입력해 주세요.")
     private String originPassword;
@@ -21,10 +23,4 @@ public class PasswordDto {
 
     @NotBlank(message = "새 비밀번호 확인을 입력해 주세요.")
     private String confirmPassword;
-
-    public PasswordDto(String originPassword, String password, String confirmPassword) {
-        this.originPassword = originPassword;
-        this.password = password;
-        this.confirmPassword = confirmPassword;
-    }
 }

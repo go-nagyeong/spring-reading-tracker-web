@@ -2,21 +2,25 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.mapper.ReadingBookDetailMapper;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReadingBookService {
 
     private final ReadingBookJpaRepository readingBookRepository;
@@ -30,29 +34,58 @@ public class ReadingBookService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<ReadingBook> findReadingBookById(Long id) {
-        return readingBookRepository.findById(id);
+    public Optional<ReadingBookDetailResponse> findReadingBookById(Long id) {
+        return readingBookRepository.findById(id)
+                .map(ReadingBookDetailMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ReadingBook> findReadingBookByUserAndBook(Long userId, String bookIsbn) {
-        return readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn);
+    public Optional<ReadingBookDetailResponse> findReadingBookByUserAndBook(Long userId, String bookIsbn) {
+        return readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
+                .map(ReadingBookDetailMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public List<ReadingBook> getReadingListByUser(Long userId) {
-        return readingBookRepository.findAllByUserId(userId);
+    public List<ReadingBookDetailResponse> getReadingListByUserAndBookList(Long userId, List<String> bookIsbnList) {
+        return readingBookRepository.findAllByUserIdAndBookIsbnIn(userId, bookIsbnList)
+                .stream()
+                .map(ReadingBookDetailMapper.INSTANCE::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<ReadingBook> getReadingListByUserAndBookList(Long userId, List<String> bookIsbnList) {
-        return readingBookRepository.findAllByUserIdAndBookIsbnIn(userId, bookIsbnList);
+    public List<ReadingBookDetailResponse> getReadingListByUserAndCollectionList(Long userId, List<Long> collectionIdList) {
+        return readingBookRepository.findAllByUserIdAndCollectionIdIn(userId, collectionIdList)
+                .stream()
+                .map(ReadingBookDetailMapper.INSTANCE::toDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public Page<ReadingBook> getReadingListByUserAndOtherFilter(ReadingBookFilterDto filterDto, Pageable pageable,
-                                                                User user) {
-        return readingBookDslRepository.getReadingBooksWithFilter(filterDto, pageable, user);
+    public Page<ReadingBookDetailResponse> getReadingListWithBookDetailByUserAndFilters(User user, ReadingBookCondition condition, Pageable pageable) {
+        Page<ReadingBook> pageableReadingList = readingBookDslRepository.findAllByUserAndFilters(user, condition, pageable);
+
+        // 1. Page<ReadingBook>를 List<ReadingBookDetailResponse>로 변환
+        List<String> isbnList = new ArrayList<>();
+
+        List<ReadingBookDetailResponse> readingList = pageableReadingList.getContent()
+                .stream()
+                .map(readingBook -> {
+                    isbnList.add(readingBook.getBookIsbn());
+                    return ReadingBookDetailMapper.INSTANCE.toDto(readingBook);
+                })
+                .toList();
+
+        // 2. ISBN을 기반으로 책 상세 정보를 한 번에 조회
+        Map<String, BookParameter> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
+                .stream()
+                .collect(Collectors.toMap(BookParameter::getIsbn13, bookInfo -> bookInfo));
+
+        // 3. 각 독서 정보에 책 상세 정보 설정
+        readingList.forEach(readingBook -> readingBook.setBookInfo(bookInfoMap.get(readingBook.getBookIsbn())));
+
+        // 4. 페이지네이션 정보와 함께 반환
+        return new PageImpl<>(readingList, pageable, pageableReadingList.getTotalElements());
     }
 
     // 책 독자 수 계산
@@ -65,24 +98,23 @@ public class ReadingBookService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public ReadingBook createReadingBook(ReadingBook readingBook) {
-        ReadingBook createdReadingBook = readingBookRepository.save(readingBook);
-
-        // 이후 연계 작업
-        // 1. 책 데이터 저장
+    public ReadingBookDetailResponse createReadingBook(ReadingBook readingBook) {
+        // (이전 연계 작업) 책 데이터 저장
         saveBook(readingBook.getBookIsbn());
 
-        // 2. 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
+        ReadingBook createdReadingBook = readingBookRepository.save(readingBook);
+
+        // (이후 연계 작업) 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
         saveReadingRecord(createdReadingBook);
 
-        return createdReadingBook;
+        return ReadingBookDetailMapper.INSTANCE.toDto(createdReadingBook);
     }
 
     /**
      * CR[U]D - UPDATE
      */
     @Transactional
-    public ReadingBook updateReadingBook(Long id, ReadingBook readingBook) {
+    public ReadingBookDetailResponse updateReadingBook(Long id, ReadingBook readingBook) {
         ReadingBook existingReadingBook = readingBookRepository.findById(id).orElseThrow();
 
         boolean readingStatusChanged = !existingReadingBook.getReadingStatus().equals(readingBook.getReadingStatus());
@@ -98,7 +130,7 @@ public class ReadingBookService {
             saveReadingRecord(existingReadingBook);
         }
 
-        return existingReadingBook;
+        return ReadingBookDetailMapper.INSTANCE.toDto(existingReadingBook);
     }
 
     @Transactional
@@ -118,8 +150,8 @@ public class ReadingBookService {
      * CRU[D] - BATCH DELETE
      */
     @Transactional
-    public void batchDeleteReadingBooks(BatchUpdateDto<Long> batchUpdateDto) {
-        for (Long id : batchUpdateDto.getDeleteList()) {
+    public void batchDeleteReadingBooks(BatchUpdateRequest<Long> request) {
+        for (Long id : request.getDeleteList()) {
             readingBookRepository.deleteById(id);
         }
     }
@@ -128,28 +160,13 @@ public class ReadingBookService {
      * (공통 메서드) 책 데이터 생성 및 변경
      */
     private void saveBook(String isbn) {
-        Optional<Book> existingbook = bookService.findBookByIsbn(isbn);
+        Optional<BookParameter> existingBook = bookService.findBookByIsbn(isbn);
 
-        if (existingbook.isEmpty()) {
-            PageableBookListDto lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
-            BookDto book = lookupResult.getItem().get(0);
+        if (existingBook.isEmpty()) {
+            PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
+            BookParameter book = lookupResult.getItem().get(0);
 
-            LocalDate parsedPubDate = LocalDate.parse(book.getPubDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-            Book newBook = Book.builder()
-                    .isbn13(book.getIsbn13())
-                    .isbn10(book.getIsbn())
-                    .title(book.getTitle())
-                    .author(book.getAuthor())
-                    .translator(book.getTranslator())
-                    .publisher(book.getPublisher())
-                    .pubDate(parsedPubDate)
-                    .description(book.getDescription())
-                    .cover(book.getCover())
-                    .pages(Integer.valueOf(book.getSubInfo().getItemPage()))
-                    .build();
-
-            bookService.createBook(newBook);
+            bookService.createBook(book);
         }
     }
 

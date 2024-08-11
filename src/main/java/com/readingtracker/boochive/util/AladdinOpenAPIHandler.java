@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.util;
 
-import com.readingtracker.boochive.dto.BookDto;
-import com.readingtracker.boochive.dto.PageableBookListDto;
+import com.readingtracker.boochive.dto.BookParameter;
+import com.readingtracker.boochive.dto.PageableBookListResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -33,7 +33,7 @@ public class AladdinOpenAPIHandler {
     /**
      * 상품 검색 API
      */
-    public PageableBookListDto searchBooks(Integer page, String query, QueryType queryType) {
+    public PageableBookListResponse searchBooks(Integer page, String query, QueryType queryType) {
         URI url = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path("/ItemSearch.aspx")
                 .queryParam("ttbkey", apiKey)
@@ -52,11 +52,11 @@ public class AladdinOpenAPIHandler {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        PageableBookListDto response = restTemplate.exchange(
+        PageableBookListResponse response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 entity,
-                PageableBookListDto.class
+                PageableBookListResponse.class
         ).getBody();
 
         return formatData(response);
@@ -65,7 +65,7 @@ public class AladdinOpenAPIHandler {
     /**
      * 상품 조회 API
      */
-    public PageableBookListDto lookupBook(String itemId) {
+    public PageableBookListResponse lookupBook(String itemId) {
         List<String> optResult = new ArrayList<>(); // 부가 정보
         optResult.add("fulldescription"); // 상품 소개
         optResult.add("Toc"); // 목차
@@ -86,11 +86,11 @@ public class AladdinOpenAPIHandler {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        PageableBookListDto response = restTemplate.exchange(
+        PageableBookListResponse response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 entity,
-                PageableBookListDto.class
+                PageableBookListResponse.class
         ).getBody();
 
         return formatData(response);
@@ -99,7 +99,7 @@ public class AladdinOpenAPIHandler {
     /**
      * 응답 데이터 전처리 메서드
      */
-    private PageableBookListDto formatData(PageableBookListDto data) {
+    private PageableBookListResponse formatData(PageableBookListResponse data) {
         // 도서 목록 개수 및 전체 페이지 수 전처리
         Integer totalCount = data.getTotalResults();
         if (totalCount > 0) {
@@ -111,7 +111,7 @@ public class AladdinOpenAPIHandler {
             data.setTotalPages(0);
         }
 
-        for (BookDto item : data.getItem()) {
+        for (BookParameter item : data.getItem()) {
             // 저자 정보 전처리 (지은이, 옮긴이, 그림 분리)
             String authorWithOthers = item.getAuthor().replaceAll("\\s*\\(", "");
 

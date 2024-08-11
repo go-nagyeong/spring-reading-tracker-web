@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', function (e) {
     // Update/reset user image of account page
-    let profileUserImage = document.getElementById('uploadedAvatar');
+    let profileUserImage = document.getElementById('userProfile');
     const fileInput = document.querySelector('.profile-img-input'),
         fileRandomBtn = document.querySelector('.profile-img-random'),
         resetFileInput = document.querySelector('.profile-img-reset'),

@@ -30,11 +30,10 @@
                     <h5 class="card-header">회원정보 수정</h5>
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3">
-                            <img class="img-thumbnail square rounded w-15 w-lg-20 min-w-px-100 user-profile" src=""
-                                 id="uploadedAvatar"/>
+                            <img class="img-thumbnail square rounded w-15 w-lg-20 min-w-px-100" id="userProfile" src="">
                             <div class="button-wrapper">
-                                <p class="fw-medium mt-1 user-name"><!-- 데이터 동적 로드 --></p>
-                                <small class="d-block text-muted mb-3 user-email"><!-- 데이터 동적 로드 --></small>
+                                <p class="fw-medium mt-1" id="name"><!-- 데이터 동적 로드 --></p>
+                                <small class="d-block text-muted mb-3" id="userEmail"><!-- 데이터 동적 로드 --></small>
                                 <div class="btn-group">
                                     <button class="btn btn-md btn-outline-primary dropdown-toggle"
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -293,26 +292,42 @@
     const accountForm = document.getElementById('accountForm');
     const passwordForm = document.getElementById('passwordForm');
     const withdrawForm = document.getElementById('withdrawForm');
-    let userId;
 
     document.addEventListener('DOMContentLoaded', function() {
         setBirthdateSelectOptions(); // 생년월일 선택 옵션 세팅
-        getLoginUserDetail()
-            .then(userDetail => {
-                userId = userDetail.id;
-                setAccountForm(userDetail);
-            });
+        getUserInfo();
     })
+
+    /**
+     * 회원 정보 불러오기
+     */
+    function getUserInfo() {
+        const promise = axios.get(`/api/users/me`);
+
+        const onSuccess = (result) => {
+            setAccountForm(result.data);
+        }
+
+        handleApiResponse(promise, onSuccess);
+    }
 
     /**
      * 회원정보 폼 데이터 동적 세팅
      */
     function setAccountForm(userDetail) {
-        document.querySelector('[name=id]').value = userId;
+        document.querySelector('[name=id]').value = userDetail.id;
+
         // 프로필 이미지
+        setProfileImage(userDetail.profileImage, document.getElementById('userProfile'));
         document.querySelector('[name=profileImage]').value = userDetail.profileImage;
+
         // 이름
+        document.getElementById('name').textContent = userDetail.username;
         document.querySelector('[name=username]').value = userDetail.username;
+
+        // 이메일
+        document.getElementById('userEmail').textContent = userDetail.email;
+
         // 성별
         const sexCodeMap = {
             0: 'sexNotKnown',
@@ -321,6 +336,7 @@
             9: 'sexNotApplicable',
         };
         document.getElementById(sexCodeMap[userDetail.sex]).checked = true;
+
         // 생년월일
         if (userDetail.birthdate) {
             const birthDateSplit = userDetail.birthdate.split('-');
@@ -334,6 +350,7 @@
 
             document.querySelector('[name=birthdate]').value = userDetail.birthdate;
         }
+
         // 휴대폰번호
         const inputEvent = new Event("input", {"bubbles":true, "cancelable":false});
         document.querySelector('[name=phoneNumber]').value = userDetail.phoneNumber;
@@ -344,7 +361,6 @@
      * 회원정보 변경사항 저장
      */
     accountForm.addEventListener('submit', function(event) {
-        console.log('submit');
         event.preventDefault();
         uploadProfileImage();
     })
@@ -354,9 +370,9 @@
 
         // 폼 데이터 전처리
         const data = new FormData();
-        const id = document.querySelector('[name=id]').value;
+        const userId = document.querySelector('[name=id]').value;
         const file = document.getElementById('upload').files[0];
-        data.append("userId", id);
+        data.append("userId", userId);
         data.append("file", file);
 
         // 업로드할 이미지 없으면 생략
@@ -380,7 +396,6 @@
     }
     // 회원정보 업데이트
     function updateAccountInfo() {
-        console.log('updateAccountInfo')
         clearErrorMessages(accountForm);
         globalLoading(true);
 
@@ -409,7 +424,7 @@
 
         data['birthdate'] = dateStr;
         data['phoneNumber'] = data['phoneNumber'].replaceAll('-', '');
-        console.log(data);
+
         const promise = axios.put(`/api/users/${data.id}`, data);
 
         const onSuccess = (result) => {
@@ -437,6 +452,7 @@
 
         // 폼 데이터 전처리
         const data = formToJson(new FormData(passwordForm));
+        const userId = document.querySelector('[name=id]').value;
 
         const promise = axios.put(`/api/users/${userId}/password`, data);
 
@@ -472,6 +488,7 @@
             return false;
         }
 
+        const userId = document.querySelector('[name=id]').value;
         const promise = axios.delete(`/api/users/${userId}`);
         const onSuccess = (result) => {
             window.location.href = '/';

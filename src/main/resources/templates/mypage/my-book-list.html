@@ -335,7 +335,7 @@
                 targetElement.querySelector('.info-detail .bk-intro').textContent = item.description;
 
                 // 책 관련 통계 세팅 (작성 평점, 노트 수, 완독 수)
-                updateUserBookStatistics(item, targetElement);
+                updateUserBookStatistics(item.subInfo, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
                 if (userCollectionList.length) {

@@ -63,26 +63,32 @@ public class User implements UserDetails {
 
     private LocalDateTime deletedAt;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<ReadingBook> readingBooks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<BookCollection> collections = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<PurchaseHistory> purchaseHistories = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<RentalHistory> rentalHistories = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<ReadingRecord> readingRecords = new ArrayList<>();
@@ -97,11 +103,11 @@ public class User implements UserDetails {
     /**
      * 프로필 정보 변경
      */
-    public void updateProfile(String profileImage, String name, LocalDate birthdate, Integer sex, String phoneNumber) {
-        this.profileImage = profileImage;
+    public void updateProfile(String name, String profileImage, Integer sex, LocalDate birthdate, String phoneNumber) {
         this.name = name;
-        this.birthdate = birthdate;
+        this.profileImage = profileImage;
         this.sex = sex;
+        this.birthdate = birthdate;
         this.phoneNumber = phoneNumber;
     }
 

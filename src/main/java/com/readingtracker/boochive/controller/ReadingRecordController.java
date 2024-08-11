@@ -2,7 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.BatchUpdateDto;
+import com.readingtracker.boochive.dto.BatchUpdateRequest;
 import com.readingtracker.boochive.service.ReadingRecordService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -74,9 +74,9 @@ public class ReadingRecordController {
      * POST - 독서 이력 Batch Update (일괄 수정 및 삭제)
      */
     @PostMapping("/batch")
-    public ResponseEntity<ApiResponse<List<ReadingRecord>>> handleReadingRecords(@RequestBody BatchUpdateDto<ReadingRecord> batchUpdateDto,
+    public ResponseEntity<ApiResponse<List<ReadingRecord>>> handleReadingRecords(@RequestBody BatchUpdateRequest<ReadingRecord> request,
                                                                                  @AuthenticationPrincipal User user) {
-        List<ReadingRecord> remainingReadingRecords = readingRecordService.handleReadingRecords(batchUpdateDto, user.getId());
+        List<ReadingRecord> remainingReadingRecords = readingRecordService.handleReadingRecords(request, user.getId());
 
         return ApiResponse.success("독서 이력이 수정되었습니다.", remainingReadingRecords);
     }

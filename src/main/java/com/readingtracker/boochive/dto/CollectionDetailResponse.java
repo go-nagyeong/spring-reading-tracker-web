@@ -7,9 +7,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class BookCollectionDto {
+public class CollectionDetailResponse {
 
     private Long id;
     private String collectionName;
-    private List<BookDto> books;
+    private List<BookParameter> books; // 매핑 이후 조회 변수
 }

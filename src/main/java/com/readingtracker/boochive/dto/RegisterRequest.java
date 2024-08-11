@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ConfirmPassword
-public class RegisterForm {
+public class RegisterRequest {
 
     @NotBlank(message = "이메일을 입력해 주세요.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
@@ -30,5 +30,4 @@ public class RegisterForm {
 
     @AssertTrue(message = "회원가입을 완료하려면 이용약관에 동의해야 합니다.")
     private Boolean isTermsAgreed;
-
 }

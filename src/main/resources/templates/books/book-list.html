@@ -183,7 +183,7 @@
                 targetElement.querySelector('.info-detail .bk-intro').textContent = item.description;
 
                 // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
-                updateBookStatistics(item, targetElement);
+                updateBookStatistics(item.subInfo, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
                 if (userCollectionList.length) {

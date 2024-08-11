@@ -1,9 +1,11 @@
 package com.readingtracker.boochive.controller;
 
+import com.readingtracker.boochive.dto.LoggedInUserResponse;
+import com.readingtracker.boochive.mapper.LoggedInUserMapper;
 import com.readingtracker.boochive.util.ApiResponse;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.LoginForm;
-import com.readingtracker.boochive.dto.RegisterForm;
+import com.readingtracker.boochive.dto.LoginRequest;
+import com.readingtracker.boochive.dto.RegisterRequest;
 import com.readingtracker.boochive.service.UserService;
 import com.readingtracker.boochive.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
@@ -17,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -34,10 +37,20 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
 
     /**
+     * 현재 로그인 유저 정보 가져오기
+     */
+    @GetMapping("/logged-in-user")
+    public ResponseEntity<ApiResponse<LoggedInUserResponse>> getLoggedInUser(@AuthenticationPrincipal User user) {
+        LoggedInUserResponse loggedInUser = LoggedInUserMapper.INSTANCE.toDto(user);
+
+        return ApiResponse.success(null, loggedInUser);
+    }
+
+    /**
      * 회원가입
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterForm form,
+    public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterRequest request,
                                                                      BindingResult bindingResult) {
         // 유효성 검사 결과 전처리
         if (bindingResult.hasErrors()) {
@@ -45,13 +58,7 @@ public class AuthenticationController {
             return ApiResponse.failure("", errorMap);
         }
 
-        // 회원 데이터 생성
-        User user = User.builder()
-                .email(form.getEmail())
-                .password(form.getPassword())
-                .name(form.getUsername())
-                .build();
-        userService.createUser(user);
+        userService.createUser(request);
 
         return ApiResponse.success(null);
     }
@@ -60,7 +67,7 @@ public class AuthenticationController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginForm form,
+    public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequest request,
                                                                   BindingResult bindingResult,
                                                                   HttpServletResponse response) {
         // 유효성 검사 결과 전처리
@@ -73,7 +80,7 @@ public class AuthenticationController {
         // AuthenticationManager를 사용하여 로그인 인증 (인증 객체 생성 후 전달)
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(form.getEmail(), form.getPassword());
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
             authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
             // 잘못된 인증 정보 (이메일 또는 비밀번호)
@@ -89,8 +96,8 @@ public class AuthenticationController {
         }
 
         // 인증 성공 시 토큰 발급
-        String accessToken = jwtTokenProvider.generateAccessToken(form.getEmail());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(form.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(request.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(request.getEmail());
 
         // 토큰 쿠키에 저장
         // (memo) Access Token까지 저장하는 이유는 클라이언트에서 페이지 이동시 헤더에 담아 보내지 못하기 때문에 저장된 쿠키로 검증

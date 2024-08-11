@@ -2,7 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.domain.ReadingStatus;
-import com.readingtracker.boochive.dto.BatchUpdateDto;
+import com.readingtracker.boochive.dto.BatchUpdateRequest;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.repository.ReadingRecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -77,19 +77,19 @@ public class ReadingRecordService {
      * CR[U][D] - BATCH UPDATE/DELETE
      */
     @Transactional
-    public List<ReadingRecord> handleReadingRecords(BatchUpdateDto<ReadingRecord> batchUpdateDto, Long userId) {
-        List<ReadingRecord> allRecords = batchUpdateDto.getUpdateList();
-        allRecords.addAll(batchUpdateDto.getDeleteList());
+    public List<ReadingRecord> handleReadingRecords(BatchUpdateRequest<ReadingRecord> request, Long userId) {
+        List<ReadingRecord> allRecords = request.getUpdateList();
+        allRecords.addAll(request.getDeleteList());
 
         String bookIsbn = allRecords.stream()
                 .map(ReadingRecord::getBookIsbn)
                 .findFirst()
                 .orElse(null);
 
-        for (ReadingRecord record : batchUpdateDto.getUpdateList()) {
+        for (ReadingRecord record : request.getUpdateList()) {
             update(record.getId(), record);
         }
-        for (ReadingRecord record : batchUpdateDto.getDeleteList()) {
+        for (ReadingRecord record : request.getDeleteList()) {
             readingRecordRepository.deleteById(record.getId());
         }
 

@@ -435,7 +435,7 @@
         targetElement.querySelector('.info-detail .bk-isbn em').textContent = `${item.isbn13} (${item.isbn})`;
 
         // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
-        updateBookStatistics(item, targetElement);
+        updateBookStatistics(item.subInfo, targetElement);
 
         // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 관련 UI 업데이트
         onUpdateReadingInfo(readingInfo, targetElement);
@@ -485,7 +485,7 @@
                 // 리뷰 내용 및 사용자 정보
                 setProfileImage(item.reviewerProfile,  targetElement.querySelector('.rv-left img'))
                 targetElement.querySelector('.rv-user').textContent = item.reviewerName;
-                targetElement.querySelector('.rv-date').textContent = item.createdAt;
+                targetElement.querySelector('.rv-date').textContent = item.createdDate;
                 const reviewContent = targetElement.querySelector('.rv-content div');
                 reviewContent.innerHTML = item.reviewText;
 
@@ -534,7 +534,7 @@
             // 리뷰 내용
             reviewWrap.querySelector('.rv-content span').classList.toggle('d-none', review);
             reviewWrap.querySelector('.rv-content div').innerHTML = review ? review.reviewText : '';
-            reviewWrap.querySelector('.rv-date').textContent = review ? review.createdAt : '';
+            reviewWrap.querySelector('.rv-date').textContent = review ? review.createdDate : '';
 
             // 평점(별점)
             const newRatingEl = rebuildRatingEl(reviewWrap.querySelector('.rating-grade'));

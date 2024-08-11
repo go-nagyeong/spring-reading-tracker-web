@@ -1,10 +1,10 @@
 package com.readingtracker.boochive.validator;
 
-import com.readingtracker.boochive.dto.PasswordDto;
+import com.readingtracker.boochive.dto.PasswordUpdateRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class NewPasswordValidator implements ConstraintValidator<NewPassword, PasswordDto> {
+public class NewPasswordValidator implements ConstraintValidator<NewPassword, PasswordUpdateRequest> {
 
     @Override
     public void initialize(NewPassword constraintAnnotation) {
@@ -12,7 +12,7 @@ public class NewPasswordValidator implements ConstraintValidator<NewPassword, Pa
     }
 
     @Override
-    public boolean isValid(PasswordDto passwordDto, ConstraintValidatorContext constraintValidatorContext) {
-        return passwordDto.getPassword() != null && !passwordDto.getPassword().equals(passwordDto.getOriginPassword());
+    public boolean isValid(PasswordUpdateRequest request, ConstraintValidatorContext constraintValidatorContext) {
+        return request.getPassword() != null && !request.getPassword().equals(request.getOriginPassword());
     }
 }

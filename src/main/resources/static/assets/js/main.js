@@ -189,7 +189,7 @@ let menu, animate;
 
     // 로그인 유저 정보 세팅
     document.addEventListener('DOMContentLoaded', function (event) {
-        getLoginUserDetail()
+        getLoginUserInfo()
             .then(userDetail => {
                 setGlobalLoginUserData(userDetail);
             });
@@ -249,10 +249,9 @@ let menu, animate;
     const labelElements = document.querySelectorAll('label');
     labelElements.forEach(el => {
         const parentEl = el.parentElement;
-        const switchEl = parentEl.querySelector('input');
-        const isSwitchLabel = switchEl.getAttribute('role') === 'switch';
+        const switchEl = parentEl.querySelector('input[type=checkbox][role=switch]');
         const hasTwoLabels = parentEl.querySelectorAll('label').length === 2;
-        if (isSwitchLabel && hasTwoLabels) {
+        if (switchEl && hasTwoLabels) {
             el.addEventListener('click', function() {
                 switchEl.checked = el.dataset.switch === 'on'; // data-switch = on/off
                 switchEl.dispatchEvent(new Event('change')); // change trigger

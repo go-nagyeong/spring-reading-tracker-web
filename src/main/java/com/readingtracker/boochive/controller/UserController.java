@@ -1,9 +1,9 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.PasswordDto;
-import com.readingtracker.boochive.dto.UserDto;
-import com.readingtracker.boochive.mapper.UserMapper;
+import com.readingtracker.boochive.dto.PasswordUpdateRequest;
+import com.readingtracker.boochive.dto.UserInfoParameter;
+import com.readingtracker.boochive.mapper.UserInfoMapper;
 import com.readingtracker.boochive.service.UserService;
 import com.readingtracker.boochive.util.ApiResponse;
 import com.readingtracker.boochive.util.FileStorageUtil;
@@ -33,13 +33,13 @@ public class UserController {
     private final FileStorageUtil fileStorageUtil;
 
     /**
-     * GET - 로그인 유저 정보 조회
+     * GET - 로그인 유저 세부 회원 정보 조회 (이름, 프로필 이미지, 성별, 생년월일 등)
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserDto>> getLoginUserDetail(@AuthenticationPrincipal User user) {
-        UserDto userDto = UserMapper.INSTANCE.toDto(user);
+    public ResponseEntity<ApiResponse<UserInfoParameter>> getLoggedInUserInfoDetail(@AuthenticationPrincipal User user) {
+        UserInfoParameter loggedInUser = UserInfoMapper.INSTANCE.toDto(user);
 
-        return ApiResponse.success(null, userDto);
+        return ApiResponse.success(null, loggedInUser);
     }
 
     /**
@@ -59,15 +59,16 @@ public class UserController {
      * PUT - 회원정보 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto user,
-                                                           BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<UserInfoParameter>> updateUser(@PathVariable Long id,
+                                                                     @Valid @RequestBody UserInfoParameter userInfo,
+                                                                     BindingResult bindingResult) {
         // 유효성 검사
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMap = handleValidationErrors(bindingResult);
             return ApiResponse.failure(null, errorMap);
         }
 
-        UserDto savedUser = userService.updateUser(id, user);
+        UserInfoParameter savedUser = userService.updateUser(id, userInfo);
 
         return ApiResponse.success("회원정보가 수정되었습니다.", savedUser);
     }
@@ -77,7 +78,7 @@ public class UserController {
      */
     @PutMapping("/{id}/password")
     public ResponseEntity<ApiResponse<Object>> updatePassword(@PathVariable Long id,
-                                                              @Valid @RequestBody PasswordDto passwordDto,
+                                                              @Valid @RequestBody PasswordUpdateRequest request,
                                                               BindingResult bindingResult) {
         // 유효성 검사
         if (bindingResult.hasErrors()) {
@@ -85,7 +86,7 @@ public class UserController {
             return ApiResponse.failure(null, errorMap);
         }
 
-        userService.updatePassword(id, passwordDto);
+        userService.updatePassword(id, request);
 
         return ApiResponse.success("비밀번호가 변경되었습니다.");
     }

@@ -7,12 +7,12 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PageableBookListDto {
+public class PageableBookListResponse {
 
     private Integer startIndex;
     private Integer totalResults;
     private Integer itemsPerPage;
     private Integer totalPages; // API 조회 결과 전처리 변수
 
-    private List<BookDto> item;
+    private List<BookParameter> item;
 }

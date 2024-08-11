@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.Review;
-import com.readingtracker.boochive.dto.ReviewDto;
+import com.readingtracker.boochive.dto.ReviewResponse;
 import com.readingtracker.boochive.mapper.ReviewMapper;
 import com.readingtracker.boochive.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,19 +22,19 @@ public class ReviewService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<ReviewDto> findReviewById(Long id) {
+    public Optional<ReviewResponse> findReviewById(Long id) {
         return reviewRepository.findById(id)
                 .map(ReviewMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ReviewDto> findReviewByUserAndBook(Long userId, String bookIsbn) {
+    public Optional<ReviewResponse> findReviewByUserAndBook(Long userId, String bookIsbn) {
         return reviewRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
                 .map(ReviewMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewDto> getReviewsByUser(Long userId) {
+    public List<ReviewResponse> getReviewsByUser(Long userId) {
         return reviewRepository.findAllByUserId(userId)
                 .stream()
                 .map(ReviewMapper.INSTANCE::toDto)
@@ -42,7 +42,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewDto> getLatestReviewsByBook(String bookIsbn) {
+    public List<ReviewResponse> getLatestReviewsByBook(String bookIsbn) {
         return reviewRepository.findAllByBookIsbnOrderByIdDesc(bookIsbn)
                 .stream()
                 .map(ReviewMapper.INSTANCE::toDto)
@@ -74,7 +74,7 @@ public class ReviewService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public ReviewDto createReview(Review review) {
+    public ReviewResponse createReview(Review review) {
         return ReviewMapper.INSTANCE.toDto(reviewRepository.save(review));
     }
 
@@ -82,7 +82,7 @@ public class ReviewService {
      * CR[U]D - UPDATE
      */
     @Transactional
-    public ReviewDto updateReview(Long id, Review review) {
+    public ReviewResponse updateReview(Long id, Review review) {
         Review existingReview = reviewRepository.findById(id).orElseThrow();
 
         existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());
