@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.service;
 
+import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.domain.UserConfig;
 import com.readingtracker.boochive.repository.UserConfigRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,14 +53,14 @@ public class UserConfigService {
      * [C]R[U]D - BATCH CREATE/UPDATE
      */
     @Transactional
-    public Map<String, String> handleConfigs(Map<String, String> configs, Long userId) {
+    public Map<String, String> handleConfigs(Map<String, String> configs, User user) {
         List<UserConfig> updatedConfigList = new ArrayList<>();
 
         for (Map.Entry<String, String> entry : configs.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            Optional<UserConfig> existingConfig = userConfigRepository.findByUserIdAndConfigKey(userId, key);
+            Optional<UserConfig> existingConfig = userConfigRepository.findByUserIdAndConfigKey(user.getId(), key);
             existingConfig.ifPresentOrElse(
                     config -> {
                         config.updateConfigValue(value);
@@ -67,7 +68,7 @@ public class UserConfigService {
                     },
                     () -> {
                         UserConfig newConfig = UserConfig.builder()
-                                .userId(userId)
+                                .user(user)
                                 .configKey(key)
                                 .configValue(value)
                                 .build();

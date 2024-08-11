@@ -1,5 +1,7 @@
 package com.readingtracker.boochive.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.readingtracker.boochive.util.CurrentUserContext;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,8 +25,10 @@ public class UserConfig {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
     @Column(nullable = false)
     private String configKey;
@@ -41,10 +45,12 @@ public class UserConfig {
     private LocalDateTime updatedAt;
 
     /**
-     * 사용자 변경
+     * 신규 등록 전 값 자동 세팅
      */
-    public void updateUserId(Long userId) {
-        this.userId = userId;
+    @PrePersist
+    protected void prePersist() {
+        // 현재 로그인 유저 정보 세팅
+        this.user = CurrentUserContext.getUser();
     }
 
     /**

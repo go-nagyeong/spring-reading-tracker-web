@@ -37,7 +37,7 @@ public class UserConfigController {
     @PostMapping
     public ResponseEntity<ApiResponse<Map<String, String>>> createOrUpdateUserConfig(@RequestBody Map<String, String> configs,
                                                                                      @AuthenticationPrincipal User user) {
-        Map<String, String> updatedConfigList = userConfigService.handleConfigs(configs, user.getId());
+        Map<String, String> updatedConfigList = userConfigService.handleConfigs(configs, user);
 
         return ApiResponse.success(null, updatedConfigList);
     }

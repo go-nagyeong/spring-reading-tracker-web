@@ -61,7 +61,6 @@ public class ReadingBookController {
     @PostMapping
     public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@RequestBody ReadingBook readingBook,
                                                                            @AuthenticationPrincipal User user) {
-        readingBook.updateUser(user); // 사용자 ID 세팅
         ReadingBookDetailResponse savedReadingBook = readingBookService.createReadingBook(readingBook);
 
         Map<String, Object> data = new HashMap<>();

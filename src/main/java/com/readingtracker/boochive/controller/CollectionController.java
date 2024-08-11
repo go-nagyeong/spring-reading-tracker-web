@@ -43,11 +43,9 @@ public class CollectionController {
      * POST - 컬렉션 생성
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<CollectionDetailResponse>> createCollection(@RequestBody BookCollection bookCollection,
-                                                                                  @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<CollectionDetailResponse>> createCollection(@RequestBody BookCollection bookCollection) {
         validateCollection(bookCollection);
 
-        bookCollection.updateUser(user); // 사용자 ID 세팅
         CollectionDetailResponse savedCollection = collectionService.createCollection(bookCollection);;
 
         return ApiResponse.success("컬렉션이 생성되었습니다.", savedCollection);

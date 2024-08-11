@@ -60,11 +60,9 @@ public class ReviewController {
      * POST - 리뷰 등록
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(@RequestBody Review review,
-                                                                    @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(@RequestBody Review review) {
         validateReview(review);
 
-        review.updateUser(user); // 사용자 ID 세팅
         ReviewResponse savedReview = reviewService.createReview(review);
 
         return ApiResponse.success("리뷰가 등록되었습니다.", savedReview);

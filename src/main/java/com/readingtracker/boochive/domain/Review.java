@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.readingtracker.boochive.util.CurrentUserContext;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -47,10 +48,12 @@ public class Review {
     private LocalDateTime updatedAt;
 
     /**
-     * 사용자 변경
+     * 신규 등록 전 값 자동 세팅
      */
-    public void updateUser(User user) {
-        this.user = user;
+    @PrePersist
+    protected void prePersist() {
+        // 현재 로그인 유저 정보 세팅
+        this.user = CurrentUserContext.getUser();
     }
 
     /**

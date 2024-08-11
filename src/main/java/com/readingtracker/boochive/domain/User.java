@@ -93,6 +93,11 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<ReadingRecord> readingRecords = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<UserConfig> userConfigs = new ArrayList<>();
+
     /**
      * 비밀번호 변경
      */
