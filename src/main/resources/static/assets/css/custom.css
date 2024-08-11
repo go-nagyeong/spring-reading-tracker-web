@@ -113,6 +113,26 @@ input[type='number'] {
     text-decoration-line: underline;
 }
 
+.btn-dark {
+    color: #fff;
+    background-color: var(--bs-dark);
+    border-color: var(--bs-dark);
+    box-shadow: 0 0.125rem 0.25rem 0 rgba(var(--bs-dark-rgb), 0.4);
+}
+.btn-dark:hover {
+    color: #fff !important;
+    background-color: var(--bs-dark) !important;
+    border-color: var(--bs-dark) !important;
+    transform: translateY(-1px) !important;
+}
+.btn-check:focus + .btn-dark, .btn-dark:focus, .btn-dark.focus {
+    color: #fff;
+    background-color: var(--bs-dark);
+    border-color: var(--bs-dark);
+    transform: translateY(0);
+    box-shadow: none;
+}
+
 .btn-outline-dark {
     color: var(--bs-dark);
     border-color: var(--bs-dark);

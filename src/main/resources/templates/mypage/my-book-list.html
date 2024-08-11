@@ -12,8 +12,10 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-header d-flex align-items-center flex-wrap">
-            <h5 class="order-first">내 책장 <em class="fs-6 text-primary total-count">0</em></h5>
-            <div class="d-flex gap-1 gap-md-2 order-1 order-md-0 ms-auto ms-md-4" id="filterWrap">
+            <h5 class="order-first me-1">내 책장 <em class="fs-6 text-primary total-count">0</em></h5>
+
+            <!-- 조건 필터 버튼 -->
+            <div class="d-flex gap-1 gap-md-2 order-1 order-md-0 ms-auto ms-md-3" id="filterWrap">
                 <div class="btn-group reading-btn-group" id="readingStatusFilter">
                     <button class="btn btn-outline-primary btn-sm dropdown-toggle reading-list-btn filter-btn" type="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -69,9 +71,16 @@
                         <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
                     </ul>
                 </div>
+                <button class="btn btn-outline-dark btn-sm" type="button" id="filterResetBtn">
+                    <i class="bx bx-refresh"></i>
+                    <span>초기화</span>
+                </button>
             </div>
-            <div class="order-0 order-md-1 ms-auto d-none d-md-flex">
-                <button type="button" class="btn btn-secondary btn-sm batch-del-btn">제거</button>
+
+            <!-- 전체 선택, 제거 버튼 -->
+            <div class="gap-1 gap-md-2 order-0 order-md-1 ms-auto d-none d-md-flex">
+                <button type="button" class="btn btn-outline-dark btn-sm batch-check-btn">전체 선택</button>
+                <button type="button" class="btn btn-dark btn-sm batch-del-btn">제거</button>
             </div>
         </div>
 
@@ -85,7 +94,7 @@
                         <div class="item-unit row">
                             <div class="item-check d-none d-md-flex">
                                 <label>
-                                    <input type="checkbox" class="form-check-input" name="books[]">
+                                    <input type="checkbox" class="form-check-input" name="books[]" disabled>
                                 </label>
                             </div>
                             <div class="item-img">
@@ -173,6 +182,8 @@
     let userCollectionList = [];
 
     document.addEventListener('DOMContentLoaded', function (e) {
+        setupStaticFilter(); // 필터 상태 및 이벤트 세팅
+
         // 로그인 유저 컬렉션 목록 가져오기
         getUserCollectionList()
             .then(list => {
@@ -180,32 +191,98 @@
                 if (list.length) { // 컬렉션 필터 목록 세팅
                     setCollectionButtonOptions(list, document.getElementById('filterWrap'));
                 }
-                // (컬렉션 목록 동적 로드 후) 필터 상태 UI 및 이벤트 세팅
-                updateFilterUI();
-                setFilterButtonEvent();
+                // 컬렉션 필터 상태 및 이벤트 세팅
+                setupDynamicFilter();
             });
+
         getBookList();
     });
 
     /**
-     * 현재 필터에 따른 UI 세팅
+     * 현재 필터 조건 가져오기 (URLSearchParams 객체로 반환)
      */
-    function updateFilterUI() {
+    function getCurrentFilterConditions() {
         const searchParams = new URLSearchParams(window.location.search);
-        const readingStatus = searchParams.get('readingStatus'); // 독서 상태 필터
-        const collectionId = searchParams.get('collectionId'); // 컬렉션 ID 필터
-        const isOwned = searchParams.get('isOwned'); // 소장 여부 필터
+        searchParams.delete('page');
+        return searchParams;
+    }
 
+    /**
+     * 현재 필터에 따른 UI 세팅 및 필터 버튼 이벤트 세팅
+     */
+    function setupStaticFilter() {
+        const searchParams = getCurrentFilterConditions();
+        // 현재 필터 값
+        const readingStatus = searchParams.get('readingStatus'); // 독서 상태 필터
+        const isOwned = searchParams.get('isOwned'); // 소장 여부 필터
+        // 엘리먼트
+        const readingStatusFilter = document.getElementById('readingStatusFilter');
+        const ownFilter = document.getElementById('ownFilter');
+        const filterReset = document.getElementById('filterResetBtn');
+
+        // 1. 현재 필터에 따른 UI 세팅
         const filterWrapElement = document.getElementById('filterWrap');
         if (readingStatus) {
             updateReadingListButtonUI(readingStatus, filterWrapElement);
         }
-        if (collectionId) {
-            updateCollectionButtonUI(collectionId, filterWrapElement);
-        }
         if (isOwned) {
             updateOwnFilterButtonUI(isOwned, filterWrapElement)
         }
+
+        // 2. 필터 버튼 이벤트 세팅
+        // 독서 상태 필터
+        readingStatusFilter.querySelectorAll('.dropdown-item').forEach(el => {
+            el.addEventListener('click', function() {
+                if (el.dataset.value) {
+                    searchParams.set('readingStatus', el.dataset.value);
+                } else { // 필터 지우기
+                    searchParams.delete('readingStatus');
+                }
+                location.href = '?' + searchParams.toString();
+            })
+        })
+
+        // 소장 여부 필터
+        ownFilter.querySelectorAll('.dropdown-item').forEach(el => {
+            el.addEventListener('click', function() {
+                if (el.dataset.value) {
+                    searchParams.set('isOwned', el.dataset.value);
+                } else {
+                    searchParams.delete('isOwned');
+                }
+                location.href = '?' + searchParams.toString();
+            })
+        })
+
+        // 필터 초기화
+        filterReset.addEventListener('click', function() {
+            location.href = location.pathname;
+        })
+    }
+
+    // 동적으로 불러오는 컬렉션 필터에 대한 세팅
+    function setupDynamicFilter() {
+        const searchParams = getCurrentFilterConditions();
+        const collectionId = searchParams.get('collectionId'); // 컬렉션 ID 필터
+        const collectionFilter = document.getElementById('collectionFilter');
+
+        // 1. 현재 필터에 따른 UI 세팅
+        const filterWrapElement = document.getElementById('filterWrap');
+        if (collectionId) {
+            updateCollectionButtonUI(collectionId, filterWrapElement);
+        }
+
+        // 2. 필터 버튼 이벤트 세팅
+        collectionFilter.querySelectorAll('.dropdown-item').forEach(el => {
+            el.addEventListener('click', function() {
+                if (el.dataset.value) {
+                    searchParams.set('collectionId', el.dataset.value);
+                } else {
+                    searchParams.delete('collectionId');
+                }
+                location.href = '?' + searchParams.toString();
+            })
+        })
     }
 
     /**
@@ -231,46 +308,6 @@
         toggleButtonText.textContent = currentOwnOptionItem.textContent;
     }
 
-    /**
-     * 필터 버튼 이벤트 세팅
-     */
-    function setFilterButtonEvent() {
-        const searchParams = new URLSearchParams(window.location.search);
-        const readingStatusFilter = document.getElementById('readingStatusFilter');
-        const collectionFilter = document.getElementById('collectionFilter');
-        const ownFilter = document.getElementById('ownFilter');
-
-        readingStatusFilter.querySelectorAll('.dropdown-item').forEach(el => {
-            el.addEventListener('click', function() {
-                if (el.dataset.value) {
-                    searchParams.set('readingStatus', el.dataset.value);
-                } else { // 필터 지우기
-                    searchParams.delete('readingStatus');
-                }
-                location.href = '?' + searchParams.toString();
-            })
-        })
-        collectionFilter.querySelectorAll('.dropdown-item').forEach(el => {
-            el.addEventListener('click', function() {
-                if (el.dataset.value) {
-                    searchParams.set('collectionId', el.dataset.value);
-                } else {
-                    searchParams.delete('collectionId');
-                }
-                location.href = '?' + searchParams.toString();
-            })
-        })
-        ownFilter.querySelectorAll('.dropdown-item').forEach(el => {
-            el.addEventListener('click', function() {
-                if (el.dataset.value) {
-                    searchParams.set('isOwned', el.dataset.value);
-                } else {
-                    searchParams.delete('isOwned');
-                }
-                location.href = '?' + searchParams.toString();
-            })
-        })
-    }
 
     /**
      * 내 책 목록(책장) 조회 (쿼리스트링을 통해 파라미터 자동 처리)
@@ -321,6 +358,10 @@
                 const readingInfo = readingInfoList[item.isbn13];
 
                 // 책 정보 세팅
+                const checkbox = targetElement.querySelector('[name="books[]"]');
+                checkbox.disabled = false;
+                checkbox.value = readingInfo.id;
+
                 targetElement.dataset.bookIsbn = item.isbn13;
                 targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
@@ -347,7 +388,6 @@
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트
                 onUpdateReadingInfo(readingInfo, targetElement);
-                targetElement.querySelector('[name="books[]"]').value = readingInfo.id;
 
                 bookListWrap.appendChild(targetElement);
             })
@@ -364,6 +404,11 @@
     /**
      * 독서 목록에서 책 일괄 제거
      */
+    document.querySelector('.batch-check-btn').addEventListener('click', function() { // 전체 선택 버튼
+        document.querySelectorAll('[name="books[]"]').forEach(el => {
+            el.checked = true;
+        })
+    })
     document.querySelector('.batch-del-btn').addEventListener('click', function() {
         deleteCheckedBooks();
     })
@@ -384,8 +429,9 @@
                 const promise = axios.post(`/api/reading-books/batch`, data);
 
                 const onSuccess = (result) => {
-                    closeUIComponents();
-                    getBookList();
+                    let searchParams = new URLSearchParams(window.location.search);
+                    searchParams.set('page', 1);
+                    location.href = '?' + searchParams.toString();
                 };
 
                 handleApiResponse(promise, onSuccess);
