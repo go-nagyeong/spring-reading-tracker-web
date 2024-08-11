@@ -2,10 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
-import com.readingtracker.boochive.service.BookService;
-import com.readingtracker.boochive.service.ReadingBookService;
-import com.readingtracker.boochive.service.ReadingRecordService;
-import com.readingtracker.boochive.service.ReviewService;
+import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +23,6 @@ import java.util.stream.Collectors;
 public class ReadingBookController {
 
     private final ReadingBookService readingBookService;
-    private final BookService bookService;
     private final ReviewService reviewService;
     private final ReadingRecordService readingRecordService;
 

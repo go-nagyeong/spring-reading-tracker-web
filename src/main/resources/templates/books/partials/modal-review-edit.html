@@ -29,13 +29,13 @@
      */
     document.getElementById('reviewForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        handleReview();
+        handleReview('U');
     })
     document.getElementById('deleteReviewBtn').addEventListener('click', function(event) {
         handleReview('D');
     })
 
-    async function handleReview(action = 'C') {
+    async function handleReview(action) {
         globalLoading(true);
 
         // 폼 데이터 전처리
@@ -48,7 +48,7 @@
             globalLoading(false);
             return false;
         }
-        if (action === 'C' && data['id']) action = 'U';
+        if (action === 'U' && !data['id']) action = 'C';
 
         let promise;
         switch (action) {

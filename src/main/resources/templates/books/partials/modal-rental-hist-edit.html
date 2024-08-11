@@ -1,0 +1,83 @@
+<div class="modal-header">
+    <h5 class="modal-title">대여 이력 기록</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form id="rentalHistForm">
+    <div class="modal-body">
+        <input type="hidden" name="id">
+        <input type="hidden" name="bookIsbn">
+
+        <div class="mb-2">
+            <label class="form-label">대여일자</label>
+            <input type="date" class="form-control input-editable" name="rentalDate">
+        </div>
+        <div class="mb-2">
+            <label class="form-label">반납기한</label>
+            <input type="date" class="form-control input-editable" name="returnDate">
+        </div>
+        <div class="mb-2">
+            <label class="form-label">대여처</label>
+            <input type="text" class="form-control input-editable" name="rentalFrom">
+        </div>
+        <div class="mb-2">
+            <label class="form-label">메모</label>
+            <textarea class="form-control input-editable" rows="2" name="memo"></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" id="deleteHistoryBtn">삭제</button>
+        <div class="ms-auto">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+            <button type="submit" class="btn btn-primary" id="saveHistoryBtn">저장</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    /**
+     * 대여 이력 저장
+     */
+    document.getElementById('rentalHistForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        handleHistory('U');
+    })
+    document.getElementById('deleteHistoryBtn').addEventListener('click', function(event) {
+        handleHistory('D');
+    })
+
+    function handleHistory(action) {
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const form = document.getElementById('rentalHistForm');
+        const data = formToJson(new FormData(form));
+
+        if (action === 'D' && !data.id) { // 삭제 예외 처리
+            globalLoading(false);
+            return false;
+        }
+        if (action === 'U' && !data.id) action = 'C';
+
+        let promise;
+        switch (action) {
+            case 'C':
+                promise = axios.post(`/api/rental-histories`, data);
+                break;
+            case 'U':
+                promise = axios.put(`/api/rental-histories/${data.id}`, data);
+                break;
+            case 'D':
+                promise = axios.delete(`/api/rental-histories/${data.id}`);
+                break;
+            default:
+                throw new Error('Invalid action type');
+        }
+
+        const onSuccess = (result) => {
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+</script>

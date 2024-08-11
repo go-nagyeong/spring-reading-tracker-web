@@ -100,7 +100,7 @@
                                     <span class="badge bg-secondary text-black fw-bold me-1 idx-badge">
                                         <!-- 데이터 동적 로드 -->
                                     </span>
-                                    <span class="badge bg-label-primary own-badge">소장중</span>
+                                    <span class="badge bg-label-primary own-badge hidden">소장중</span>
                                 </div>
 
                                 <div class="info-name">
@@ -318,12 +318,14 @@
                 const targetElement = templateTag.cloneNode(true);
                 targetElement.classList.remove('template-tag');
 
+                const readingInfo = readingInfoList[item.isbn13];
+
                 // 책 정보 세팅
                 targetElement.dataset.bookIsbn = item.isbn13;
                 targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
                 targetElement.querySelector('.info-num .idx-badge').textContent = calculateRowIndex(getListResult.startIndex, getListResult.itemsPerPage, idx+1);
-                targetElement.querySelector('.info-num .own-badge').style.display = 'inline-block';
+                targetElement.querySelector('.info-num .own-badge').toggle(readingInfo.isOwned);
                 targetElement.querySelector('.info-name a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.info-name a').textContent = item.title;
                 targetElement.querySelector('.info-auth > a').textContent = item.formatAuthor;
@@ -344,7 +346,6 @@
                 }
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트
-                const readingInfo = readingInfoList[item.isbn13];
                 onUpdateReadingInfo(readingInfo, targetElement);
                 targetElement.querySelector('[name="books[]"]').value = readingInfo.id;
 

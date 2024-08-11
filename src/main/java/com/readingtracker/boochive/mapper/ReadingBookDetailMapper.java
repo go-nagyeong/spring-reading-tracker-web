@@ -12,5 +12,6 @@ public interface ReadingBookDetailMapper {
     ReadingBookDetailMapper INSTANCE = Mappers.getMapper(ReadingBookDetailMapper.class);
 
     @Mapping(target = "bookInfo", ignore = true)
+    @Mapping(target = "isOwned", ignore = true)
     ReadingBookDetailResponse toDto(ReadingBook readingBook);
 }

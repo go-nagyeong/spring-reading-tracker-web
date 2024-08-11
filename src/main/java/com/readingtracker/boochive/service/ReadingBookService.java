@@ -28,6 +28,7 @@ public class ReadingBookService {
 
     private final BookService bookService;
     private final ReadingRecordService readingRecordService;
+    private final PurchaseHistoryService purchaseHistoryService;
     private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
 
     /**
@@ -76,15 +77,22 @@ public class ReadingBookService {
                 })
                 .toList();
 
-        // 2. ISBN을 기반으로 책 상세 정보를 한 번에 조회
+        // 2. ISBN을 기반으로 책 상세 정보, 구매 이력(소장 여부)을 한 번에 조회
         Map<String, BookParameter> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
                 .stream()
                 .collect(Collectors.toMap(BookParameter::getIsbn13, bookInfo -> bookInfo));
+        List<String> ownedBookList = purchaseHistoryService
+                .getHistoriesByUserAndBookList(user.getId(), isbnList)
+                .stream()
+                .map(PurchaseHistoryParameter::getBookIsbn)
+                .toList();
 
-        // 3. 각 독서 정보에 책 상세 정보 설정
-        readingList.forEach(readingBook -> readingBook.setBookInfo(bookInfoMap.get(readingBook.getBookIsbn())));
+        // 3. 각 독서 정보에 책 상세 정보, 소장 여부 정보 설정
+        readingList.forEach(readingBook -> {
+            readingBook.setBookInfo(bookInfoMap.get(readingBook.getBookIsbn()));
+            readingBook.setIsOwned(ownedBookList.contains(readingBook.getBookIsbn()));
+        });
 
-        // 4. 페이지네이션 정보와 함께 반환
         return new PageImpl<>(readingList, pageable, pageableReadingList.getTotalElements());
     }
 

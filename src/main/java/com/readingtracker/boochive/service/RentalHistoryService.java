@@ -1,6 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.RentalHistory;
+import com.readingtracker.boochive.dto.RentalHistoryParameter;
+import com.readingtracker.boochive.mapper.RentalHistoryMapper;
 import com.readingtracker.boochive.repository.RentalHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,28 +20,32 @@ public class RentalHistoryService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<RentalHistory> findHistoryById(Long id) {
-        return rentalHistoryRepository.findById(id);
+    public Optional<RentalHistoryParameter> findHistoryById(Long id) {
+        return rentalHistoryRepository.findById(id)
+                .map(RentalHistoryMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Optional<RentalHistory> findHistoryByUserAndBook(Long userId, String bookIsbn) {
-        return rentalHistoryRepository.findByUserIdAndBookIsbn(userId, bookIsbn);
+    public Optional<RentalHistoryParameter> findHistoryByUserAndBook(Long userId, String bookIsbn) {
+        return rentalHistoryRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
+                .map(RentalHistoryMapper.INSTANCE::toDto);
     }
 
     /**
      * [C]RUD - CREATE
      */
     @Transactional
-    public RentalHistory createHistory(RentalHistory history) {
-        return rentalHistoryRepository.save(history);
+    public RentalHistoryParameter createHistory(RentalHistoryParameter history) {
+        RentalHistory newHistory = RentalHistoryMapper.INSTANCE.toEntity(history);
+
+        return RentalHistoryMapper.INSTANCE.toDto(rentalHistoryRepository.save(newHistory));
     }
 
     /**
      * CR[U]D - UPDATE
      */
     @Transactional
-    public RentalHistory updateHistory(Long id, RentalHistory history) {
+    public RentalHistoryParameter updateHistory(Long id, RentalHistoryParameter history) {
         RentalHistory existingRentalHistory = rentalHistoryRepository.findById(id).orElseThrow();
 
         existingRentalHistory.updateHistory(
@@ -49,7 +55,7 @@ public class RentalHistoryService {
                 history.getMemo()
         );
 
-        return existingRentalHistory;
+        return RentalHistoryMapper.INSTANCE.toDto(existingRentalHistory);
     }
 
     /**

@@ -203,10 +203,16 @@
                         <div class="card-body">
                             <div class="item-btn-col flex-row flex-grow-all">
                                 <div th:replace="~{common/reading-list-button :: button_group('L')}"></div>
-                                <button type="button" class="btn btn-md btn-outline-dark w-100" id="ownHistEditModalBtn"
-                                        data-bs-toggle="modal" data-bs-target="#smallModal">
-                                    구매/대여 이력 기록
-                                </button>
+                                <div class="btn-group text-nowrap">
+                                    <button type="button" class="btn btn-md btn-outline-dark" id="purchaseHistEditModalBtn"
+                                            data-bs-toggle="modal" data-bs-target="#smallModal">
+                                        구매 이력 기록
+                                    </button>
+                                    <button type="button" class="btn btn-md btn-outline-dark" id="rentalHistEditModalBtn"
+                                            data-bs-toggle="modal" data-bs-target="#smallModal">
+                                        대여 이력 기록
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -361,9 +367,13 @@
                     url = '/notes/offcanvas-post-it-detail';
                     // TODO
                     break;
-                case 'ownHistEditModalBtn': // 도서 대여/구매 이력 기록 모달
-                    url = '/books/partials/modal-own-hist-edit';
-                    callback = () => setHistoryModalFormData();
+                case 'purchaseHistEditModalBtn': // 도서 구매 이력 기록 모달
+                    url = '/books/partials/modal-purchase-hist-edit';
+                    callback = () => setPurchaseHistoryModalFormData();
+                    break;
+                case 'rentalHistEditModalBtn': // 도서 대여 이력 기록 모달
+                    url = '/books/partials/modal-rental-hist-edit';
+                    callback = () => setRentalHistoryModalFormData();
                     break;
                 case 'reviewEditModalBtn': // 도서 리뷰 수정 모달
                     url = '/books/partials/modal-review-edit';
@@ -561,7 +571,7 @@
             reviewSimpleEditor = new SimpleEditor('editorjs'); // 에디터 플러그인 초기화
 
             modalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-            modalForm.querySelector('#deleteReviewBtn').toggle(review);
+            modalForm.querySelector('#deleteReviewBtn').toggle(review); // 신규 작성이면 삭제 버튼 숨기기
             if (review) {
                 modalForm.querySelector('[name=id]').value = review.id;
                 reviewSimpleEditor.fill(review.reviewText); // 리뷰 내용
@@ -575,21 +585,19 @@
 
     /**
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
-     * 2. 사용자 구매/대여 이력 모달
+     * 2. 사용자 구매 이력 모달
      */
-    function setHistoryModalFormData() {
+    function setPurchaseHistoryModalFormData() {
         globalLoading(true);
 
-        const promise = axios.get(`/api/own-histories/book/${bookIsbn}/me`);
+        const promise = axios.get(`/api/purchase-histories/book/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
-            const { purchaseHistory, rentalHistory } = result.data;
+            const purchaseHistory = result.data;
             const purchaseForm = document.getElementById('purchaseHistForm');
-            const rentalForm = document.getElementById('rentalHistForm');
 
             purchaseForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-            rentalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-            // 구매 이력
+            purchaseForm.querySelector('#deleteHistoryBtn').toggle(purchaseHistory); // 신규 작성이면 삭제 버튼 숨기기
             if (purchaseHistory) {
                 purchaseForm.querySelector('[name=id]').value = purchaseHistory.id;
                 purchaseForm.querySelector('[name=purchaseDate]').value = purchaseHistory.purchaseDate;
@@ -597,7 +605,26 @@
                 purchaseForm.querySelector('[name=price]').value = purchaseHistory.price;
                 purchaseForm.querySelector('[name=memo]').value = purchaseHistory.memo;
             }
-            // 대여 이력
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    /**
+     * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
+     * 3. 사용자 대여 이력 모달
+     */
+    function setRentalHistoryModalFormData() {
+        globalLoading(true);
+
+        const promise = axios.get(`/api/rental-histories/book/${bookIsbn}/me`);
+
+        const onSuccess = (result) => {
+            const rentalHistory = result.data;
+            const rentalForm = document.getElementById('rentalHistForm');
+
+            rentalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
+            rentalForm.querySelector('#deleteHistoryBtn').toggle(rentalHistory); // 신규 작성이면 삭제 버튼 숨기기
             if (rentalHistory) {
                 rentalForm.querySelector('[name=id]').value = rentalHistory.id;
                 rentalForm.querySelector('[name=rentalDate]').value = rentalHistory.rentalDate;
@@ -612,7 +639,7 @@
 
     /**
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
-     * 3. 현재 독서 이력 수정 오프캔버스
+     * 4. 현재 독서 이력 수정 오프캔버스
      */
     function setReadingRecordCanvasForm() {
         const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest`);
@@ -632,7 +659,7 @@
 
     /**
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
-     * 4. 완독 이력 수정 오프캔버스
+     * 5. 완독 이력 수정 오프캔버스
      */
     function setCompletedReadingRecordCanvasForm() {
         const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/completed`);

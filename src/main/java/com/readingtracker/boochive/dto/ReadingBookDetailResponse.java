@@ -13,4 +13,5 @@ public class ReadingBookDetailResponse {
     private Long collectionId;
     private ReadingStatus readingStatus;
     private BookParameter bookInfo; // 매핑 이후 조회 변수
+    private Boolean isOwned; // 매핑 이후 조회 변수
 }
