@@ -3,7 +3,7 @@
 // 책 두께 1mm당 15p 기준으로 UI depth 계산
 const bookElement = (book) => `
 <a href="/books/detail/${book.isbn13}">
-    <div class="book" data-depth="${Math.round(book.subInfo.itemPage / 15)}">
+    <div class="book">
         <div class="spine">
             <span class="spine-title">${book.title}</span>
         </div>
@@ -18,17 +18,17 @@ function initializeBookshelfUI() {
     /**
      * 책 크기 스타일 세팅
      */
-    document.querySelectorAll('.bookshelf .book').forEach(el => {
-        if (el.getAttribute('data-depth')) {
-            // const width = el.getAttribute('data-width') + 'px';
-            // const height = el.getAttribute('data-height') + 'px';
-            const depth = el.getAttribute('data-depth') + 'px';
-
-            // el.style.setProperty('--book-width', width);
-            // el.style.setProperty('--book-height', height);
-            el.style.setProperty('--book-depth', depth);
-        }
-    });
+    // document.querySelectorAll('.bookshelf .book').forEach(el => {
+    //     if (el.getAttribute('data-depth')) {
+    //         const width = el.getAttribute('data-width') + 'px';
+    //         const height = el.getAttribute('data-height') + 'px';
+    //         const depth = el.getAttribute('data-depth') + 'px';
+    //
+    //         el.style.setProperty('--book-width', width);
+    //         el.style.setProperty('--book-height', height);
+    //         el.style.setProperty('--book-depth', depth);
+    //     }
+    // })
 
     document.querySelectorAll('.bookshelf:not(.with-post-it)').forEach(el => hideOverflowingElement(el));
     document.querySelectorAll('.bookshelf.with-post-it').forEach(el => moveOverflowingElementToNextLine(el));
@@ -41,7 +41,8 @@ window.initializeBookshelfUI = initializeBookshelfUI;
  */
 // 엘리먼트 숨기고 '더보기' 버튼으로 처리
 function hideOverflowingElement(bookshelfEl) {
-    const parentSize = getWidth(bookshelfEl.querySelector('.books'));
+    // const parentSize = getInnerWidth(bookshelfEl.querySelector('.books'));
+    const parentSize = getInnerWidth(bookshelfEl) - getOuterWidth(bookshelfEl.querySelector('.more'));
     let childrenSize = 0;
     bookshelfEl.querySelectorAll('.book').forEach(el => {
         childrenSize += getOuterWidth(el);
@@ -51,11 +52,11 @@ function hideOverflowingElement(bookshelfEl) {
 
 // 다음 줄로 엘리먼트 넘기기
 function moveOverflowingElementToNextLine(bookshelfEl) {
-    const parent = bookshelfEl.querySelector('.books');
-    const children = bookshelfEl.querySelectorAll('.book');
-
-    const parentSize = getWidth(parent);
+    // const parent = bookshelfEl.querySelector('.books');
+    // const parentSize = getInnerWidth(parent);
+    const parentSize = getInnerWidth(bookshelfEl) - getOuterWidth(bookshelfEl.querySelector('.more'));
     let childrenSize = 0;
+    const children = bookshelfEl.querySelectorAll('.book');
     children.forEach(el => {
         childrenSize += getOuterWidth(el);
 
@@ -98,7 +99,7 @@ function cloneBookShelfElement(bookshelfEl) {
 window.hideOverflowingElement = hideOverflowingElement;
 window.moveOverflowingElementToNextLine = moveOverflowingElementToNextLine;
 
-function getWidth(el) {
+function getInnerWidth(el) {
     const style = window.getComputedStyle(el),
         width = el.clientWidth,
         padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
@@ -107,9 +108,9 @@ function getWidth(el) {
 }
 
 function getOuterWidth(el) {
-    const style = window.getComputedStyle(el, null),
+    const style = window.getComputedStyle(el),
         width = el.offsetWidth,
         margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-
+    
     return width + margin;
 }

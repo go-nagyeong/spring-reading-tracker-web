@@ -487,7 +487,6 @@
 
 .bookshelf {
     width: 100%;
-    overflow: visible;
     display: flex;
     justify-content: center;
     position: relative;
@@ -497,6 +496,7 @@
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
     pointer-events: all;
+    padding: 0 0.25rem;
 }
 .bookshelf:before {
     content: "";
@@ -522,18 +522,18 @@
 }
 
 .bookshelf .books {
-    width: 100%;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    padding-left: 0.25rem;
     transform: translateY(-100%);
     position: relative;
     top: 10px;
 }
 
 .bookshelf .more {
-    width: 10%;
+    flex: 0 0 62px;
+    margin: 0 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -550,10 +550,13 @@
     transform: translateZ(0) rotateY(0);
     transition: transform 1s;
     overflow: visible;
-    margin: 0 0.05rem;
+    margin: 0 0.15rem;
 }
 .bookshelf.ui-book-cover .book {
-    margin: 0 0.5rem;
+    margin: 0 1rem;
+}
+.bookshelf .book:first-child {
+    margin-left: 0;
 }
 .bookshelf.ui-library .book:hover {
     z-index: 1;
@@ -624,28 +627,43 @@
 }
 
 @media (max-width: 767px) {
-    .bookshelf .books {
-        padding-left: 1rem;
+    .bookshelf-cont {
+        min-height: 120px;
+    }
+    .bookshelf {
+        padding: 0;
+        border-bottom: 12px solid #D2B48C;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+    }
+    .bookshelf:before {
+        width: calc(100% + 20px);
+        height: 15px;
+        top: 12px;
+    }
+    .bookshelf:after {
+        width: calc(100% + 20px);
+        height: 30px;
+        top: 27px;
+    }
+    .bookshelf.ui-library .book {
+        --book-width: calc(152px * 0.5);
+        --book-height: calc(225px * 0.5);
+        --book-depth: calc(35px * 0.5);
     }
     .bookshelf.ui-book-cover .book {
-        margin: 0 0.35rem;
+        --book-width: calc(152px * 0.45);
+        --book-height: calc(225px * 0.45);
+        --book-depth: calc(35px * 0.45);
     }
-    .bookshelf .spine {
-        width: calc(var(--book-depth) * 0.5);
-        height: calc(var(--book-height) * 0.5);
+    .bookshelf.ui-book-cover .book {
+        margin: 0 0.3rem;
     }
-    .bookshelf .spine-title {
-        font-weight: 500;
+    .bookshelf .books {
+        top: 7px;
     }
-    .bookshelf .top {
-        width: calc(var(--book-depth) * 0.5);
-        height: calc(var(--book-width) * 0.5);
-        min-width: calc(22px * 0.5);
-        transform: rotateX(90deg) translateZ(calc(var(--book-width) * 0.5 / 2)) translateY(calc(var(--book-width) * 0.5 / 2 * -1));
-    }
-    .bookshelf .cover {
-        width: calc(var(--book-width) * 0.5);
-        height: calc(var(--book-height) * 0.5);
+    .bookshelf .more {
+        flex: 0 0 18px;
     }
 }
 

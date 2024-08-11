@@ -60,7 +60,7 @@
                             <div class="more">
                                 <a th:href="@{/my/reading-books}" class="">
                                     <i class="bx bx-right-arrow-circle"></i>
-                                    <span class="align-middle">더보기</span>
+                                    <span class="align-middle d-none d-md-inline-block">더보기</span>
                                 </a>
                             </div>
                         </div>
@@ -149,7 +149,7 @@
             const collectionList = result.data;
 
             if (collectionList.length) {
-                await appendCollectionElement(collectionList);
+                appendCollectionElement(collectionList);
                 // TODO: setPagination
 
                 // 책장 UI 초기화
@@ -167,12 +167,12 @@
     /**
      * 컬랙션 목록 결과 html 동적 추가
      */
-    async function appendCollectionElement(collectionList) {
+    function appendCollectionElement(collectionList) {
         const collectionListWrap = document.getElementById('collectionListWrap');
         const templateTag = collectionListWrap.querySelector('.template-tag');
 
         if (templateTag) {
-            for await (const item of collectionList) {
+            for (const item of collectionList) {
                 const targetElement = templateTag.cloneNode(true);
                 targetElement.classList.remove('template-tag');
 

@@ -288,8 +288,9 @@
             const data = result.data;
             const getListResult = data.getListResult;
 
-            await appendBookElement(data);
+            appendBookElement(data);
             setPagination(getListResult.startIndex, getListResult.totalPages);
+
             // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
             setCollectionButtonEvent();
             setReadingListButtonEvent();
@@ -305,7 +306,7 @@
     /**
      * 책 조회 결과 html 동적 추가
      */
-    async function appendBookElement(data) {
+    function appendBookElement(data) {
         const { getListResult, readingInfoList } = data;
         const bookListWrap = document.getElementById('myBookList');
         const templateTag = bookListWrap.querySelector('.template-tag');

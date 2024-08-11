@@ -741,6 +741,11 @@ form.edit-or-view-mode .lcslt-disabled:after {
     text-align: center;
     padding: 2rem 0;
 }
+@media (max-width: 767px) {
+    .result-msg-wrap {
+        padding: 1rem 0;
+    }
+}
 
 .add-visible {
     display: none;
