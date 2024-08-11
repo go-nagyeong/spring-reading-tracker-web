@@ -327,7 +327,7 @@ Element.prototype.toggle = function(isShow) {
 /**
  * 삭제 확인 모달
  */
-function confirmDelete(content = null) {
+function confirmDeleteModal(content = null) {
     return new Promise(resolve => {
         const modalEl = document.querySelector('#smallModal');
         const target = document.querySelector('#smallModal .modal-content');
@@ -341,5 +341,30 @@ function confirmDelete(content = null) {
 
         const modalBootstrap = new bootstrap.Modal(modalEl)
         modalBootstrap.show();
+    })
+}
+
+/**
+ * 삭제 확인 버튼 (중첩 모달을 피하기 위해)
+ */
+function confirmDeleteButton(button, onConfirm) {
+    return new Promise(resolve => {
+        const originalText = button.textContent; // 원래 텍스트 저장
+
+        const confirmHandler = function(event) {
+            resolve();
+            revert(); // 원래 상태 복원
+        };
+
+        // 버튼 텍스트 및 이벤트 리스너 정리 함수
+        function revert() {
+            button.textContent = originalText;
+            button.classList.remove('blinking');
+            button.removeEventListener('click', confirmHandler);
+        }
+
+        button.textContent = "정말 삭제하시겠습니까?";
+        button.classList.add('blinking');
+        button.addEventListener('click', confirmHandler);
     })
 }

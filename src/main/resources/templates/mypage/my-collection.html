@@ -252,7 +252,7 @@
         const name = el.querySelector('.col-title').textContent;
         const content = `${name} 컬렉션이 삭제됩니다.`;
 
-        confirmDelete(content)
+        confirmDeleteModal(content)
             .then(() => {
                 globalLoading(true);
 

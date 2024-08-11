@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <div class="modal-footer">
+    <div class="modal-footer justify-content-start">
         <button type="button" class="btn btn-outline-danger" id="deleteHistoryBtn">삭제</button>
         <div class="ms-auto">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
@@ -36,43 +36,47 @@
 
 <script>
     /**
-     * 대여 이력 저장
+     * 대여 이력 저장 및 삭제
      */
     document.getElementById('rentalHistForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        handleHistory('U');
+        saveHistory();
     })
     document.getElementById('deleteHistoryBtn').addEventListener('click', function(event) {
-        handleHistory('D');
+        confirmDeleteButton(event.target)
+            .then(deleteHistory);
     })
 
-    function handleHistory(action) {
+    function saveHistory() {
         globalLoading(true);
 
         // 폼 데이터 전처리
         const form = document.getElementById('rentalHistForm');
         const data = formToJson(new FormData(form));
 
-        if (action === 'D' && !data.id) { // 삭제 예외 처리
+        const promise = data.id
+            ? axios.put(`/api/rental-histories/${data.id}`, data)
+            : axios.post(`/api/rental-histories`, data);
+
+        const onSuccess = (result) => {
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    function deleteHistory() {
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const id = document.querySelector('#rentalHistForm [name=id]').value;
+
+        if (!id) { // 삭제 예외 처리
             globalLoading(false);
             return false;
         }
-        if (action === 'U' && !data.id) action = 'C';
 
-        let promise;
-        switch (action) {
-            case 'C':
-                promise = axios.post(`/api/rental-histories`, data);
-                break;
-            case 'U':
-                promise = axios.put(`/api/rental-histories/${data.id}`, data);
-                break;
-            case 'D':
-                promise = axios.delete(`/api/rental-histories/${data.id}`);
-                break;
-            default:
-                throw new Error('Invalid action type');
-        }
+        const promise = axios.delete(`/api/rental-histories/${id}`);
 
         const onSuccess = (result) => {
             closeUIComponents();

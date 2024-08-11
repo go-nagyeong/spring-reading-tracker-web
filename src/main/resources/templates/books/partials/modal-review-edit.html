@@ -14,7 +14,7 @@
             <div id="editorjs"></div>
         </div>
     </div>
-    <div class="modal-footer">
+    <div class="modal-footer justify-content-start">
         <button type="button" class="btn btn-outline-danger" id="deleteReviewBtn">삭제</button>
         <div class="ms-auto">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
@@ -25,17 +25,18 @@
 
 <script>
     /**
-     * 리뷰 작성
+     * 리뷰 저장 및 삭제
      */
     document.getElementById('reviewForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        handleReview('U');
+        saveReview();
     })
     document.getElementById('deleteReviewBtn').addEventListener('click', function(event) {
-        handleReview('D');
+        confirmDeleteButton(event.target)
+            .then(deleteReview);
     })
 
-    async function handleReview(action) {
+    async function saveReview() {
         globalLoading(true);
 
         // 폼 데이터 전처리
@@ -44,26 +45,29 @@
         data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
         await reviewSimpleEditor.save().then(result => data['reviewText'] = result);
 
-        if (action === 'D' && !data['id']) { // 삭제 예외 처리
+        const promise = data.id
+            ? axios.put(`/api/reviews/${data.id}`, data)
+            : axios.post(`/api/reviews`, data);
+
+        const onSuccess = (result) => {
+            loadReviewData();
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    function deleteReview() {
+        globalLoading(true);
+
+        const id = document.querySelector('#reviewForm [name=id]').value;
+
+        if (!id) { // 삭제 예외 처리
             globalLoading(false);
             return false;
         }
-        if (action === 'U' && !data['id']) action = 'C';
 
-        let promise;
-        switch (action) {
-            case 'C':
-                promise = axios.post(`/api/reviews`, data);
-                break;
-            case 'U':
-                promise = axios.put(`/api/reviews/${data['id']}`, data);
-                break;
-            case 'D':
-                promise = axios.delete(`/api/reviews/${data['id']}`);
-                break;
-            default:
-                throw new Error('Invalid action type');
-        }
+        const promise = axios.delete(`/api/reviews/${id}`)
 
         const onSuccess = (result) => {
             loadReviewData();

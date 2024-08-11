@@ -771,6 +771,10 @@ form.edit-or-view-mode .lcslt-disabled:after {
     display: none;
 }
 
+.blinking {
+    animation: blink 1s linear infinite;
+}
+
 /**
  * ---- Vendor - LC Select -----------------------
  */
