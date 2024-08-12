@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.ReadingRecord;
-import com.readingtracker.boochive.domain.ReadingStatus;
+import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.dto.BatchUpdateRequest;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;

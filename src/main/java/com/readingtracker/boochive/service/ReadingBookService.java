@@ -2,6 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.ReadingBookDetailMapper;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;

@@ -1,6 +1,6 @@
 package com.readingtracker.boochive.dto;
 
-import com.readingtracker.boochive.domain.ReadingStatus;
+import com.readingtracker.boochive.enums.ReadingStatus;
 import lombok.Getter;
 import lombok.Setter;
 

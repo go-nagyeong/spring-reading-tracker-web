@@ -7,7 +7,7 @@ import com.readingtracker.boochive.dto.ReadingBookDetailResponse;
 import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.ApiResponse;
-import com.readingtracker.boochive.util.QueryType;
+import com.readingtracker.boochive.enums.QueryType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

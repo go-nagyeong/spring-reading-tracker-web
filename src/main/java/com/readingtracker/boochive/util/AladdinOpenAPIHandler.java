@@ -2,6 +2,7 @@ package com.readingtracker.boochive.util;
 
 import com.readingtracker.boochive.dto.BookParameter;
 import com.readingtracker.boochive.dto.PageableBookListResponse;
+import com.readingtracker.boochive.enums.QueryType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

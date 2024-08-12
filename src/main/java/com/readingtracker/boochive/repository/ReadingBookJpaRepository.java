@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.repository;
 
 import com.readingtracker.boochive.domain.ReadingBook;
-import com.readingtracker.boochive.domain.ReadingStatus;
+import com.readingtracker.boochive.enums.ReadingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
