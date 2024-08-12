@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.domain;
+package com.readingtracker.boochive.enums;
 
 import lombok.Getter;
 

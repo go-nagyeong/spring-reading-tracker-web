@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.util;
+package com.readingtracker.boochive.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -9,7 +9,7 @@ public enum QueryType {
     PUBLISHER;
 
     @JsonValue
-    String get() {
+    public String get() {
         String name = name();
         return name.charAt(0) + name.substring(1).toLowerCase();
     }
