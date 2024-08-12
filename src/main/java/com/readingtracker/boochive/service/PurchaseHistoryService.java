@@ -2,6 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.PurchaseHistory;
 import com.readingtracker.boochive.dto.PurchaseHistoryParameter;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.PurchaseHistoryMapper;
 import com.readingtracker.boochive.repository.PurchaseHistoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,8 @@ public class PurchaseHistoryService {
      */
     @Transactional
     public PurchaseHistoryParameter updateHistory(Long id, PurchaseHistoryParameter history) {
-        PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(id).orElseThrow();
+        PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("구매 이력"));
 
         existingPurchaseHistory.updateHistory(
                 history.getPurchaseDate(),
@@ -71,6 +73,10 @@ public class PurchaseHistoryService {
      */
     @Transactional
     public void deleteHistoryById(Long id) {
-        purchaseHistoryRepository.deleteById(id);
+        // 데이터 존재 여부 검사
+        PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("구매 이력"));
+
+        purchaseHistoryRepository.delete(existingPurchaseHistory);
     }
 }

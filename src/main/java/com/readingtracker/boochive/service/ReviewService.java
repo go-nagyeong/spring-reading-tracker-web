@@ -2,6 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.dto.ReviewResponse;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.ReviewMapper;
 import com.readingtracker.boochive.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +84,8 @@ public class ReviewService {
      */
     @Transactional
     public ReviewResponse updateReview(Long id, Review review) {
-        Review existingReview = reviewRepository.findById(id).orElseThrow();
+        Review existingReview = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("리뷰"));
 
         existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());
 
@@ -95,6 +97,10 @@ public class ReviewService {
      */
     @Transactional
     public void deleteReviewById(Long id) {
-        reviewRepository.deleteById(id);
+        // 데이터 존재 여부 검사
+        Review existingReview = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("리뷰"));
+
+        reviewRepository.delete(existingReview);
     }
 }

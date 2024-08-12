@@ -3,6 +3,7 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.domain.ReadingStatus;
 import com.readingtracker.boochive.dto.BatchUpdateRequest;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.repository.ReadingRecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +71,7 @@ public class ReadingRecordService {
      */
     @Transactional
     public void deleteReadingRecord(Long id) {
-        readingRecordRepository.deleteById(id);
+        delete(id);
     }
 
     /**
@@ -90,7 +91,7 @@ public class ReadingRecordService {
             update(record.getId(), record);
         }
         for (ReadingRecord record : request.getDeleteList()) {
-            readingRecordRepository.deleteById(record.getId());
+            delete(record.getId());
         }
 
         List<ReadingRecord> remainingReadingRecords = readingRecordRepository.findAllByUserIdAndBookIsbn(userId, bookIsbn);
@@ -109,7 +110,8 @@ public class ReadingRecordService {
      * (공통 메서드) UPDATE 로직
      */
     private ReadingRecord update(Long id, ReadingRecord record) {
-        ReadingRecord existingReadingRecord = readingRecordRepository.findById(id).orElseThrow();
+        ReadingRecord existingReadingRecord = readingRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("독서 이력"));
 
         boolean endDateChanged = !Objects.equals(existingReadingRecord.getEndDate(), record.getEndDate());
         if (!Objects.equals(existingReadingRecord.getStartDate(), record.getStartDate())) {
@@ -122,6 +124,17 @@ public class ReadingRecordService {
         validateReadingRecord(record, endDateChanged); // 날짜 유효성 검사
 
         return record;
+    }
+
+    /**
+     * (공통 메서드) DELETE 로직
+     */
+    private void delete(Long id) {
+        // 데이터 존재 여부 검사
+        ReadingRecord existingReadingRecord = readingRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("독서 이력"));
+
+        readingRecordRepository.delete(existingReadingRecord);
     }
 
     /**

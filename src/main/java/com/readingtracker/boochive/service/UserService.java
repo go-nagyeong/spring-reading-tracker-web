@@ -4,6 +4,7 @@ import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.PasswordUpdateRequest;
 import com.readingtracker.boochive.dto.RegisterRequest;
 import com.readingtracker.boochive.dto.UserInfoParameter;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.RegisterMapper;
 import com.readingtracker.boochive.mapper.UserInfoMapper;
 import com.readingtracker.boochive.repository.UserRepository;
@@ -61,7 +62,8 @@ public class UserService {
      */
     @Transactional
     public UserInfoParameter updateUser(Long id, UserInfoParameter userInfo) {
-        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id).orElseThrow();
+        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("회원"));
 
         existingUser.updateProfile(
                 userInfo.getUsername(),
@@ -76,7 +78,8 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long id, PasswordUpdateRequest request) {
-        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id).orElseThrow();
+        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("회원"));
 
         // 현재 비밀번호 검증
         if (!passwordEncoder.matches(request.getOriginPassword(), existingUser.getPassword())) {
@@ -94,6 +97,10 @@ public class UserService {
      */
     @Transactional
     public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+        // 데이터 존재 여부 검사
+        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResourceNotFoundException("회원"));
+
+        userRepository.delete(existingUser);
     }
 }

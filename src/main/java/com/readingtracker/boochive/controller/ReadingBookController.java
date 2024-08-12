@@ -2,6 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +91,8 @@ public class ReadingBookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteReadingBook(@PathVariable Long id,
                                                                               @AuthenticationPrincipal User user) {
-        ReadingBookDetailResponse existing = readingBookService.findReadingBookById(id).orElseThrow();
+        ReadingBookDetailResponse existing = readingBookService.findReadingBookById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
         String bookIsbn = existing.getBookIsbn();
 
         readingBookService.deleteReadingBookById(id);

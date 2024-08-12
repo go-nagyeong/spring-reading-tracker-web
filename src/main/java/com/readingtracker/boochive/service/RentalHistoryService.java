@@ -2,6 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.RentalHistory;
 import com.readingtracker.boochive.dto.RentalHistoryParameter;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.RentalHistoryMapper;
 import com.readingtracker.boochive.repository.RentalHistoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,8 @@ public class RentalHistoryService {
      */
     @Transactional
     public RentalHistoryParameter updateHistory(Long id, RentalHistoryParameter history) {
-        RentalHistory existingRentalHistory = rentalHistoryRepository.findById(id).orElseThrow();
+        RentalHistory existingRentalHistory = rentalHistoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("대여 이력"));
 
         existingRentalHistory.updateHistory(
                 history.getRentalDate(),
@@ -63,6 +65,10 @@ public class RentalHistoryService {
      */
     @Transactional
     public void deleteHistoryById(Long id) {
-        rentalHistoryRepository.deleteById(id);
+        // 데이터 존재 여부 검사
+        RentalHistory existingRentalHistory = rentalHistoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("대여 이력"));
+
+        rentalHistoryRepository.delete(existingRentalHistory);
     }
 }

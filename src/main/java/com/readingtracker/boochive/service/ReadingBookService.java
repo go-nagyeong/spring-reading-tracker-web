@@ -2,6 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.ReadingBookDetailMapper;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
@@ -123,7 +124,8 @@ public class ReadingBookService {
      */
     @Transactional
     public ReadingBookDetailResponse updateReadingBook(Long id, ReadingBook readingBook) {
-        ReadingBook existingReadingBook = readingBookRepository.findById(id).orElseThrow();
+        ReadingBook existingReadingBook = readingBookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
 
         boolean readingStatusChanged = !existingReadingBook.getReadingStatus().equals(readingBook.getReadingStatus());
         if (readingStatusChanged) {
@@ -151,7 +153,11 @@ public class ReadingBookService {
      */
     @Transactional
     public void deleteReadingBookById(Long id) {
-        readingBookRepository.deleteById(id);
+        // 데이터 존재 여부 검사
+        ReadingBook existingReadingBook = readingBookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
+
+        readingBookRepository.delete(existingReadingBook);
     }
 
     /**
@@ -160,7 +166,11 @@ public class ReadingBookService {
     @Transactional
     public void batchDeleteReadingBooks(BatchUpdateRequest<Long> request) {
         for (Long id : request.getDeleteList()) {
-            readingBookRepository.deleteById(id);
+            // 데이터 존재 여부 검사
+            ReadingBook existingReadingBook = readingBookRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
+
+            readingBookRepository.delete(existingReadingBook);
         }
     }
 

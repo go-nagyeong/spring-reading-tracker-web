@@ -2,6 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.domain.UserConfig;
+import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.repository.UserConfigRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,8 @@ public class UserConfigService {
      */
     @Transactional
     public UserConfig updateConfig(Long id, UserConfig userConfig) {
-        UserConfig existingUserConfig = userConfigRepository.findById(id).orElseThrow();
+        UserConfig existingUserConfig = userConfigRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자 설정"));
 
         existingUserConfig.updateConfigValue(userConfig.getConfigValue());
 
@@ -86,6 +88,10 @@ public class UserConfigService {
      */
     @Transactional
     public void deleteConfig(Long id) {
-        userConfigRepository.deleteById(id);
+        // 데이터 존재 여부 검사
+        UserConfig existingUserConfig = userConfigRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자 설정"));
+
+        userConfigRepository.delete(existingUserConfig);
     }
 }
