@@ -1,6 +1,6 @@
 package com.readingtracker.boochive.validator;
 
-import com.readingtracker.boochive.repository.UserRepository;
+import com.readingtracker.boochive.service.UserService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class NotDuplicateEmailValidator implements ConstraintValidator<NotDuplicateEmail, String> {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public void initialize(NotDuplicateEmail constraintAnnotation) {
@@ -17,6 +17,6 @@ public class NotDuplicateEmailValidator implements ConstraintValidator<NotDuplic
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext constraintValidatorContext) {
-        return userRepository.findByEmail(email).isEmpty();
+        return userService.findUserByEmailIncludingDeleted(email).isEmpty();
     }
 }

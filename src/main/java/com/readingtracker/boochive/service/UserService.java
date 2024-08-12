@@ -26,12 +26,19 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public Optional<UserInfoParameter> findUserById(Long id) {
-        return userRepository.findById(id)
+        return userRepository.findByIdAndDeletedAtIsNull(id)
                 .map(UserInfoMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<UserInfoParameter> findUserByEmail(String email) {
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
+                .map(UserInfoMapper.INSTANCE::toDto);
+    }
+
+    // 탈퇴한 계정도 포함해서 조회
+    @Transactional(readOnly = true)
+    public Optional<UserInfoParameter> findUserByEmailIncludingDeleted(String email) {
         return userRepository.findByEmail(email)
                 .map(UserInfoMapper.INSTANCE::toDto);
     }
@@ -54,7 +61,7 @@ public class UserService {
      */
     @Transactional
     public UserInfoParameter updateUser(Long id, UserInfoParameter userInfo) {
-        User existingUser = userRepository.findById(id).orElseThrow();
+        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id).orElseThrow();
 
         existingUser.updateProfile(
                 userInfo.getUsername(),
@@ -69,7 +76,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long id, PasswordUpdateRequest request) {
-        User existingUser = userRepository.findById(id).orElseThrow();
+        User existingUser = userRepository.findByIdAndDeletedAtIsNull(id).orElseThrow();
 
         // 현재 비밀번호 검증
         if (!passwordEncoder.matches(request.getOriginPassword(), existingUser.getPassword())) {
