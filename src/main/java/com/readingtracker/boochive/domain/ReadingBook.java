@@ -3,6 +3,7 @@ package com.readingtracker.boochive.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.util.CurrentUserContext;
+import com.readingtracker.boochive.util.Own;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
         @UniqueConstraint(columnNames = {"user_id", "book_isbn"})
 })
 @EntityListeners(AuditingEntityListener.class)
-public class ReadingBook {
+public class ReadingBook implements Own {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

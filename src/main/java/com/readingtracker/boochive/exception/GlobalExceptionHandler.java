@@ -6,9 +6,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
 
 @ControllerAdvice
 @Slf4j
@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
         return ApiResponse.failure("파일 처리 중 오류가 발생했습니다. 나중에 다시 시도해 주세요.");
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error("GlobalExceptionHandler :: 데이터 타입 오류", e);
+        return ApiResponse.failure("데이터 형식이 올바르지 않습니다.");
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("GlobalExceptionHandler :: Illegal Argument 오류", e);
@@ -41,6 +47,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleResourceNotFoundException(ResourceNotFoundException e) {
         log.error("GlobalExceptionHandler :: 존재하지 않는 레코드 오류", e);
+        return ApiResponse.failure(e.getMessage());
+    }
+
+    @ExceptionHandler(ResourceAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleResourceAccessDeniedException(ResourceAccessDeniedException e) {
+        log.error("GlobalExceptionHandler :: 접근 권한 오류", e);
         return ApiResponse.failure(e.getMessage());
     }
 }

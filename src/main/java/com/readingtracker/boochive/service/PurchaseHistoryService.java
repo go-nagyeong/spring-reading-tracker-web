@@ -2,9 +2,9 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.PurchaseHistory;
 import com.readingtracker.boochive.dto.PurchaseHistoryParameter;
-import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.PurchaseHistoryMapper;
 import com.readingtracker.boochive.repository.PurchaseHistoryRepository;
+import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +16,7 @@ import java.util.*;
 public class PurchaseHistoryService {
 
     private final PurchaseHistoryRepository purchaseHistoryRepository;
+    private final ResourceAccessUtil<PurchaseHistory> resourceAccessUtil;
 
     /**
      * C[R]UD - READ
@@ -55,8 +56,7 @@ public class PurchaseHistoryService {
      */
     @Transactional
     public PurchaseHistoryParameter updateHistory(Long id, PurchaseHistoryParameter history) {
-        PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("구매 이력"));
+        PurchaseHistory existingPurchaseHistory = resourceAccessUtil.checkAccessAndRetrieve(id, PurchaseHistory.class);
 
         existingPurchaseHistory.updateHistory(
                 history.getPurchaseDate(),
@@ -73,9 +73,7 @@ public class PurchaseHistoryService {
      */
     @Transactional
     public void deleteHistoryById(Long id) {
-        // 데이터 존재 여부 검사
-        PurchaseHistory existingPurchaseHistory = purchaseHistoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("구매 이력"));
+        PurchaseHistory existingPurchaseHistory = resourceAccessUtil.checkAccessAndRetrieve(id, PurchaseHistory.class);
 
         purchaseHistoryRepository.delete(existingPurchaseHistory);
     }

@@ -3,11 +3,11 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.enums.ReadingStatus;
-import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.ReadingBookDetailMapper;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
+import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +27,7 @@ public class ReadingBookService {
 
     private final ReadingBookJpaRepository readingBookRepository;
     private final ReadingBookDslRepositoryImpl readingBookDslRepository;
+    private final ResourceAccessUtil<ReadingBook> resourceAccessUtil;
 
     private final BookService bookService;
     private final ReadingRecordService readingRecordService;
@@ -125,8 +126,7 @@ public class ReadingBookService {
      */
     @Transactional
     public ReadingBookDetailResponse updateReadingBook(Long id, ReadingBook readingBook) {
-        ReadingBook existingReadingBook = readingBookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
+        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingBook.class);
 
         boolean readingStatusChanged = !existingReadingBook.getReadingStatus().equals(readingBook.getReadingStatus());
         if (readingStatusChanged) {
@@ -154,9 +154,7 @@ public class ReadingBookService {
      */
     @Transactional
     public void deleteReadingBookById(Long id) {
-        // 데이터 존재 여부 검사
-        ReadingBook existingReadingBook = readingBookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
+        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingBook.class);
 
         readingBookRepository.delete(existingReadingBook);
     }
@@ -167,9 +165,7 @@ public class ReadingBookService {
     @Transactional
     public void batchDeleteReadingBooks(BatchUpdateRequest<Long> request) {
         for (Long id : request.getDeleteList()) {
-            // 데이터 존재 여부 검사
-            ReadingBook existingReadingBook = readingBookRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("독서 정보"));
+            ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingBook.class);
 
             readingBookRepository.delete(existingReadingBook);
         }

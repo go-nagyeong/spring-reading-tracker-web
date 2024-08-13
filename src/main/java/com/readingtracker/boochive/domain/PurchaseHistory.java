@@ -2,6 +2,7 @@ package com.readingtracker.boochive.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.readingtracker.boochive.util.CurrentUserContext;
+import com.readingtracker.boochive.util.Own;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @Table(name = "book_purchase_history", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "book_isbn"})
 })
-public class PurchaseHistory {
+public class PurchaseHistory implements Own {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

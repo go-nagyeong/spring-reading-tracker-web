@@ -2,8 +2,8 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.domain.UserConfig;
-import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.repository.UserConfigRepository;
+import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class UserConfigService {
 
     private final UserConfigRepository userConfigRepository;
+    private final ResourceAccessUtil<UserConfig> resourceAccessUtil;
 
     /**
      * C[R]UD - READ
@@ -43,8 +44,7 @@ public class UserConfigService {
      */
     @Transactional
     public UserConfig updateConfig(Long id, UserConfig userConfig) {
-        UserConfig existingUserConfig = userConfigRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자 설정"));
+        UserConfig existingUserConfig = resourceAccessUtil.checkAccessAndRetrieve(id, UserConfig.class);
 
         existingUserConfig.updateConfigValue(userConfig.getConfigValue());
 
@@ -88,9 +88,7 @@ public class UserConfigService {
      */
     @Transactional
     public void deleteConfig(Long id) {
-        // 데이터 존재 여부 검사
-        UserConfig existingUserConfig = userConfigRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자 설정"));
+        UserConfig existingUserConfig = resourceAccessUtil.checkAccessAndRetrieve(id, UserConfig.class);
 
         userConfigRepository.delete(existingUserConfig);
     }

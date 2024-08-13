@@ -3,9 +3,9 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.dto.BatchUpdateRequest;
-import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.repository.ReadingRecordRepository;
+import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,7 @@ public class ReadingRecordService {
 
     private final ReadingRecordRepository readingRecordRepository;
     private final ReadingBookJpaRepository readingBookRepository;
+    private final ResourceAccessUtil<ReadingRecord> resourceAccessUtil;
 
     /**
      * C[R]UD - READ
@@ -110,8 +111,7 @@ public class ReadingRecordService {
      * (공통 메서드) UPDATE 로직
      */
     private ReadingRecord update(Long id, ReadingRecord record) {
-        ReadingRecord existingReadingRecord = readingRecordRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("독서 이력"));
+        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingRecord.class);
 
         boolean endDateChanged = !Objects.equals(existingReadingRecord.getEndDate(), record.getEndDate());
         if (!Objects.equals(existingReadingRecord.getStartDate(), record.getStartDate())) {
@@ -130,9 +130,7 @@ public class ReadingRecordService {
      * (공통 메서드) DELETE 로직
      */
     private void delete(Long id) {
-        // 데이터 존재 여부 검사
-        ReadingRecord existingReadingRecord = readingRecordRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("독서 이력"));
+        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingRecord.class);
 
         readingRecordRepository.delete(existingReadingRecord);
     }

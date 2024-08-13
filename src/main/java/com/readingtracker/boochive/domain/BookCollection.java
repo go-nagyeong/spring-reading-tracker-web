@@ -2,6 +2,7 @@ package com.readingtracker.boochive.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.readingtracker.boochive.util.CurrentUserContext;
+import com.readingtracker.boochive.util.Own;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class BookCollection {
+public class BookCollection implements Own {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

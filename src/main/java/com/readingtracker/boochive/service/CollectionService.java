@@ -4,9 +4,9 @@ import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.dto.CollectionDetailResponse;
 import com.readingtracker.boochive.dto.BookParameter;
 import com.readingtracker.boochive.dto.ReadingBookDetailResponse;
-import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.CollectionDetailMapper;
 import com.readingtracker.boochive.repository.CollectionRepository;
+import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class CollectionService {
 
     private final CollectionRepository collectionRepository;
+    private final ResourceAccessUtil<BookCollection> resourceAccessUtil;
 
     private final BookService bookService;
     private final ReadingBookService readingBookService;
@@ -91,8 +92,7 @@ public class CollectionService {
      */
     @Transactional
     public CollectionDetailResponse updateCollection(Long id, BookCollection bookCollection) {
-        BookCollection existingBookCollection = collectionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("컬렉션"));
+        BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id, BookCollection.class);
 
         existingBookCollection.updateCollectionName(bookCollection.getCollectionName());
 
@@ -104,9 +104,7 @@ public class CollectionService {
      */
     @Transactional
     public void deleteCollectionById(Long id) {
-        // 데이터 존재 여부 검사
-        BookCollection existingBookCollection = collectionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("컬렉션"));
+        BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id, BookCollection.class);
 
         // (이전 연계 작업) 해당 컬렉션에 소속된 모든 책의 컬렉션 참조 초기화
         readingBookService.nullifyCollectionReference(id);
