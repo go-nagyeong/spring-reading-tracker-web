@@ -126,7 +126,7 @@ public class ReadingBookService {
      */
     @Transactional
     public ReadingBookDetailResponse updateReadingBook(Long id, ReadingBook readingBook) {
-        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingBook.class);
+        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         boolean readingStatusChanged = !existingReadingBook.getReadingStatus().equals(readingBook.getReadingStatus());
         if (readingStatusChanged) {
@@ -154,7 +154,7 @@ public class ReadingBookService {
      */
     @Transactional
     public void deleteReadingBookById(Long id) {
-        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingBook.class);
+        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         readingBookRepository.delete(existingReadingBook);
     }
@@ -165,7 +165,7 @@ public class ReadingBookService {
     @Transactional
     public void batchDeleteReadingBooks(BatchUpdateRequest<Long> request) {
         for (Long id : request.getDeleteList()) {
-            ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingBook.class);
+            ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
 
             readingBookRepository.delete(existingReadingBook);
         }

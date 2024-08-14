@@ -92,7 +92,7 @@ public class CollectionService {
      */
     @Transactional
     public CollectionDetailResponse updateCollection(Long id, BookCollection bookCollection) {
-        BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id, BookCollection.class);
+        BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingBookCollection.updateCollectionName(bookCollection.getCollectionName());
 
@@ -104,7 +104,7 @@ public class CollectionService {
      */
     @Transactional
     public void deleteCollectionById(Long id) {
-        BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id, BookCollection.class);
+        BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         // (이전 연계 작업) 해당 컬렉션에 소속된 모든 책의 컬렉션 참조 초기화
         readingBookService.nullifyCollectionReference(id);

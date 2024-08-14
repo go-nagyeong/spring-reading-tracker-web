@@ -85,7 +85,7 @@ public class ReviewService {
      */
     @Transactional
     public ReviewResponse updateReview(Long id, Review review) {
-        Review existingReview = resourceAccessUtil.checkAccessAndRetrieve(id, Review.class);
+        Review existingReview = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());
 
@@ -97,7 +97,7 @@ public class ReviewService {
      */
     @Transactional
     public void deleteReviewById(Long id) {
-        Review existingReview = resourceAccessUtil.checkAccessAndRetrieve(id, Review.class);
+        Review existingReview = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         reviewRepository.delete(existingReview);
     }

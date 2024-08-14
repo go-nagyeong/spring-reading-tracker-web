@@ -48,7 +48,7 @@ public class RentalHistoryService {
      */
     @Transactional
     public RentalHistoryParameter updateHistory(Long id, RentalHistoryParameter history) {
-        RentalHistory existingRentalHistory = resourceAccessUtil.checkAccessAndRetrieve(id, RentalHistory.class);
+        RentalHistory existingRentalHistory = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingRentalHistory.updateHistory(
                 history.getRentalDate(),
@@ -65,7 +65,7 @@ public class RentalHistoryService {
      */
     @Transactional
     public void deleteHistoryById(Long id) {
-        RentalHistory existingRentalHistory = resourceAccessUtil.checkAccessAndRetrieve(id, RentalHistory.class);
+        RentalHistory existingRentalHistory = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         rentalHistoryRepository.delete(existingRentalHistory);
     }

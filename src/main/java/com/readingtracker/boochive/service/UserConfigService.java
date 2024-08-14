@@ -44,7 +44,7 @@ public class UserConfigService {
      */
     @Transactional
     public UserConfig updateConfig(Long id, UserConfig userConfig) {
-        UserConfig existingUserConfig = resourceAccessUtil.checkAccessAndRetrieve(id, UserConfig.class);
+        UserConfig existingUserConfig = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingUserConfig.updateConfigValue(userConfig.getConfigValue());
 
@@ -88,7 +88,7 @@ public class UserConfigService {
      */
     @Transactional
     public void deleteConfig(Long id) {
-        UserConfig existingUserConfig = resourceAccessUtil.checkAccessAndRetrieve(id, UserConfig.class);
+        UserConfig existingUserConfig = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         userConfigRepository.delete(existingUserConfig);
     }

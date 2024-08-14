@@ -56,7 +56,7 @@ public class PurchaseHistoryService {
      */
     @Transactional
     public PurchaseHistoryParameter updateHistory(Long id, PurchaseHistoryParameter history) {
-        PurchaseHistory existingPurchaseHistory = resourceAccessUtil.checkAccessAndRetrieve(id, PurchaseHistory.class);
+        PurchaseHistory existingPurchaseHistory = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingPurchaseHistory.updateHistory(
                 history.getPurchaseDate(),
@@ -73,7 +73,7 @@ public class PurchaseHistoryService {
      */
     @Transactional
     public void deleteHistoryById(Long id) {
-        PurchaseHistory existingPurchaseHistory = resourceAccessUtil.checkAccessAndRetrieve(id, PurchaseHistory.class);
+        PurchaseHistory existingPurchaseHistory = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         purchaseHistoryRepository.delete(existingPurchaseHistory);
     }

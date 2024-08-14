@@ -117,7 +117,7 @@ public class ReadingRecordService {
      * (공통 메서드) UPDATE 로직
      */
     private ReadingRecord update(Long id, ReadingRecord record) {
-        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingRecord.class);
+        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         boolean endDateChanged = !Objects.equals(existingReadingRecord.getEndDate(), record.getEndDate());
         if (!Objects.equals(existingReadingRecord.getStartDate(), record.getStartDate())) {
@@ -136,7 +136,7 @@ public class ReadingRecordService {
      * (공통 메서드) DELETE 로직
      */
     private void delete(Long id) {
-        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id, ReadingRecord.class);
+        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         readingRecordRepository.delete(existingReadingRecord);
     }
