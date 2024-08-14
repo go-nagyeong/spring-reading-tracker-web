@@ -77,7 +77,9 @@ public class ReadingRecordService {
      */
     @Transactional
     public void deleteReadingRecord(Long id) {
-        delete(id);
+        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id);
+
+        readingRecordRepository.delete(existingReadingRecord);
     }
 
     /**
@@ -85,27 +87,29 @@ public class ReadingRecordService {
      */
     @Transactional
     public List<ReadingRecord> handleReadingRecords(BatchUpdateRequest<ReadingRecord> request, Long userId) {
-        List<ReadingRecord> allRecords = request.getUpdateList();
-        allRecords.addAll(request.getDeleteList());
-
-        String bookIsbn = allRecords.stream()
-                .map(ReadingRecord::getBookIsbn)
-                .findFirst()
-                .orElse(null);
+        Set<String> bookIsbnSet = new HashSet<>(); // Unique 적용을 위해 HashSet 사용
 
         for (ReadingRecord record : request.getUpdateList()) {
-            update(record.getId(), record);
+            ReadingRecord existing = update(record.getId(), record);
+            bookIsbnSet.add(existing.getBookIsbn());
         }
-        for (ReadingRecord record : request.getDeleteList()) {
-            delete(record.getId());
+        for (Long id : request.getDeleteList()) {
+            ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id);
+            bookIsbnSet.add(existingReadingRecord.getBookIsbn());
+            readingRecordRepository.delete(existingReadingRecord);
         }
 
+        if (bookIsbnSet.size() > 1) {
+            throw new IllegalArgumentException("책 정보가 일치하지 않습니다. 문제가 계속되면 관리자에게 문의해 주세요");
+        }
+
+        // (이후 연계 작업) 남아있는 완독 이력 조회
+        String bookIsbn = bookIsbnSet.iterator().next();
         List<ReadingRecord> remainingCompletedReadingRecords = readingRecordRepository
                 .findAllByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
 
-        // (이후 연계 작업) 완독 이력 데이터 모두 삭제 시 독서 상태 자동 변경
+        // 모두 삭제됐을 시 독서 상태 '읽을 예정' 상태로 자동 변경
         if (remainingCompletedReadingRecords.isEmpty()) {
-            // 완독 이력이 없으니 '읽을 예정' 상태로 복구
             readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
                     .ifPresent(readingBook -> readingBook.updateReadingStatus(ReadingStatus.TO_READ));
         }
@@ -130,15 +134,6 @@ public class ReadingRecordService {
         validateReadingRecord(record, endDateChanged); // 날짜 유효성 검사
 
         return record;
-    }
-
-    /**
-     * (공통 메서드) DELETE 로직
-     */
-    private void delete(Long id) {
-        ReadingRecord existingReadingRecord = resourceAccessUtil.checkAccessAndRetrieve(id);
-
-        readingRecordRepository.delete(existingReadingRecord);
     }
 
     /**

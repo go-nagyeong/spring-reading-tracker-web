@@ -109,7 +109,7 @@ public class ReadingBookController {
      * POST - 독서 목록에서 Batch Delete (일괄 삭제)
      */
     @PostMapping("/batch")
-    public ResponseEntity<ApiResponse<Object>> batchDeleteReadingBooks(@RequestBody BatchUpdateRequest<Long> request) {
+    public ResponseEntity<ApiResponse<Object>> batchDeleteReadingBooks(@RequestBody BatchUpdateRequest<ReadingBook> request) {
         readingBookService.batchDeleteReadingBooks(request);
 
         return ApiResponse.success("독서 목록에서 삭제되었습니다.");

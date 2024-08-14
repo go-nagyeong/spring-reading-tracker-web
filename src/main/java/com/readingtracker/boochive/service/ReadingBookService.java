@@ -154,21 +154,26 @@ public class ReadingBookService {
      */
     @Transactional
     public void deleteReadingBookById(Long id) {
-        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
-
-        readingBookRepository.delete(existingReadingBook);
+        delete(id);
     }
 
     /**
      * CRU[D] - BATCH DELETE
      */
     @Transactional
-    public void batchDeleteReadingBooks(BatchUpdateRequest<Long> request) {
+    public void batchDeleteReadingBooks(BatchUpdateRequest<ReadingBook> request) {
         for (Long id : request.getDeleteList()) {
-            ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
-
-            readingBookRepository.delete(existingReadingBook);
+            delete(id);
         }
+    }
+
+    /**
+     * (공통 메서드) DELETE 로직
+     */
+    private void delete(Long id) {
+        ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
+
+        readingBookRepository.delete(existingReadingBook);
     }
 
     /**
