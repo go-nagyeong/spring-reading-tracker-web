@@ -337,11 +337,6 @@
 
         // [독서 목록에 추가] 버튼 이벤트 세팅
         setReadingListButtonEvent();
-
-        // 별점 플러그인 초기화
-        document.querySelectorAll('.star-rating').forEach(el => {
-            initializeStarRating(el);
-        })
     });
 
     /**
@@ -500,9 +495,10 @@
                 reviewContent.innerHTML = item.reviewText;
 
                 // 평점(별점)
-                const newRatingEl = rebuildRatingEl(targetElement.querySelector('.rating-grade'));
-                newRatingEl.dataset.value = item.rating;
-                initializeStarRating(newRatingEl);
+                const ratingEl = targetElement.querySelector('.star-rating');
+                ratingEl.dataset.value = item.rating;
+                initializeStarRating(ratingEl);
+
                 reviewListWrap.appendChild(targetElement);
 
                 // 더보기 버튼
@@ -547,7 +543,7 @@
             reviewWrap.querySelector('.rv-date').textContent = review ? review.createdDate : '';
 
             // 평점(별점)
-            const newRatingEl = rebuildRatingEl(reviewWrap.querySelector('.rating-grade'));
+            const newRatingEl = rebuildRatingEl(reviewWrap.querySelector('.star-rating'));
             newRatingEl.dataset.value = review ? review.rating : '';
             initializeStarRating(newRatingEl);
         }
@@ -662,7 +658,7 @@
      * 5. 완독 이력 수정 오프캔버스
      */
     function setCompletedReadingRecordCanvasForm() {
-        const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/completed`);
+        const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
             const completedReadingRecordList = result.data;

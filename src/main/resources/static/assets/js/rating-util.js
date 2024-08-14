@@ -1,14 +1,15 @@
 function rebuildRatingEl(element) {
-    const cloneStarRatingEl = element.querySelector('select.star-rating').cloneNode();
-    element.innerHTML = '';
-    element.append(cloneStarRatingEl);
+    const ratingWrap = element.parentElement;
+    const cloneStarRatingEl = element.cloneNode();
+    ratingWrap.innerHTML = '';
+    ratingWrap.append(cloneStarRatingEl);
 
-    return element.querySelector('select.star-rating');
+    return ratingWrap.querySelector('select.star-rating');
 }
 
-function initializeStarRating(el) {
-    const rating = el.dataset.value;
-    let ratingRange = el.dataset.range || 5;
+function initializeStarRating(element) {
+    const rating = element.dataset.value;
+    let ratingRange = element.dataset.range || 5;
 
     for (let i = 0; i <= ratingRange; i++) {
         const option = document.createElement('option');
@@ -19,17 +20,17 @@ function initializeStarRating(el) {
         if (rating && i === Math.floor(rating)) {
             option.selected = true;
         }
-        el.append(option);
+        element.append(option);
     }
 
-    const starRating = new StarRating(el, {tooltip: ' '});
+    const starRating = new StarRating(element, {tooltip: ' '});
     const widgetEl = starRating.widgets[0].widgetEl;
 
     if (widgetEl) {
-        el.classList.forEach(cls => { // 별 크기 및 평점 라벨 관련 클래스
+        element.classList.forEach(cls => { // 별 크기 및 평점 라벨 관련 클래스
             widgetEl.classList.add(cls);
         })
-        if (rating && !el.classList.contains('non-label')) {
+        if (rating && !element.classList.contains('non-label')) {
             widgetEl.setAttribute("aria-label", rating);
         } else {
             widgetEl.removeAttribute("aria-label");

@@ -287,6 +287,7 @@ function updateBookStatistics(data, targetElement) {
     for (const subInfoWrap of subInfoWraps) {
         const readerCntEl = subInfoWrap.querySelector('em.sale-num, .sale-num em');
         const reviewCntEl = subInfoWrap.querySelector('em.rating-rv-count, .rating-rv-count em');
+        const ratingEl = subInfoWrap.querySelector('select.star-rating');
 
         if (data.hasOwnProperty('readerCount') && readerCntEl) {
             readerCntEl.textContent = data.readerCount;
@@ -295,14 +296,12 @@ function updateBookStatistics(data, targetElement) {
             reviewCntEl.textContent = data.reviewCount;
         }
 
-        const ratingWrap = subInfoWrap.querySelector('.rating-grade');
         if (data.hasOwnProperty('averageRating')) {
             if (data.averageRating < 1) {
-                ratingWrap.innerHTML = '';
+                ratingEl.parentElement.innerHTML = '';
             } else {
-                const newRatingEl = rebuildRatingEl(ratingWrap);
-                newRatingEl.dataset.value = data.averageRating;
-                initializeStarRating(newRatingEl);
+                ratingEl.dataset.value = data.averageRating;
+                initializeStarRating(ratingEl);
             }
         }
 
@@ -316,6 +315,7 @@ function updateUserBookStatistics(data, targetElement) {
     const subInfoWrap = targetElement.querySelector('.info-rating');
     const readCntEl = subInfoWrap.querySelector('em.read-cnt');
     const noteCntEl = subInfoWrap.querySelector('em.note-cnt');
+    const ratingElements = subInfoWrap.querySelectorAll('select.star-rating'); // 반응형 엘리먼트 2개
 
     if (data.hasOwnProperty('userReadCount') && readCntEl) {
         readCntEl.textContent = data.userReadCount;
@@ -324,15 +324,13 @@ function updateUserBookStatistics(data, targetElement) {
         noteCntEl.textContent = data.userNoteCount;
     }
 
-    const ratingWraps = subInfoWrap.querySelectorAll('.rating-grade'); // 반응형 엘리먼트 2개
-    for (const ratingWrap of ratingWraps) {
-        if (data.hasOwnProperty('userRating')) {
+    if (data.hasOwnProperty('userRating')) {
+        for (const ratingEl of ratingElements) {
             if (data.userRating < 1) {
-                ratingWrap.innerHTML = '';
+                ratingEl.parentElement.innerHTML = '';
             } else {
-                const newRatingEl = rebuildRatingEl(ratingWrap);
-                newRatingEl.dataset.value = data.userRating;
-                initializeStarRating(newRatingEl);
+                ratingEl.dataset.value = data.userRating;
+                initializeStarRating(ratingEl)
             }
         }
     }

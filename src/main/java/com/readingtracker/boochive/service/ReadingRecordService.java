@@ -31,12 +31,17 @@ public class ReadingRecordService {
 
     @Transactional(readOnly = true)
     public Optional<ReadingRecord> findReadingRecordByUserAndBookAndStartDate(Long userId, String bookIsbn, LocalDate startDate) {
-        return readingRecordRepository.findByUserIdAndBookIsbnAndStartDate(userId, bookIsbn, startDate);
+        return readingRecordRepository.findByUserIdAndBookIsbnAndStartDateAndEndDateIsNull(userId, bookIsbn, startDate);
     }
 
     @Transactional(readOnly = true)
     public Optional<ReadingRecord> findLatestReadingRecordByUserAndBook(Long userId, String bookIsbn) {
         return readingRecordRepository.findFirstByUserIdAndBookIsbnAndEndDateIsNullOrderByStartDateDesc(userId, bookIsbn);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReadingRecord> getReadingRecordsByUserAndBook(Long userId, String bookIsbn) {
+        return readingRecordRepository.findAllByUserIdAndBookIsbn(userId, bookIsbn);
     }
 
     @Transactional(readOnly = true)
@@ -95,16 +100,17 @@ public class ReadingRecordService {
             delete(record.getId());
         }
 
-        List<ReadingRecord> remainingReadingRecords = readingRecordRepository.findAllByUserIdAndBookIsbn(userId, bookIsbn);
+        List<ReadingRecord> remainingCompletedReadingRecords = readingRecordRepository
+                .findAllByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
 
-        // (이후 연계 작업) 이력 데이터 모두 삭제 시 독서 상태 자동 변경
-        if (remainingReadingRecords.isEmpty()) {
-            // 독서 이력이 없으니 '읽을 예정' 상태로 복구
+        // (이후 연계 작업) 완독 이력 데이터 모두 삭제 시 독서 상태 자동 변경
+        if (remainingCompletedReadingRecords.isEmpty()) {
+            // 완독 이력이 없으니 '읽을 예정' 상태로 복구
             readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
                     .ifPresent(readingBook -> readingBook.updateReadingStatus(ReadingStatus.TO_READ));
         }
 
-        return remainingReadingRecords;
+        return remainingCompletedReadingRecords;
     }
 
     /**

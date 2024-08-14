@@ -22,6 +22,18 @@ public class ReadingRecordController {
     private final ReadingRecordService readingRecordService;
 
     /**
+     * GET - 로그인 유저의 / 특정 책 / 전체 독서 이력
+     */
+    @GetMapping("/book/{bookIsbn}/me")
+    public ResponseEntity<ApiResponse<List<ReadingRecord>>> getReadingRecords(@PathVariable String bookIsbn,
+                                                                              @AuthenticationPrincipal User user) {
+        List<ReadingRecord> readingRecordList =
+                readingRecordService.getReadingRecordsByUserAndBook(user.getId(), bookIsbn);
+
+        return ApiResponse.success(null, readingRecordList);
+    }
+
+    /**
      * GET - 로그인 유저의 / 특정 책 / 완독 이력
      */
     @GetMapping("/book/{bookIsbn}/me/completed")

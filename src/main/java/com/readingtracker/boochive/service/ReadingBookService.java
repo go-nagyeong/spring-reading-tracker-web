@@ -189,7 +189,7 @@ public class ReadingBookService {
      * (공통 메서드) 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
      */
     private void saveReadingRecord(ReadingBook readingBook) {
-        // 읽는 중 > 독서시작일, 읽음 > 완독일 세팅 (독서시작일 기준 unique)
+        // 읽는 중 > 독서 이력 생성 / 읽음 > 완독일 세팅
         LocalDate today = LocalDate.now();
 
         if (readingBook.getReadingStatus().equals(ReadingStatus.READING)) { // 읽는 중
@@ -198,9 +198,7 @@ public class ReadingBookService {
                     .findReadingRecordByUserAndBookAndStartDate(readingBook.getUser().getId(), readingBook.getBookIsbn(), today)
                     .ifPresentOrElse(
                             record -> {
-                                // 이미 있는 경우, 완독일만 초기화
-                                record.updateEndDate(null);
-                                readingRecordService.updateReadingRecord(record.getId(), record);
+                                // 이미 있는 경우, 생성 X
                             },
                             () -> {
                                 // 없는 경우, 금일자를 독서시작일로 새로 생성
