@@ -250,7 +250,7 @@ function updateReadingCarouselCardUI(readingStatus) {
 }
 // (위 Carousel 카드 콘텐츠) 최근 독서 이력
 function setReadingRecordCardData() {
-    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest`);
+    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_reading`);
 
     const onSuccess = (result) => {
         const latestReadingRecord = result.data;
@@ -263,15 +263,15 @@ function setReadingRecordCardData() {
 }
 // (위 Carousel 카드 콘텐츠) 완독 독서 이력
 function setReadRecordCardData() {
-    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/completed`);
+    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_read`);
 
     const onSuccess = (result) => {
-        const completedReadingRecordList = result.data;
-        const latestRecord = completedReadingRecordList[completedReadingRecordList.length - 1]
-        const cardEl = document.getElementById('readDateCard');
-        cardEl.querySelector('.start-date').textContent = latestRecord.startDate;
-        cardEl.querySelector('.end-date').textContent = latestRecord.endDate;
-        cardEl.querySelector('.record-cnt').textContent = completedReadingRecordList.length;
+        const { latestReadRecord, readCount } = result.data;
+        const cardEl = document.getElementById('readCountCard');
+
+        cardEl.querySelector('.start-date').textContent = latestReadRecord.startDate;
+        cardEl.querySelector('.end-date').textContent = latestReadRecord.endDate;
+        cardEl.querySelector('.record-cnt').textContent = readCount;
     }
 
     handleApiResponse(promise, onSuccess);

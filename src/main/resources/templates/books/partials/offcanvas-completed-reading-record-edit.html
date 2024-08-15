@@ -63,7 +63,7 @@
                 if (data.action === 'U') {
                     updateList.push(data);
                 } else { // 'D'
-                    deleteList.push(data);
+                    deleteList.push(data.id);
                 }
             }
         })
@@ -81,11 +81,11 @@
         const promise = axios.post(`/api/reading-records/batch`, data);
 
         const onSuccess = (result) => {
-            const remainingRecords = result.data;
+            const remainingCompletedReadingRecordCount = result.data;
             let readingStatus = 'READ';
 
             // 이력이 모두 삭제 됐을 경우, 자동으로 독서 상태 변경됨
-            if (remainingRecords.length < 1) {
+            if (remainingCompletedReadingRecordCount < 1) {
                 readingStatus = 'TO_READ';
                 updateReadingListButtonUI(readingStatus, document.querySelector('.dataset-el'));
             }

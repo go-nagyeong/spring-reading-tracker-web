@@ -195,21 +195,24 @@ public class ReadingBookService {
      */
     private void saveReadingRecord(ReadingBook readingBook) {
         // 읽는 중 > 독서 이력 생성 / 읽음 > 완독일 세팅
+        Long userId = readingBook.getUser().getId();
+        String bookIsbn = readingBook.getBookIsbn();
         LocalDate today = LocalDate.now();
 
         if (readingBook.getReadingStatus().equals(ReadingStatus.READING)) { // 읽는 중
             // 금일자가 독서시작일인 이력 찾기
             readingRecordService
-                    .findReadingRecordByUserAndBookAndStartDate(readingBook.getUser().getId(), readingBook.getBookIsbn(), today)
+                    .findRecordByUserAndBookAndStartDate(userId, bookIsbn, today)
                     .ifPresentOrElse(
                             record -> {
-                                // 이미 있는 경우, 생성 X
+                                // 이미 있는 경우, 완독일 지우기
+                                record.updateEndDate(null);
                             },
                             () -> {
                                 // 없는 경우, 금일자를 독서시작일로 새로 생성
                                 ReadingRecord newReadingRecord = ReadingRecord.builder()
                                         .user(readingBook.getUser())
-                                        .bookIsbn(readingBook.getBookIsbn())
+                                        .bookIsbn(bookIsbn)
                                         .startDate(today)
                                         .build();
                                 readingRecordService.createReadingRecord(newReadingRecord);
@@ -217,9 +220,9 @@ public class ReadingBookService {
                     );
 
         } else if (readingBook.getReadingStatus().equals(ReadingStatus.READ)) { // 읽음
-            // 가장 최근 독서 이력 찾기
+            // 가장 최근 독서 이력 찾기 (완독일이 없는 이력)
             readingRecordService
-                    .findLatestReadingRecordByUserAndBook(readingBook.getUser().getId(), readingBook.getBookIsbn())
+                    .findLatestReadingRecordByUserAndBook(userId, bookIsbn)
                     .ifPresentOrElse(
                             record -> {
                                 // 있는 경우, 완독일을 금일자로 업데이트
@@ -230,7 +233,7 @@ public class ReadingBookService {
                                 // 없는 경우, 금일자를 독서시작일/완독일로 새로 생성
                                 ReadingRecord newReadingRecord = ReadingRecord.builder()
                                         .user(readingBook.getUser())
-                                        .bookIsbn(readingBook.getBookIsbn())
+                                        .bookIsbn(bookIsbn)
                                         .startDate(today)
                                         .endDate(today)
                                         .build();

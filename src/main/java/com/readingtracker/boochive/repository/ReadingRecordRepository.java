@@ -9,13 +9,13 @@ import java.util.Optional;
 
 public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Long> {
 
-    Optional<ReadingRecord> findByUserIdAndBookIsbnAndStartDateAndEndDateIsNull(Long userId, String bookIsbn, LocalDate startDate);
+    Optional<ReadingRecord> findByUserIdAndBookIsbnAndStartDate(Long userId, String bookIsbn, LocalDate startDate);
 
-    Optional<ReadingRecord> findFirstByUserIdAndBookIsbnAndEndDateIsNullOrderByStartDateDesc(Long userId, String bookIsbn);
+    Optional<ReadingRecord> findFirstByUserIdAndBookIsbnAndEndDateIsNullOrderByIdDesc(Long userId, String bookIsbn);
+
+    Optional<ReadingRecord> findFirstByUserIdAndBookIsbnAndEndDateIsNotNullOrderByIdDesc(Long userId, String bookIsbn);
 
     List<ReadingRecord> findAllByUserIdAndBookIsbn(Long userId, String bookIsbn);
-
-    List<ReadingRecord> findAllByUserIdAndBookIsbnAndEndDateIsNotNull(Long userId, String bookIsbn);
 
     Integer countByUserIdAndBookIsbnAndEndDateIsNotNull(Long userId, String bookIsbn);
 }

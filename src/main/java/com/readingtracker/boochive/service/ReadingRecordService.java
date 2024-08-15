@@ -23,30 +23,37 @@ public class ReadingRecordService {
 
     /**
      * C[R]UD - READ
+     *   1. Record : 전체 독서 이력
+     *   2. ReadingRecord : '읽는 중' 상태의 독서 이력 (완독일 Null)
+     *   3. ReadRecord : 완독 이력 (완독일 Not Null)
      */
     @Transactional
-    public Optional<ReadingRecord> findReadingRecordById(Long id) {
+    public Optional<ReadingRecord> findRecordById(Long id) {
         return readingRecordRepository.findById(id);
     }
 
+    // 독서시작일 기준으로 독서 이력 찾기 (완독 여부 상관 X)
     @Transactional(readOnly = true)
-    public Optional<ReadingRecord> findReadingRecordByUserAndBookAndStartDate(Long userId, String bookIsbn, LocalDate startDate) {
-        return readingRecordRepository.findByUserIdAndBookIsbnAndStartDateAndEndDateIsNull(userId, bookIsbn, startDate);
+    public Optional<ReadingRecord> findRecordByUserAndBookAndStartDate(Long userId, String bookIsbn, LocalDate starDate) {
+        return readingRecordRepository.findByUserIdAndBookIsbnAndStartDate(userId, bookIsbn, starDate);
     }
 
+    // '읽는 중' 상태의 가장 최근 독서 이력 (최근 = 이력 생성일 기준)
     @Transactional(readOnly = true)
     public Optional<ReadingRecord> findLatestReadingRecordByUserAndBook(Long userId, String bookIsbn) {
-        return readingRecordRepository.findFirstByUserIdAndBookIsbnAndEndDateIsNullOrderByStartDateDesc(userId, bookIsbn);
+        return readingRecordRepository.findFirstByUserIdAndBookIsbnAndEndDateIsNullOrderByIdDesc(userId, bookIsbn);
     }
 
+    // 가장 최근 완독 이력 (최근 = 이력 생성일 기준)
     @Transactional(readOnly = true)
-    public List<ReadingRecord> getReadingRecordsByUserAndBook(Long userId, String bookIsbn) {
+    public Optional<ReadingRecord> findLatestReadRecordByUserAndBook(Long userId, String bookIsbn) {
+        return readingRecordRepository.findFirstByUserIdAndBookIsbnAndEndDateIsNotNullOrderByIdDesc(userId, bookIsbn);
+    }
+
+    // 전체 독서 이력 (완독 여부 상관 X)
+    @Transactional(readOnly = true)
+    public List<ReadingRecord> getRecordsByUserAndBook(Long userId, String bookIsbn) {
         return readingRecordRepository.findAllByUserIdAndBookIsbn(userId, bookIsbn);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ReadingRecord> getCompletedReadingRecordsByUserAndBook(Long userId, String bookIsbn) {
-        return readingRecordRepository.findAllByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
     }
 
     // 로그인 유저의 책 완독 수 계산
@@ -86,7 +93,7 @@ public class ReadingRecordService {
      * CR[U][D] - BATCH UPDATE/DELETE
      */
     @Transactional
-    public List<ReadingRecord> handleReadingRecords(BatchUpdateRequest<ReadingRecord> request, Long userId) {
+    public Integer handleReadingRecords(BatchUpdateRequest<ReadingRecord> request, Long userId) {
         Set<String> bookIsbnSet = new HashSet<>(); // Unique 적용을 위해 HashSet 사용
 
         for (ReadingRecord record : request.getUpdateList()) {
@@ -103,18 +110,17 @@ public class ReadingRecordService {
             throw new IllegalArgumentException("책 정보가 일치하지 않습니다. 문제가 계속되면 관리자에게 문의해 주세요");
         }
 
-        // (이후 연계 작업) 남아있는 완독 이력 조회
+        // (이후 연계 작업) 완독 이력 모두 삭제됐을 시 독서 상태 '읽을 예정' 상태로 자동 변경
         String bookIsbn = bookIsbnSet.iterator().next();
-        List<ReadingRecord> remainingCompletedReadingRecords = readingRecordRepository
-                .findAllByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
+        Integer remainingCompletedReadingRecordCount = readingRecordRepository
+                .countByUserIdAndBookIsbnAndEndDateIsNotNull(userId, bookIsbn);
 
-        // 모두 삭제됐을 시 독서 상태 '읽을 예정' 상태로 자동 변경
-        if (remainingCompletedReadingRecords.isEmpty()) {
+        if (remainingCompletedReadingRecordCount < 1) {
             readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
                     .ifPresent(readingBook -> readingBook.updateReadingStatus(ReadingStatus.TO_READ));
         }
 
-        return remainingCompletedReadingRecords;
+        return remainingCompletedReadingRecordCount;
     }
 
     /**
@@ -133,7 +139,7 @@ public class ReadingRecordService {
 
         validateReadingRecord(record, endDateChanged); // 날짜 유효성 검사
 
-        return record;
+        return existingReadingRecord;
     }
 
     /**

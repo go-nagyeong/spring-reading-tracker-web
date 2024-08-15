@@ -638,7 +638,7 @@
      * 4. 현재 독서 이력 수정 오프캔버스
      */
     function setReadingRecordCanvasForm() {
-        const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest`);
+        const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_reading`);
 
         const onSuccess = (result) => {
             const latestReadingRecord = result.data;
