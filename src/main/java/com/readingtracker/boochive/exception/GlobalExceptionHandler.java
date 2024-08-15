@@ -3,10 +3,14 @@ package com.readingtracker.boochive.exception;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 
@@ -54,5 +58,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleResourceAccessDeniedException(ResourceAccessDeniedException e) {
         log.error("GlobalExceptionHandler :: 접근 권한 오류", e);
         return ApiResponse.failure(e.getMessage());
+    }
+
+    @ExceptionHandler(AladinApiException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAladinApiException(AladinApiException e) {
+        log.error("GlobalExceptionHandler :: 알라딘 API 오류", e);
+        return ApiResponse.failure(e.getMessage());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleNoResourceFoundException(NoResourceFoundException e) {
+        log.error("GlobalExceptionHandler :: 잘못된 URL 오류", e);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleNoHandlerFoundException(NoHandlerFoundException e) {
+        log.error("GlobalExceptionHandler :: 잘못된 URL 오류", e);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }

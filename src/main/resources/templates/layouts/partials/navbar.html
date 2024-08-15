@@ -18,18 +18,31 @@
                 </div>
             </div>
             <script>
-                /**
-                 * 검색어 필수값 검사
-                 */
                 const searchForm = document.getElementById('searchForm');
                 searchForm.addEventListener('submit', function(event) {
-                    const requiredValue = searchForm.querySelector('[name=query]').value;
-                    if (!requiredValue.trim()) {
-                        const content = '검색어를 입력해 주세요.';
-                        showToast(content, 'warning');
+                    const query = searchForm.querySelector('[name=query]').value;
+                    if (!validateSearchInput(query)) {
                         event.preventDefault();
                     }
                 })
+
+                /**
+                 * 검색어 필수값 및 유효성 검증
+                 */
+                function validateSearchInput(input) {
+                    if (!input.trim()) {
+                        showToast('검색어를 입력해 주세요.', 'warning');
+                        return false;
+                    }
+
+                    const regex = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s.,!?'"(){}[\]/\\-]+$/;
+                    if (!regex.test(input)) {
+                        showToast('검색어에 유효하지 않은 문자가 포함되어 있습니다. 다시 입력해 주세요.', 'error');
+                        return false;
+                    }
+
+                    return true;
+                }
             </script>
         </form>
         <!-- /Search -->

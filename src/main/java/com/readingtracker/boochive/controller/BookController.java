@@ -35,6 +35,9 @@ public class BookController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> searchBooks(@RequestParam String query,
                                                                         @RequestParam(defaultValue = "1") Integer page,
                                                                         @AuthenticationPrincipal User user) {
+        // 검색 키워드 검증
+        validateSearchQuery(query);
+
         // 책 검색 결과
         PageableBookListResponse searchResult = aladdinOpenAPIHandler.searchBooks(page, query, QueryType.TITLE);
 
@@ -94,5 +97,14 @@ public class BookController {
         subInfo.setReviewCount((Integer) reviewInfo.get("reviewCount"));
         subInfo.setAverageRating((BigDecimal) reviewInfo.get("averageRating"));
         subInfo.setReaderCount(readingBookService.getBookReaderCount(book.getIsbn13()));
+    }
+
+    /**
+     * (공통 메서드) 검색 키워드 검증
+     */
+    public void validateSearchQuery(String query) {
+        if (query == null || query.isEmpty() || !query.matches("^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\\s.,!?'\"(){}\\[\\]/\\\\-]+$")) {
+            throw new IllegalArgumentException("유효하지 않은 검색어입니다.");
+        }
     }
 }

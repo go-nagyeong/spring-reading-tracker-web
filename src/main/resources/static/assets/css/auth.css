@@ -10,7 +10,6 @@
   width: 100%;
 }
 .authentication-wrapper.authentication-basic {
-  align-items: center;
   justify-content: center;
   overflow: hidden;
 }
@@ -23,6 +22,9 @@
 .authentication-wrapper.authentication-basic .authentication-inner {
   max-width: 400px;
   position: relative;
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
 }
 .authentication-wrapper.authentication-basic .authentication-inner:before {
   width: 148px;
@@ -43,6 +45,12 @@
 }
 .authentication-wrapper.authentication-basic .authentication-inner .card {
   z-index: 1;
+  width: 100%;
+  margin: auto 0;
+}
+.authentication-wrapper.authentication-basic .authentication-inner .misc-wrapper {
+  width: 100%;
+  margin-top: 100px;
 }
 .authentication-wrapper.authentication-basic .authentication-inner .card .app-brand {
   margin-bottom: 2rem;

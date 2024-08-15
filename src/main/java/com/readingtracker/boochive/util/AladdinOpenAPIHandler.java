@@ -1,12 +1,18 @@
 package com.readingtracker.boochive.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readingtracker.boochive.dto.BookParameter;
 import com.readingtracker.boochive.dto.PageableBookListResponse;
 import com.readingtracker.boochive.enums.QueryType;
+import com.readingtracker.boochive.exception.AladinApiException;
+import io.jsonwebtoken.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -20,13 +26,15 @@ import java.util.List;
 public class AladdinOpenAPIHandler {
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
     private final String baseUrl;
     private final String apiKey;
 
-    public AladdinOpenAPIHandler(RestTemplate restTemplate,
+    public AladdinOpenAPIHandler(RestTemplate restTemplate, ObjectMapper objectMapper,
                                  @Value("${open-api.aladin.url}") String baseUrl,
                                  @Value("${open-api.aladin.key}") String apiKey) {
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
         this.baseUrl = baseUrl;
         this.apiKey = apiKey;
     }
@@ -53,14 +61,29 @@ public class AladdinOpenAPIHandler {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        PageableBookListResponse response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                PageableBookListResponse.class
-        ).getBody();
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+            PageableBookListResponse response = objectMapper.readValue(responseEntity.getBody(), PageableBookListResponse.class);
 
-        return formatData(response);
+            if (response.getErrorCode() != null) {
+                handelApiError(response.getErrorCode());
+            }
+
+            return formatData(response);
+
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new AladinApiException("API 호출 중 오류가 발생했습니다.");
+        } catch (IOException e) {
+            throw new AladinApiException("응답 처리 중 오류가 발생했습니다.");
+        } catch (JsonProcessingException e) {
+            log.error("잘못된 JSON 형식: {}", e.getMessage());
+            throw new AladinApiException("유효하지 않은 요청입니다. 입력 값을 확인해 주세요.");
+        }
     }
 
     /**
@@ -87,52 +110,81 @@ public class AladdinOpenAPIHandler {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        PageableBookListResponse response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                PageableBookListResponse.class
-        ).getBody();
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+            PageableBookListResponse response = objectMapper.readValue(responseEntity.getBody(), PageableBookListResponse.class);
 
-        return formatData(response);
+            if (response.getErrorCode() != null) {
+                handelApiError(response.getErrorCode());
+            }
+
+            return formatData(response);
+
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new AladinApiException("API 호출 중 오류가 발생했습니다.");
+        } catch (IOException e) {
+            throw new AladinApiException("응답 처리 중 오류가 발생했습니다.");
+        } catch (JsonProcessingException e) {
+            log.error("잘못된 JSON 형식: {}", e.getMessage());
+            throw new AladinApiException("유효하지 않은 요청입니다. 입력 값을 확인해 주세요.");
+        }
+
     }
 
     /**
      * 응답 데이터 전처리 메서드
      */
     private PageableBookListResponse formatData(PageableBookListResponse data) {
-        // 도서 목록 개수 및 전체 페이지 수 전처리
-        Integer totalCount = data.getTotalResults();
-        if (totalCount > 0) {
-            data.setTotalResults(Math.min(totalCount, 200)); // (알라딘 API 주요사항 - 총 결과는 200개까지만 검색 가능)
-            // 전체 페이지 수 계산 (= 총 결과 개수 / 페이지 당 개수)
-            Integer totalPages = data.getTotalResults() / data.getItemsPerPage();
-            data.setTotalPages(totalPages);
-        } else {
-            data.setTotalPages(0);
-        }
-
-        for (BookParameter item : data.getItem()) {
-            // 저자 정보 전처리 (지은이, 옮긴이, 그림 분리)
-            String authorWithOthers = item.getAuthor().replaceAll("\\s*\\(", "");
-
-            if (authorWithOthers.contains(")")) {
-                String[] authorWithOthersSplit = authorWithOthers.split("\\)");
-                // 각 역할에 따라 처리
-                for (String part : authorWithOthersSplit) {
-                    if (part.contains("지은이")) {
-                        item.setFormatAuthor(part.replaceAll("지은이", ""));
-                    } else if (part.contains("옮긴이")) {
-                        item.setTranslator(part.replaceAll(",\\s|옮긴이", ""));
-                    }
-                }
+        log.info("formatData: {}", data);
+        if (data != null) {
+            // 도서 목록 개수 및 전체 페이지 수 전처리
+            Integer totalCount = data.getTotalResults();
+            if (totalCount > 0) {
+                data.setTotalResults(Math.min(totalCount, 200)); // (알라딘 API 주요사항 - 총 결과는 200개까지만 검색 가능)
+                // 전체 페이지 수 계산 (= 총 결과 개수 / 페이지 당 개수)
+                Integer totalPages = data.getTotalResults() / data.getItemsPerPage();
+                data.setTotalPages(totalPages);
+            } else {
+                data.setTotalPages(0);
             }
 
-            // 카테고리 정보 전처리 (String > List)
-            List<String> categoryList = Arrays.asList(item.getCategoryName().split(">"));
-            item.setCategoryList(categoryList);
+            for (BookParameter item : data.getItem()) {
+                // 저자 정보 전처리 (지은이, 옮긴이, 그림 분리)
+                String authorWithOthers = item.getAuthor().replaceAll("\\s*\\(", "");
+
+                if (authorWithOthers.contains(")")) {
+                    String[] authorWithOthersSplit = authorWithOthers.split("\\)");
+                    // 각 역할에 따라 처리
+                    for (String part : authorWithOthersSplit) {
+                        if (part.contains("지은이")) {
+                            item.setFormatAuthor(part.replaceAll("지은이", ""));
+                        } else if (part.contains("옮긴이")) {
+                            item.setTranslator(part.replaceAll(",\\s|옮긴이", ""));
+                        }
+                    }
+                }
+
+                // 카테고리 정보 전처리 (String > List)
+                List<String> categoryList = Arrays.asList(item.getCategoryName().split(">"));
+                item.setCategoryList(categoryList);
+            }
         }
 
         return data;
+    }
+
+    /**
+     * API 에러 응답 사용자 정의
+     */
+    private void handelApiError(Integer errorCode) {
+        log.info("handelApiError: {}", errorCode);
+        if (errorCode == 8) { // 존재하지 않는 책
+            throw new AladinApiException("책 정보를 찾을 수 없습니다.");
+        }
     }
 }

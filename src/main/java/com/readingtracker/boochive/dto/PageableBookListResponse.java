@@ -14,5 +14,8 @@ public class PageableBookListResponse {
     private Integer itemsPerPage;
     private Integer totalPages; // API 조회 결과 전처리 변수
 
+    private Integer errorCode;
+    private String errorMessage;
+
     private List<BookParameter> item;
 }
