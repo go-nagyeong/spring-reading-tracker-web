@@ -64,7 +64,7 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
 
     private BooleanExpression equalsCollectionId(QReadingBook readingBook, ReadingBookCondition condition) {
         return condition.getCollectionId() != null
-                ? readingBook.collectionId.eq(condition.getCollectionId())
+                ? readingBook.collection.id.eq(condition.getCollectionId())
                 : null;
     }
 

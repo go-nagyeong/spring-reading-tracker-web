@@ -92,7 +92,7 @@ public class ReadingRecordController {
      */
     @PostMapping("/batch")
     public ResponseEntity<ApiResponse<Integer>> handleReadingRecords(@RequestBody BatchUpdateRequest<ReadingRecord> request,
-                                                                                 @AuthenticationPrincipal User user) {
+                                                                     @AuthenticationPrincipal User user) {
         Integer remainingCompletedReadingRecordCount = readingRecordService.handleReadingRecords(request, user.getId());
 
         return ApiResponse.success("독서 이력이 수정되었습니다.", remainingCompletedReadingRecordCount);

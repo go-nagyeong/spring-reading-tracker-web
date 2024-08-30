@@ -54,10 +54,22 @@ public class ReadingBookController {
     }
 
     /**
+     * GET - 사용자가 현재 읽고 있는 독서 목록 조회
+     */
+    @GetMapping("/me/reading")
+    public ResponseEntity<ApiResponse<List<ReadingBookDetailResponse>>> getUserIncompleteReadingBookList(@AuthenticationPrincipal User user) {
+        // 사용자의 독서 책 목록
+        List<ReadingBookDetailResponse> readingList = readingBookService
+                .getIncompleteReadingListWithBookDetailByUser(user.getId());
+
+        return ApiResponse.success(null, readingList);
+    }
+
+    /**
      * POST - 독서 목록에 추가
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@RequestBody ReadingBook readingBook,
+    public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@RequestBody ReadingBookRequest readingBook,
                                                                            @AuthenticationPrincipal User user) {
         ReadingBookDetailResponse savedReadingBook = readingBookService.createReadingBook(readingBook);
 
@@ -74,7 +86,7 @@ public class ReadingBookController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> updateReadingBook(@PathVariable Long id,
-                                                                              @RequestBody ReadingBook readingBook,
+                                                                              @RequestBody ReadingBookRequest readingBook,
                                                                               @AuthenticationPrincipal User user) {
         ReadingBookDetailResponse savedReadingBook = readingBookService.updateReadingBook(id, readingBook);
 

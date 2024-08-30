@@ -4,7 +4,6 @@
 </div>
 <form id="readingRecordForm">
     <div class="modal-body">
-        <input type="hidden" name="id">
         <input type="date" class="form-control" id="startDate" name="startDate">
     </div>
     <div class="modal-footer">
@@ -15,21 +14,22 @@
 
 <script>
     /**
-     * 독서 이력 수정
+     * 독서 이력 저장
      */
     document.getElementById('readingRecordForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        handleReadingRecord();
+        saveReadingRecord();
     })
 
-    function handleReadingRecord() {
+    function saveReadingRecord() {
         globalLoading(true);
 
         const form = document.getElementById('readingRecordForm');
         const data = formToJson(new FormData(form));
 
-        const promise = data['id']
-            ? axios.put(`/api/reading-records/${data['id']}`, data)
+        const id = form.dataset.id;
+        const promise = id
+            ? axios.put(`/api/reading-records/${id}`, data)
             : axios.post(`/api/reading-records`, data);
 
         const onSuccess = (result) => {

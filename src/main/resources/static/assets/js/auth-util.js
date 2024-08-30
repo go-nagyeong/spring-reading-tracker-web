@@ -34,62 +34,65 @@ const userConfigValueDict = {
 };
 
 /**
- * 로그인 유저 정보 가져오기
+ * 초기 로드 시 로그인 유저 정보 및 사용자 설정 값 불러와서 캐싱
  */
-async function getLoginUserInfo() {
-    const promise = axios.get(`/api/auth/logged-in-user`);
+let cachedLoggedInUserInfo = null;
+let cachedLoggedInUserConfig = null;
 
-    let loginUserInfo = null;
-
-    // handleApiResponse를 호출하면서 성공 콜백을 정의
-    await new Promise((resolve, reject) => {
-        const onSuccess = (result) => {
-            loginUserInfo = result.data;
-            resolve();
+async function loadLoggedInUserInfo() {
+    try {
+        if (!cachedLoggedInUserInfo) {
+            const response = await axios.get('/api/auth/logged-in-user');
+            cachedLoggedInUserInfo = response.data.data;
         }
+    } catch (error) {
+        console.error('axios 요청 오류:', error);
+        showToast('알 수 없는 오류가 발생했습니다.', 'error');
+    }
+    return cachedLoggedInUserInfo;
+}
+async function loadLoggedInUserConfig() {
+    try {
+        if (!cachedLoggedInUserConfig) {
+            const response = await axios.get('/api/user-configs/me');
+            cachedLoggedInUserConfig = response.data.data;
+        }
+    } catch (error) {
+        console.error('axios 요청 오류:', error);
+        showToast('알 수 없는 오류가 발생했습니다.', 'error');
+    }
+    return cachedLoggedInUserConfig;
+}
 
-        handleApiResponse(promise, onSuccess);
-    });
-
-    return loginUserInfo;
+function invalidateLoggedInUserInfoCache() {
+    cachedLoggedInUserInfo = null;
+}
+function invalidateLoggedInUserConfigCache() {
+    cachedLoggedInUserConfig = null;
 }
 
 /**
  * 로그인 유저 정보 세팅 (공통 레이아웃)
  */
-function setGlobalLoginUserData(loginUserInfo) {
+function setGlobalUserData(userInfo) {
     document.querySelectorAll('.user-profile').forEach(el => {
-        setProfileImage(loginUserInfo.profileImage, el);
+        setProfileImage(userInfo.profileImage, el);
     })
     document.querySelectorAll('.user-name').forEach(el => {
-        el.textContent = loginUserInfo.name;
+        el.textContent = userInfo.username;
     })
     document.querySelectorAll('.user-email').forEach(el => {
-        el.textContent = loginUserInfo.email;
+        el.textContent = userInfo.email;
     })
 }
 
-/**
- * 로그인 유저 Config 데이터 로드 (DB 데이터를 로컬 스토리지에 저장)
- */
-function loadLoginUserConfig() {
-    const promise = axios.get(`/api/user-configs/me`);
-
-    const onSuccess = (result) => {
-        const data = result.data;
-        Object.entries(data).forEach(([key, value]) => {
-            localStorage.setItem(key, value);
-        });
-    }
-
-    handleApiResponse(promise, onSuccess);
-}
 
 /**
- * 로그인 User Config 값 조회 (로컬 스토리지에서 조회)
+ * 로그인 유저 사용자 설정 값 조회
  */
-function getUserConfig(keyEnum) {
-    let value = localStorage.getItem(userConfigKeyDict[keyEnum]);
+async function getUserConfig(keyEnum) {
+    let config = await loadLoggedInUserConfig();
+    let value = config[userConfigKeyDict[keyEnum]];
     if (!value) {
         value = userConfigValueDict[keyEnum].DEFAULT;
     }
@@ -97,16 +100,14 @@ function getUserConfig(keyEnum) {
 }
 
 /**
- * 로그인 유저 Config 저장
+ * 로그인 유저 사용자 설정 값 저장
  */
 function saveUserConfig(data) {
     const promise = axios.post('/api/user-configs', data); // batch create/update
 
     const onSuccess = (result) => {
-        const data = result.data;
-        Object.entries(data).forEach(([key, value]) => {
-            localStorage.setItem(key, value);
-        });
+        invalidateLoggedInUserConfigCache();
+        loadLoggedInUserConfig();
     };
 
     handleApiResponse(promise, onSuccess);

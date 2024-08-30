@@ -221,7 +221,6 @@
 #readingBookList.selectable .collapse.show li {
     animation: blink 1s linear infinite;
 }
-
 @keyframes blink {
     25%, 75% {opacity: 0.5;}
     50% {opacity: 0;}
@@ -230,6 +229,37 @@
 .tp-list > li > .item-unit {
     position: relative;
 }
+
+.tp-list .item-btn-col > .btn-group > button i:not(.text-success) {
+    display: none;
+}
+@media (max-width: 767px) {
+    .tp-list .item-btn-col {
+        flex-direction: row;
+        justify-content: end;
+        position: absolute;
+        bottom: 0;
+    }
+    .tp-list .item-btn-col > .btn-group > button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50rem !important;
+        padding: 0 !important;
+        width: calc(2.309375rem + calc(var(--bs-border-width) * 2));
+        height: calc(2.309375rem + calc(var(--bs-border-width) * 2));
+    }
+    .tp-list .item-btn-col > .btn-group > button::after {
+        display: none;
+    }
+    .tp-list .item-btn-col > .btn-group > button i:not(.text-success) {
+        display: inline-block !important;
+    }
+    .tp-list .item-btn-col > .btn-group > button span {
+        display: none !important;
+    }
+}
+
 
 /* 책 검색 결과 */
 .item-unit .item-img { width: 28%; }
@@ -532,7 +562,7 @@
 }
 
 .bookshelf .more {
-    flex: 0 0 62px;
+    flex: 0 0 70px;
     margin: 0 0.5rem;
     display: flex;
     align-items: center;

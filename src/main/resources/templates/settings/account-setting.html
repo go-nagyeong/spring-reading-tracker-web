@@ -380,7 +380,6 @@
             updateAccountInfo();
             return false;
         }
-        console.log('uploadProfileImage')
 
         const promise = axios.post(`/api/users/profile-image`, data, {
             headers: {'Content-Type': 'multipart/form-data'}
@@ -428,8 +427,9 @@
         const promise = axios.put(`/api/users/${data.id}`, data);
 
         const onSuccess = (result) => {
-            setGlobalLoginUserData(result.data);
+            setGlobalUserData(result.data);
             setAccountForm(result.data);
+            invalidateLoggedInUserInfoCache(); // 캐싱된 유저 정보 초기화
         }
         const onError = (result) => {
             displayErrorMessages(accountForm, result.errors);

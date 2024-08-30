@@ -7,9 +7,9 @@
 let menu, animate;
 
 (function () {
-    // Initialize menu
-    //-----------------
-
+    /**
+     * Initialize Menu
+     */
     let layoutMenuEl = document.querySelectorAll('#layout-menu');
     layoutMenuEl.forEach(function (element) {
         menu = new Menu(element, {
@@ -70,8 +70,9 @@ let menu, animate;
         });
     }
 
-    // Initialize LC Select
-    //-----------------
+    /**
+     * Initialize LC Select
+     */
     window.Helpers.initializeLCSelect = () => {
         new lc_select('select.lc-select', {
             wrap_width: '100%',
@@ -80,9 +81,9 @@ let menu, animate;
     }
     window.Helpers.initializeLCSelect();
 
-    // Init helpers & misc
-    // --------------------
-
+    /**
+     * Initialize Bootstrap Component
+     */
     // Init BS Tooltip
     window.Helpers.initializeTooltips = () => {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -155,44 +156,48 @@ let menu, animate;
         accordionTriggerEl.addEventListener('hide.bs.collapse', accordionActiveFunction);
     });
 
-    // Auto update layout based on screen size
-    window.Helpers.setAutoUpdate(true);
+    /**
+     * TODO: 이것들 작동하고 있는건가
+     */
+    // // Auto update layout based on screen size
+    // window.Helpers.setAutoUpdate(true);
+    //
+    // // Toggle Password Visibility
+    // window.Helpers.initPasswordToggle();
+    //
+    // // Speech To Text
+    // window.Helpers.initSpeechToText();
+    //
+    // // Manage menu expanded/collapsed with templateCustomizer & local storage
+    // //------------------------------------------------------------------
+    //
+    // // If current layout is horizontal OR current window screen is small (overlay menu) than return from here
+    // if (window.Helpers.isSmallScreen()) {
+    //     return;
+    // }
+    //
+    // // If current layout is vertical and current window screen is > small
+    //
+    // // Auto update menu collapsed/expanded based on the themeConfig
+    // window.Helpers.setCollapsed(true, false);
 
-    // Toggle Password Visibility
-    window.Helpers.initPasswordToggle();
-
-    // Speech To Text
-    window.Helpers.initSpeechToText();
-
-    // Manage menu expanded/collapsed with templateCustomizer & local storage
-    //------------------------------------------------------------------
-
-    // If current layout is horizontal OR current window screen is small (overlay menu) than return from here
-    if (window.Helpers.isSmallScreen()) {
-        return;
-    }
-
-    // If current layout is vertical and current window screen is > small
-
-    // Auto update menu collapsed/expanded based on the themeConfig
-    window.Helpers.setCollapsed(true, false);
-
-
-    // axios default config
+    /**
+     * Global Configuration
+     */
+    // Axios
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.defaults.responseType = 'json';
     axios.defaults.withCredentials = true; // 쿠키를 서버로 전송 (Jwt 토큰을 헤더에 담지 않고 쿠키로 전달 <- MPA 형식의 프론트 때문)
 
-
-    // Custom helpers & misc
-    // --------------------
-
+    /**
+     * Custom
+     */
     // 로그인 유저 정보 세팅
-    document.addEventListener('DOMContentLoaded', function (event) {
-        getLoginUserInfo()
-            .then(userDetail => {
-                setGlobalLoginUserData(userDetail);
-            });
+    document.addEventListener('DOMContentLoaded', async function (event) {
+        const userInfo = await loadLoggedInUserInfo();
+        if (userInfo) {
+            setGlobalUserData(userInfo);
+        }
     });
 
     // 숫자 input 값 전처리 1

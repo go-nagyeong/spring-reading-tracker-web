@@ -52,7 +52,7 @@
                                         <a class="btn-link fw-medium" href=""><!-- 데이터 동적 로드 --></a> 역
                                     </span>
                                 </span>
-                                    <span class="info-pub">
+                                <span class="info-pub">
                                     <span class="horizontal-divider"></span>
                                     <a class="btn-link fw-medium" href=""><!-- 데이터 동적 로드 --></a>
                                 </span>
@@ -94,14 +94,10 @@
                                         리뷰수 <em class="rating-rv-count">0<!-- 태그 동적으로 추가될 때 입력 (data-value) --></em>
                                     </span>
                                 </div>
-
-                                <div class="item-btn-sm-col d-inline-block d-sm-none">
-                                    <div th:replace="~{common/reading-list-button :: button_group('S')}"></div>
-                                </div>
                             </div>
                         </div>
-                        <div class="item-btn-col d-none d-sm-flex">
-                            <div th:replace="~{common/reading-list-button :: button_group('L')}"></div>
+                        <div class="item-btn-col">
+                            <div th:replace="~{common/reading-list-button :: button_group}"></div>
                         </div>
                     </div>
                 </li>
@@ -115,12 +111,11 @@
 <script th:src="@{/assets/vendor/libs/star-rating/star-rating.js}"></script>
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
+<script async>
+    loadUserCollectionList();
+</script>
 <script>
-    let userCollectionList = [];
-
     document.addEventListener('DOMContentLoaded', function (e) {
-        // 로그인 유저 컬렉션 목록 가져오기
-        getUserCollectionList().then(list => userCollectionList = list);
         searchBooks();
     });
 
@@ -141,10 +136,6 @@
             if (searchResult.item.length) {
                 appendBookElement(data);
                 setPagination(searchResult.startIndex, searchResult.totalPages);
-
-                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                setReadingListButtonEvent();
-                setCollectionButtonEvent();
             } else {
                 showNoResultMessage();
             }
@@ -186,12 +177,12 @@
                 updateBookStatistics(item.subInfo, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
-                if (userCollectionList.length) {
-                    setCollectionButtonOptions(userCollectionList, targetElement);
+                if (cachedUserCollectionList) {
+                    setCollectionButtonOptions(cachedUserCollectionList, targetElement);
                 }
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트
-                const readingInfo = readingInfoList[item.isbn13];
+                const readingInfo = readingInfoList[item.isbn13] || {};
                 onUpdateReadingInfo(readingInfo, targetElement);
 
                 bookListWrap.appendChild(targetElement);

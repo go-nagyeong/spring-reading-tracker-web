@@ -41,6 +41,7 @@
                     onUpdateCollection(savedCollection);
                 }
             }
+            invalidateUserCollectionListCache(); // 캐싱된 컬렉션 목록 초기화
             closeUIComponents();
         };
 

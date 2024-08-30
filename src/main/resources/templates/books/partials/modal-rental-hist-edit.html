@@ -4,9 +4,6 @@
 </div>
 <form id="rentalHistForm">
     <div class="modal-body">
-        <input type="hidden" name="id">
-        <input type="hidden" name="bookIsbn">
-
         <div class="mb-2">
             <label class="form-label">대여일자</label>
             <input type="date" class="form-control input-editable" name="rentalDate">
@@ -43,8 +40,7 @@
         saveHistory();
     })
     document.getElementById('deleteHistoryBtn').addEventListener('click', function(event) {
-        confirmDeleteButton(event.target)
-            .then(deleteHistory);
+        confirmDeleteButton(event.target).then(deleteHistory);
     })
 
     function saveHistory() {
@@ -53,9 +49,11 @@
         // 폼 데이터 전처리
         const form = document.getElementById('rentalHistForm');
         const data = formToJson(new FormData(form));
+        data['bookIsbn'] = queryParameters[queryParameters.length - 1];
 
-        const promise = data.id
-            ? axios.put(`/api/rental-histories/${data.id}`, data)
+        const id = form.dataset.id;
+        const promise = id
+            ? axios.put(`/api/rental-histories/${id}`, data)
             : axios.post(`/api/rental-histories`, data);
 
         const onSuccess = (result) => {
@@ -68,8 +66,8 @@
     function deleteHistory() {
         globalLoading(true);
 
-        // 폼 데이터 전처리
-        const id = document.querySelector('#rentalHistForm [name=id]').value;
+        const form = document.getElementById('rentalHistForm');
+        const id = form.dataset.id;
 
         if (!id) { // 삭제 예외 처리
             globalLoading(false);

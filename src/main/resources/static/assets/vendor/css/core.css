@@ -101,7 +101,7 @@
   --bs-root-font-size: 16px;
 
   /* 변경 */
-  --bs-body-font-size: 0.9375rem;
+  --bs-body-font-size: 1rem;
   /*--bs-body-font-size: var(--bs-root-font-size);*/
 
   --bs-body-font-weight: 400;

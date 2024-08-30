@@ -18,9 +18,11 @@ public interface ReadingBookJpaRepository extends JpaRepository<ReadingBook, Lon
 
     List<ReadingBook> findAllByUserIdAndCollectionIdIn(Long userId, List<Long> collectionIdList);
 
+    List<ReadingBook> findAllByUserIdAndReadingStatus(Long userId, ReadingStatus readingStatus);
+
     Integer countByBookIsbnAndReadingStatus(String bookIsbnList, ReadingStatus readingStatus);
 
     @Modifying
-    @Query("UPDATE ReadingBook rb SET rb.collectionId = null WHERE rb.collectionId = :collectionId")
+    @Query("UPDATE ReadingBook rb SET rb.collection.id = null WHERE rb.collection.id = :collectionId")
     void nullifyCollectionReferenceByCollectionId(@Param("collectionId") Long collectionId);
 }

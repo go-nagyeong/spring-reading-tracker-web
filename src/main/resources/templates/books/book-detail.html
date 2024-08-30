@@ -144,23 +144,23 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="tab-pane fade" id="navs-intro" role="tabpanel">
-                        <h4 class="mb-3 fw-bold">책 소개</h4>
-                        <div class="intro-bottom">
-                            <div class="info-text fw-bold"></div>
-                            <div class="info-text">
-                            </div>
-                            <div class="info-text">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="navs-chapter" role="tabpanel">
-                        <h4 class="mb-3 fw-bold">목차</h4>
-                        <ul class="book-contents-list">
-                            <li class="book-contents-item">
-                            </li>
-                        </ul>
-                    </div>
+<!--                    <div class="tab-pane fade" id="navs-intro" role="tabpanel">-->
+<!--                        <h4 class="mb-3 fw-bold">책 소개</h4>-->
+<!--                        <div class="intro-bottom">-->
+<!--                            <div class="info-text fw-bold"></div>-->
+<!--                            <div class="info-text">-->
+<!--                            </div>-->
+<!--                            <div class="info-text">-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="tab-pane fade" id="navs-chapter" role="tabpanel">-->
+<!--                        <h4 class="mb-3 fw-bold">목차</h4>-->
+<!--                        <ul class="book-contents-list">-->
+<!--                            <li class="book-contents-item">-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -202,13 +202,15 @@
                     <div class="col-12">
                         <div class="card-body">
                             <div class="item-btn-col flex-row flex-grow-all">
-                                <div th:replace="~{common/reading-list-button :: button_group('L')}"></div>
+                                <div th:replace="~{common/reading-list-button :: button_group}"></div>
                                 <div class="btn-group text-nowrap">
-                                    <button type="button" class="btn btn-md btn-outline-dark" id="purchaseHistEditModalBtn"
+                                    <button type="button" class="btn btn-md btn-outline-dark"
+                                            id="purchaseHistEditModalBtn"
                                             data-bs-toggle="modal" data-bs-target="#smallModal">
                                         구매 이력 기록
                                     </button>
-                                    <button type="button" class="btn btn-md btn-outline-dark" id="rentalHistEditModalBtn"
+                                    <button type="button" class="btn btn-md btn-outline-dark"
+                                            id="rentalHistEditModalBtn"
                                             data-bs-toggle="modal" data-bs-target="#smallModal">
                                         대여 이력 기록
                                     </button>
@@ -246,8 +248,9 @@
                                 <i class="bx bx-highlight bx-xs me-1"></i>인상깊은 구절을 남겨보세요.
                             </small>
                         </a>
-                        <a href="javascript:void(0);" id="postItCanvasBtn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCont"
-                           class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start"
+                           id="postItCanvasBtn" role="button" data-bs-toggle="offcanvas"
+                           data-bs-target="#offcanvasCont">
                             <div class="d-flex justify-content-between w-100">
                                 <span class="fw-medium">포스트잇</span>
                                 <small class="text-muted">3 days ago</small>
@@ -256,7 +259,7 @@
                                 <i class="bx bx-tag bx-xs me-1"></i>간단한 한 줄 메모를 해보세요.
                             </small>
                         </a>
-                        <a href="javascript:void(0);"
+                        <a href="javascript:void(0);" role="button"
                            class="list-group-item list-group-item-action flex-column align-items-start under-construction">
                             <div class="d-flex justify-content-between w-100">
                                 <span class="fw-medium">독서 카드</span>
@@ -271,7 +274,7 @@
             </div>
             <div class="card d-none d-lg-flex">
                 <h5 class="card-header">내 리뷰</h5>
-                <div class="card-body">
+                <div class="card-body user-rv-card">
                     <div class="rv-wrap" id="reviewEditModalBtn" role="button" data-bs-toggle="modal"
                          data-bs-target="#mediumModal">
                         <div class="rating-grade mb-1">
@@ -294,7 +297,7 @@
         <div class="col-100 col-lg-30 mb-4 d-flex d-lg-none order-3">
             <div class="card w-100">
                 <h5 class="card-header">내 리뷰</h5>
-                <div class="card-body">
+                <div class="card-body user-rv-card">
                     <div class="rv-wrap" id="reviewEditModalBtn" role="button" data-bs-toggle="modal"
                          data-bs-target="#largeModal">
                         <div class="rating-grade mb-1">
@@ -319,24 +322,16 @@
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
 <script th:src="@{/assets/js/editor-util.js}"></script>
+<script async>
+    loadUserCollectionList();
+</script>
 <script>
     const queryParameters = window.location.pathname.split('/');
     const bookIsbn = queryParameters[queryParameters.length - 1];
-    let userCollectionList = [];
 
     document.addEventListener('DOMContentLoaded', function (e) {
-        // 로그인 유저 컬렉션 목록 가져오기
-        getUserCollectionList().then(list => {
-            if (list.length) { // 컬렉션 버튼 목록 세팅
-                setCollectionButtonOptions(list);
-            }
-        })
-
         lookupBook(); // 책 상세 조회 결과 세팅
         loadReviewData(); // 리뷰 목록 및 사용자 리뷰 데이터 세팅
-
-        // [독서 목록에 추가] 버튼 이벤트 세팅
-        setReadingListButtonEvent();
     });
 
     /**
@@ -374,17 +369,17 @@
                     url = '/books/partials/modal-review-edit';
                     callback = () => setReviewModalFormData();
                     break;
-                case 'readingRecordEditBtn': // 현재 독서 이력 수정 모달
-                    url = '/books/partials/modal-reading-record-edit';
-                    callback = () => setReadingRecordCanvasForm();
+                case 'readingDateEditBtn': // 독서일 수정 모달
+                    url = '/books/partials/modal-reading-date-edit';
+                    callback = () => setReadingDateCanvasForm();
                     break;
                 // case 'readingTimeEditBtn': // 독서시간 이력 수정 오프캔버스
                 //     url = '/books/partials/offcanvas-reading-time-log-edit';
                 //     // TODO
                 //     break;
-                case 'readDateEditBtn': // 완독 이력 수정 오프캔버스
-                    url = '/books/partials/offcanvas-completed-reading-record-edit';
-                    callback = () => setCompletedReadingRecordCanvasForm();
+                case 'readingRecordEditBtn': // 독서 이력 수정 오프캔버스
+                    url = '/books/partials/offcanvas-reading-record-edit';
+                    callback = () => setReadingRecordCanvasForm();
                     break;
             }
 
@@ -405,8 +400,6 @@
 
         const onSuccess = (result) => {
             setBookData(result.data);
-            // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-            setCollectionButtonEvent();
         };
 
         handleApiResponse(promise, onSuccess);
@@ -439,8 +432,19 @@
         targetElement.querySelector('.info-detail .bk-page em').textContent = item.subInfo.itemPage;
         targetElement.querySelector('.info-detail .bk-isbn em').textContent = `${item.isbn13} (${item.isbn})`;
 
+        // 별점 UI 컴포넌트 초기화
+        // const starRatingEl = bookInfoWrap.querySelector('.star-rating');
+        // if (starRatingEl) {
+        //     initializeStarRating(starRatingEl);
+        // }
+
         // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
         updateBookStatistics(item.subInfo, targetElement);
+
+        // 컬렉션 버튼 목록 세팅
+        if (cachedUserCollectionList) {
+            setCollectionButtonOptions(cachedUserCollectionList, targetElement);
+        }
 
         // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 관련 UI 업데이트
         onUpdateReadingInfo(readingInfo, targetElement);
@@ -462,8 +466,6 @@
             if (reviewList.length) {
                 appendReviewElement(reviewList);
                 // TODO: setPagination
-                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                setReviewButtonEvent();
             } else {
                 showNoResultMessage();
             }
@@ -494,7 +496,7 @@
                 const reviewContent = targetElement.querySelector('.rv-content div');
                 reviewContent.innerHTML = item.reviewText;
 
-                // 평점(별점)
+                // 별점 UI 컴포넌트 초기화
                 const ratingEl = targetElement.querySelector('.star-rating');
                 ratingEl.dataset.value = item.rating;
                 initializeStarRating(ratingEl);
@@ -505,6 +507,9 @@
                 targetElement.querySelector('.more-btn').style.display = checkOverflow(reviewContent) ? 'block' : 'none';
             })
         }
+
+        // 버튼 이벤트 세팅
+        setReviewButtonEvent();
     }
 
     function clearReviewList() {
@@ -515,13 +520,10 @@
         })
     }
 
-    /**
-     * 동적으로 추가되는 리뷰 버튼 이벤트 세팅
-     */
     function setReviewButtonEvent() {
         const moreBtnList = document.querySelectorAll('.rv-content span.more-btn');
         moreBtnList.forEach(el => {
-            el.addEventListener('click', function(event) {
+            el.addEventListener('click', function (event) {
                 const content = el.previousElementSibling;
                 content.classList.toggle('ellipsis');
                 content.classList.toggle('line-clamp-3');
@@ -534,15 +536,15 @@
      * 사용자 리뷰 데이터 동적 세팅
      */
     function setUserReviewSummaryData(review) {
-        const reviewWraps = document.querySelectorAll('.rv-wrap'); // 반응형 엘리먼트 2개
+        const userReviewWraps = document.querySelectorAll('.user-rv-card'); // 반응형 엘리먼트 2개
 
-        for (const reviewWrap of reviewWraps) {
+        for (const reviewWrap of userReviewWraps) {
             // 리뷰 내용
             reviewWrap.querySelector('.rv-content span').classList.toggle('d-none', review);
             reviewWrap.querySelector('.rv-content div').innerHTML = review ? review.reviewText : '';
             reviewWrap.querySelector('.rv-date').textContent = review ? review.createdDate : '';
 
-            // 평점(별점)
+            // 별점 UI 컴포넌트 초기화
             const newRatingEl = rebuildRatingEl(reviewWrap.querySelector('.star-rating'));
             newRatingEl.dataset.value = review ? review.rating : '';
             initializeStarRating(newRatingEl);
@@ -564,16 +566,19 @@
             const modalForm = document.getElementById('reviewForm');
             const starRatingEl = modalForm.querySelector('.star-rating');
 
-            reviewSimpleEditor = new SimpleEditor('editorjs'); // 에디터 플러그인 초기화
+            // 에디터 플러그인 초기화
+            reviewSimpleEditor = new SimpleEditor('editorjs');
 
-            modalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
+            // 리뷰 데이터 세팅
             modalForm.querySelector('#deleteReviewBtn').toggle(review); // 신규 작성이면 삭제 버튼 숨기기
             if (review) {
-                modalForm.querySelector('[name=id]').value = review.id;
+                modalForm.dataset.id = review.id;
                 reviewSimpleEditor.fill(review.reviewText); // 리뷰 내용
-                starRatingEl.dataset.value = review.rating; // 평점
+                starRatingEl.dataset.value = review.rating;
             }
-            initializeStarRating(starRatingEl); // 별점 플러그인 초기화
+
+            // 별점 UI 컴포넌트 초기화
+            initializeStarRating(starRatingEl);
         };
 
         handleApiResponse(promise, onSuccess);
@@ -590,16 +595,16 @@
 
         const onSuccess = (result) => {
             const purchaseHistory = result.data;
-            const purchaseForm = document.getElementById('purchaseHistForm');
+            const modalForm = document.getElementById('purchaseHistForm');
 
-            purchaseForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-            purchaseForm.querySelector('#deleteHistoryBtn').toggle(purchaseHistory); // 신규 작성이면 삭제 버튼 숨기기
+            // 구매 이력 데이터 세팅
+            modalForm.querySelector('#deleteHistoryBtn').toggle(purchaseHistory); // 신규 작성이면 삭제 버튼 숨기기
             if (purchaseHistory) {
-                purchaseForm.querySelector('[name=id]').value = purchaseHistory.id;
-                purchaseForm.querySelector('[name=purchaseDate]').value = purchaseHistory.purchaseDate;
-                purchaseForm.querySelector('[name=purchaseFrom]').value = purchaseHistory.purchaseFrom;
-                purchaseForm.querySelector('[name=price]').value = purchaseHistory.price;
-                purchaseForm.querySelector('[name=memo]').value = purchaseHistory.memo;
+                modalForm.dataset.id = purchaseHistory.id;
+                modalForm.querySelector('[name=purchaseDate]').value = purchaseHistory.purchaseDate;
+                modalForm.querySelector('[name=purchaseFrom]').value = purchaseHistory.purchaseFrom;
+                modalForm.querySelector('[name=price]').value = purchaseHistory.price;
+                modalForm.querySelector('[name=memo]').value = purchaseHistory.memo;
             }
         };
 
@@ -617,16 +622,16 @@
 
         const onSuccess = (result) => {
             const rentalHistory = result.data;
-            const rentalForm = document.getElementById('rentalHistForm');
+            const modalForm = document.getElementById('rentalHistForm');
 
-            rentalForm.querySelector('[name=bookIsbn]').value = bookIsbn;
-            rentalForm.querySelector('#deleteHistoryBtn').toggle(rentalHistory); // 신규 작성이면 삭제 버튼 숨기기
+            // 대여 이력 데이터 세팅
+            modalForm.querySelector('#deleteHistoryBtn').toggle(rentalHistory); // 신규 작성이면 삭제 버튼 숨기기
             if (rentalHistory) {
-                rentalForm.querySelector('[name=id]').value = rentalHistory.id;
-                rentalForm.querySelector('[name=rentalDate]').value = rentalHistory.rentalDate;
-                rentalForm.querySelector('[name=returnDate]').value = rentalHistory.returnDate;
-                rentalForm.querySelector('[name=rentalFrom]').value = rentalHistory.rentalFrom;
-                rentalForm.querySelector('[name=memo]').value = rentalHistory.memo;
+                modalForm.dataset.id = rentalHistory.id;
+                modalForm.querySelector('[name=rentalDate]').value = rentalHistory.rentalDate;
+                modalForm.querySelector('[name=returnDate]').value = rentalHistory.returnDate;
+                modalForm.querySelector('[name=rentalFrom]').value = rentalHistory.rentalFrom;
+                modalForm.querySelector('[name=memo]').value = rentalHistory.memo;
             }
         };
 
@@ -635,18 +640,19 @@
 
     /**
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
-     * 4. 현재 독서 이력 수정 오프캔버스
+     * 4. 현재 독서일 수정 오프캔버스
      */
-    function setReadingRecordCanvasForm() {
+    function setReadingDateCanvasForm() {
         const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_reading`);
 
         const onSuccess = (result) => {
             const latestReadingRecord = result.data;
-            const readingRecordForm = document.getElementById('readingRecordForm');
+            const modalForm = document.getElementById('readingRecordForm');
 
+            // 독서 이력 데이터 세팅
             if (latestReadingRecord) {
-                readingRecordForm.querySelector('[name=id]').value = latestReadingRecord.id;
-                readingRecordForm.querySelector('[name=startDate]').value = latestReadingRecord.startDate;
+                modalForm.dataset.id = latestReadingRecord.id;
+                modalForm.querySelector('[name=startDate]').value = latestReadingRecord.startDate;
             }
         }
 
@@ -655,26 +661,26 @@
 
     /**
      * 모달, 오프캔버스 같이 동적으로 로드되는 데이터들 함수
-     * 5. 완독 이력 수정 오프캔버스
+     * 5. 독서 이력 수정 오프캔버스
      */
-    function setCompletedReadingRecordCanvasForm() {
+    function setReadingRecordCanvasForm() {
         const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
-            const completedReadingRecordList = result.data;
+            const readingRecordList = result.data;
             const recordListWrap = document.getElementById('recordListWrap');
             const templateTag = recordListWrap.querySelector('.template-tag');
 
             if (templateTag) {
-                completedReadingRecordList.forEach((item, idx) => {
+                readingRecordList.forEach((item, idx) => {
                     const targetElement = templateTag.cloneNode(true);
                     targetElement.classList.remove('template-tag');
 
+                    targetElement.dataset.id = item.id;
                     targetElement.querySelector('.read-num').textContent = idx + 1;
-                    targetElement.querySelector('[name=id]').value = item.id;
-                    targetElement.querySelector('[name=bookIsbn]').value = item.bookIsbn;
                     targetElement.querySelector('[name=startDate]').value = item.startDate;
                     targetElement.querySelector('[name=endDate]').value = item.endDate;
+                    targetElement.querySelector('[name=endDate]').classList.toggle('invalid', !item.endDate);
 
                     recordListWrap.appendChild(targetElement);
 
@@ -685,18 +691,29 @@
 
         handleApiResponse(promise, onSuccess);
     }
-    // 동적으로 추가되는 이력 수정/삭제 버튼 이벤트 세팅
+
+    // 동적으로 추가되는 이력 모달 버튼 이벤트 세팅
     function setCompletedReadingRecordButtonEvent(targetElement) {
+        // 이력 수정/삭제 버튼 이벤트
         targetElement.querySelectorAll('.edit-btn').forEach(el => {
             el.addEventListener('click', function () {
-                for (const input of targetElement.querySelectorAll('input')) {
+                const form = el.closest('form');
+
+                for (const input of form.querySelectorAll('input')) {
                     input.disabled = false;
+                }
+                if (el.classList.contains('del-action')) { // DELETE
+                    form.querySelector('[name=action]').value = 'D';
+                    form.style.display = 'none';
                 }
             })
         })
-        targetElement.querySelector('.edit-btn.del-action').addEventListener('click', function () {
-            targetElement.querySelector('[name=action]').value = 'D'; // DELETE
-            targetElement.style.display = 'none';
+
+        // input 수정 이벤트 (값 입력 시 invalid 효과(빈 값 경고) 없애기)
+        targetElement.querySelectorAll('input:not([type=hidden])').forEach(el => {
+            el.addEventListener('input', function () {
+                el.classList.toggle('invalid', el.value === '');
+            })
         })
     }
 </script>

@@ -36,7 +36,9 @@ public class ReadingBook implements Own {
     @Column(length = 20, nullable = false)
     private String bookIsbn;
 
-    private Long collectionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "collection_id")
+    private BookCollection collection;
 
     @Enumerated(EnumType.STRING)
     private ReadingStatus readingStatus;
@@ -70,7 +72,7 @@ public class ReadingBook implements Own {
     /**
      * 컬렉션 변경
      */
-    public void updateCollectionId(Long collectionId) {
-        this.collectionId = collectionId;
+    public void updateCollection(BookCollection collection) {
+        this.collection = collection;
     }
 }

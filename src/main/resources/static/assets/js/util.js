@@ -19,10 +19,10 @@ function loadScript(src, type, callback = null) {
     if (callback) script.onload = callback;
     document.body.appendChild(script);
 }
-function executeInlineScript(scriptContent) {
+function executeInlineScript(text, type) {
     const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.text = scriptContent;
+    script.text = text;
+    script.type = type || 'text/javascript';
     document.body.appendChild(script);
     document.body.removeChild(script); // clean up the DOM
 }
@@ -31,7 +31,7 @@ function handleScripts(scripts) {
         if (script.src) {
             loadScript(script.src, script.type);
         } else {
-            executeInlineScript(script.textContent);
+            executeInlineScript(script.textContent, script.type);
         }
     });
     // Remove inline scripts after execution
@@ -246,23 +246,29 @@ function setProfileImage(profileImage, element) {
     element.src = profileImage || defaultAvatar;
 }
 
+function getProfileImage(profileImage) {
+    const defaultAvatar = '/assets/img/default-profile.jpg';
+    return profileImage || defaultAvatar;
+}
+
+
 /**
  * 모달, 드롭다운, 오프캔버스 close 함수 (서버 작업 success 후 일괄적으로 닫기 위해)
  */
 function closeUIComponents() {
     const modalEl = document.querySelector('.modal.show');
     if (modalEl) {
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
         modalInstance.hide();
     }
     const dropdownEl = document.querySelector('.dropdown-menu.show');
     if (dropdownEl) {
-        const dropdownInstance = bootstrap.Dropdown.getInstance(dropdownEl.previousElementSibling);
+        const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(dropdownEl.previousElementSibling);
         dropdownInstance.hide();
     }
     const offcanvasEl = document.querySelector('.offcanvas.show');
     if (offcanvasEl) {
-        const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        const offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
         offcanvasInstance.hide();
     }
 }
@@ -347,7 +353,7 @@ function confirmDeleteModal(content = null) {
 /**
  * 삭제 확인 버튼 (중첩 모달을 피하기 위해)
  */
-function confirmDeleteButton(button, onConfirm) {
+function confirmDeleteButton(button) {
     return new Promise(resolve => {
         const originalText = button.textContent; // 원래 텍스트 저장
 

@@ -4,9 +4,6 @@
 </div>
 <form id="reviewForm">
     <div class="modal-body">
-        <input type="hidden" name="id">
-        <input type="hidden" name="bookIsbn">
-
         <div class="rating-grade mb-3">
             <select class="star-rating" data-value="" data-range="10"></select>
         </div>
@@ -32,8 +29,7 @@
         saveReview();
     })
     document.getElementById('deleteReviewBtn').addEventListener('click', function(event) {
-        confirmDeleteButton(event.target)
-            .then(deleteReview);
+        confirmDeleteButton(event.target).then(deleteReview);
     })
 
     async function saveReview() {
@@ -42,11 +38,14 @@
         // 폼 데이터 전처리
         const form = document.getElementById('reviewForm');
         const data = formToJson(new FormData(form));
+
+        data['bookIsbn'] = queryParameters[queryParameters.length - 1];
         data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
         await reviewSimpleEditor.save().then(result => data['reviewText'] = result);
 
-        const promise = data.id
-            ? axios.put(`/api/reviews/${data.id}`, data)
+        const id = form.dataset.id;
+        const promise = id
+            ? axios.put(`/api/reviews/${id}`, data)
             : axios.post(`/api/reviews`, data);
 
         const onSuccess = (result) => {
@@ -60,7 +59,8 @@
     function deleteReview() {
         globalLoading(true);
 
-        const id = document.querySelector('#reviewForm [name=id]').value;
+        const form = document.getElementById('reviewForm');
+        const id = form.dataset.id;
 
         if (!id) { // 삭제 예외 처리
             globalLoading(false);

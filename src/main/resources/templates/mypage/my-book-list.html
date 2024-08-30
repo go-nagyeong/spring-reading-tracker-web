@@ -156,14 +156,10 @@
                                             <span>완독 <em class="read-cnt">0</em></span>
                                         </div>
                                     </div>
-
-                                    <div class="item-btn-sm-col d-inline-block d-sm-none">
-                                        <div th:replace="~{common/reading-list-button :: button_group('S')}"></div>
-                                    </div>
                                 </div>
                             </div>
                             <div class="item-btn-col d-none d-sm-flex">
-                                <div th:replace="~{common/reading-list-button :: button_group('L')}"></div>
+                                <div th:replace="~{common/reading-list-button :: button_group}"></div>
                             </div>
                         </div>
                     </li>
@@ -178,25 +174,29 @@
 <script th:src="@{/assets/vendor/libs/star-rating/star-rating.js}"></script>
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
+<script async>
+    loadUserCollectionList();
+</script>
 <script>
-    let userCollectionList = [];
-
-    document.addEventListener('DOMContentLoaded', function (e) {
-        setupStaticFilter(); // 필터 상태 및 이벤트 세팅
-
-        // 로그인 유저 컬렉션 목록 가져오기
-        getUserCollectionList()
-            .then(list => {
-                userCollectionList = list;
-                if (list.length) { // 컬렉션 필터 목록 세팅
-                    setCollectionButtonOptions(list, document.getElementById('filterWrap'));
-                }
-                // 컬렉션 필터 상태 및 이벤트 세팅
-                setupDynamicFilter();
-            });
+    document.addEventListener('DOMContentLoaded', async function (e) {
+        // 필터 UI 및 이벤트 세팅
+        await setDynamicFilterOptions(); // 필터 옵션 동적 세팅
+        setCurrentFilterUI();
+        setFilterButtonEvent();
 
         getBookList();
     });
+
+    /**
+     * 동적으로 불러오는 필터 옵션 세팅
+     */
+    async function setDynamicFilterOptions() {
+        // 컬렉션 옵션 목록 세팅
+        const collectionList = await loadUserCollectionList();
+        if (collectionList) {
+            setCollectionButtonOptions(collectionList, document.getElementById('filterWrap'));
+        }
+    }
 
     /**
      * 현재 필터 조건 가져오기 (URLSearchParams 객체로 반환)
@@ -208,81 +208,24 @@
     }
 
     /**
-     * 현재 필터에 따른 UI 세팅 및 필터 버튼 이벤트 세팅
+     * 현재 필터에 따른 UI 세팅
      */
-    function setupStaticFilter() {
-        const searchParams = getCurrentFilterConditions();
-        // 현재 필터 값
-        const readingStatus = searchParams.get('readingStatus'); // 독서 상태 필터
-        const isOwned = searchParams.get('isOwned'); // 소장 여부 필터
-        // 엘리먼트
-        const readingStatusFilter = document.getElementById('readingStatusFilter');
-        const ownFilter = document.getElementById('ownFilter');
-        const filterReset = document.getElementById('filterResetBtn');
+    function setCurrentFilterUI() {
+        const currentConditions = getCurrentFilterConditions();
+        const collectionId = currentConditions.get('collectionId'); // 컬렉션 ID 필터
+        const readingStatus = currentConditions.get('readingStatus'); // 독서 상태 필터
+        const isOwned = currentConditions.get('isOwned'); // 소장 여부 필터
 
-        // 1. 현재 필터에 따른 UI 세팅
         const filterWrapElement = document.getElementById('filterWrap');
         if (readingStatus) {
-            updateReadingListButtonUI(readingStatus, filterWrapElement);
+            updateReadingListButtonUI(readingStatus, filterWrapElement); // in book-util.js
+        }
+        if (collectionId) {
+            updateCollectionButtonUI(collectionId, filterWrapElement); // in book-util.js
         }
         if (isOwned) {
-            updateOwnFilterButtonUI(isOwned, filterWrapElement)
+            updateOwnFilterButtonUI(isOwned, filterWrapElement); // in this file
         }
-
-        // 2. 필터 버튼 이벤트 세팅
-        // 독서 상태 필터
-        readingStatusFilter.querySelectorAll('.dropdown-item').forEach(el => {
-            el.addEventListener('click', function() {
-                if (el.dataset.value) {
-                    searchParams.set('readingStatus', el.dataset.value);
-                } else { // 필터 지우기
-                    searchParams.delete('readingStatus');
-                }
-                location.href = '?' + searchParams.toString();
-            })
-        })
-
-        // 소장 여부 필터
-        ownFilter.querySelectorAll('.dropdown-item').forEach(el => {
-            el.addEventListener('click', function() {
-                if (el.dataset.value) {
-                    searchParams.set('isOwned', el.dataset.value);
-                } else {
-                    searchParams.delete('isOwned');
-                }
-                location.href = '?' + searchParams.toString();
-            })
-        })
-
-        // 필터 초기화
-        filterReset.addEventListener('click', function() {
-            location.href = location.pathname;
-        })
-    }
-
-    // 동적으로 불러오는 컬렉션 필터에 대한 세팅
-    function setupDynamicFilter() {
-        const searchParams = getCurrentFilterConditions();
-        const collectionId = searchParams.get('collectionId'); // 컬렉션 ID 필터
-        const collectionFilter = document.getElementById('collectionFilter');
-
-        // 1. 현재 필터에 따른 UI 세팅
-        const filterWrapElement = document.getElementById('filterWrap');
-        if (collectionId) {
-            updateCollectionButtonUI(collectionId, filterWrapElement);
-        }
-
-        // 2. 필터 버튼 이벤트 세팅
-        collectionFilter.querySelectorAll('.dropdown-item').forEach(el => {
-            el.addEventListener('click', function() {
-                if (el.dataset.value) {
-                    searchParams.set('collectionId', el.dataset.value);
-                } else {
-                    searchParams.delete('collectionId');
-                }
-                location.href = '?' + searchParams.toString();
-            })
-        })
     }
 
     /**
@@ -308,6 +251,59 @@
         toggleButtonText.textContent = currentOwnOptionItem.textContent;
     }
 
+    /**
+     * 필터 버튼 이벤트 세팅
+     */
+    function setFilterButtonEvent() {
+        const currentConditions = getCurrentFilterConditions();
+        // 엘리먼트
+        const readingStatusFilter = document.getElementById('readingStatusFilter');
+        const collectionFilter = document.getElementById('collectionFilter');
+        const ownFilter = document.getElementById('ownFilter');
+        const filterReset = document.getElementById('filterResetBtn');
+
+        // 독서 상태 필터
+        readingStatusFilter.querySelectorAll('.dropdown-item').forEach(el => {
+            el.addEventListener('click', function() {
+                if (el.dataset.value) {
+                    currentConditions.set('readingStatus', el.dataset.value);
+                } else { // 필터 지우기
+                    currentConditions.delete('readingStatus');
+                }
+                location.href = '?' + currentConditions.toString();
+            })
+        })
+
+        // 컬렉션 필터
+        collectionFilter.querySelectorAll('.dropdown-item').forEach(el => {
+            el.addEventListener('click', function() {
+                if (el.dataset.value) {
+                    currentConditions.set('collectionId', el.dataset.value);
+                } else {
+                    currentConditions.delete('collectionId');
+                }
+                location.href = '?' + currentConditions.toString();
+            })
+        })
+
+        // 소장 여부 필터
+        ownFilter.querySelectorAll('.dropdown-item').forEach(el => {
+            el.addEventListener('click', function() {
+                if (el.dataset.value) {
+                    currentConditions.set('isOwned', el.dataset.value);
+                } else {
+                    currentConditions.delete('isOwned');
+                }
+                location.href = '?' + currentConditions.toString();
+            })
+        })
+
+        // 필터 초기화
+        filterReset.addEventListener('click', function() {
+            location.href = location.pathname;
+        })
+    }
+
 
     /**
      * 내 책 목록(책장) 조회 (쿼리스트링을 통해 파라미터 자동 처리)
@@ -327,10 +323,6 @@
 
             appendBookElement(data);
             setPagination(getListResult.startIndex, getListResult.totalPages);
-
-            // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-            setCollectionButtonEvent();
-            setReadingListButtonEvent();
 
             if (getListResult.item.length < 1) {
                 showNoResultMessage();
@@ -382,8 +374,8 @@
                 updateUserBookStatistics(item.subInfo, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
-                if (userCollectionList.length) {
-                    setCollectionButtonOptions(userCollectionList, targetElement);
+                if (cachedUserCollectionList) {
+                    setCollectionButtonOptions(cachedUserCollectionList, targetElement);
                 }
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트

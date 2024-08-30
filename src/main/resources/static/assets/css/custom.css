@@ -380,9 +380,6 @@ input[type=color]::-moz-color-swatch {
 .dropdown-toggle:not(.btn-icon) {
     padding-right: 1.8rem;
 }
-.dropdown-toggle:not(.btn-icon) {
-    justify-content: flex-start !important;
-}
 .dropdown-toggle:after {
     position: absolute;
     right: 0.8rem;
