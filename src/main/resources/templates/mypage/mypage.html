@@ -40,25 +40,25 @@
                         <div class="card-body py-3">
                             <div class="row">
                                 <div class="col-3 d-flex align-items-center justify-content-center">
-                                    <a th:href="@{/mypage/my-book-list}" class="text-center">
+                                    <a th:href="@{/my/reading-books}" class="text-center">
                                         <i class="bx bxs-book"></i>
                                         <div class="fs-8">책</div>
                                     </a>
                                 </div>
                                 <div class="col-3 d-flex align-items-center justify-content-center">
-                                    <a th:href="@{/mypage/my-collection}" class="text-center">
+                                    <a th:href="@{/my/collections}" class="text-center">
                                         <i class="bx bxs-folder"></i>
                                         <div class="fs-8">컬렉션</div>
                                     </a>
                                 </div>
                                 <div class="col-3 d-flex align-items-center justify-content-center">
-                                    <a th:href="@{/notes/pencil-note}" class="text-center">
+                                    <a th:href="@{/my/notes}" class="text-center">
                                         <i class="bx bxs-note"></i>
                                         <div class="fs-8">독서 노트</div>
                                     </a>
                                 </div>
                                 <div class="col-3 d-flex align-items-center justify-content-center">
-                                    <a href="javascript:void(0);" class="text-center under-construction">
+                                    <a role="button" class="text-center under-construction">
                                         <i class="bx bxs-objects-vertical-bottom"></i>
                                         <div class="fs-8">독서 리포트</div>
                                     </a>
@@ -142,12 +142,12 @@
                             <i class="bx bx-check me-1"></i>읽을 예정
                         </button>
                         <ul class="dropdown-menu" style="">
-                            <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                            <li><a class="dropdown-item" role="button">읽을 예정</a></li>
+                            <li><a class="dropdown-item" role="button">읽음</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
+                            <li><a class="dropdown-item text-danger" role="button">필터 지우기</a></li>
                         </ul>
                     </div>
                     <div class="btn-group">
@@ -156,12 +156,12 @@
                             컬렉션
                         </button>
                         <ul class="dropdown-menu" style="">
-                            <li><a class="dropdown-item" href="javascript:void(0);">읽을 예정</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);">읽음</a></li>
+                            <li><a class="dropdown-item" role="button">읽을 예정</a></li>
+                            <li><a class="dropdown-item" role="button">읽음</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
+                            <li><a class="dropdown-item text-danger" role="button">필터 지우기</a></li>
                         </ul>
                     </div>
                     <div class="btn-group">
@@ -170,12 +170,12 @@
                             소장 여부
                         </button>
                         <ul class="dropdown-menu" style="">
-                            <li><a class="dropdown-item" href="javascript:void(0);">소장 중인</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);">소장하지 않은</a></li>
+                            <li><a class="dropdown-item" role="button">소장 중인</a></li>
+                            <li><a class="dropdown-item" role="button">소장하지 않은</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="javascript:void(0);">필터 지우기</a></li>
+                            <li><a class="dropdown-item text-danger" role="button">필터 지우기</a></li>
                         </ul>
                     </div>
                 </div>
@@ -195,73 +195,76 @@
                 </div>
             </div>
 
-            <div class="card-body px-0">
-                <div class="bookshelf ui-library" id="bookListView">
-                    <div class="books">
-                        <th:block th:each="num : ${#numbers.sequence(1,7)}">
-                            <div class="book" data-width="143" data-height="210" data-depth="32">
-                                <div class="spine">
-                                    <span class="spine-title">배움의 발견</span>
+            <div class="card-body">
+                <div class="bookshelf-cont">
+                    <div th:replace="~{common/result-message :: div('추가된 책이 없습니다.')}"></div>
+
+                    <div class="bookshelf ui-library" id="bookListView">
+                        <div class="books">
+                            <th:block th:each="num : ${#numbers.sequence(1,7)}">
+                                <div class="book" data-width="143" data-height="210" data-depth="32">
+                                    <div class="spine">
+                                        <span class="spine-title">배움의 발견</span>
+                                    </div>
+                                    <div class="side top"></div>
+                                    <div class="side cover">
+                                        <img th:src="@{/assets/img/book01.jpg}">
+                                    </div>
                                 </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book01.jpg}">
+                                <div class="book" data-width="150" data-height="210" data-depth="30">
+                                    <div class="spine">
+                                        <span class="spine-title">종의 기원</span>
+                                    </div>
+                                    <div class="side top"></div>
+                                    <div class="side cover">
+                                        <img th:src="@{/assets/img/book02.jpg}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="book" data-width="150" data-height="210" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">종의 기원</span>
+                                <div class="book" data-width="140" data-height="210" data-depth="30">
+                                    <div class="spine">
+                                        <span class="spine-title">일류의 조건</span>
+                                    </div>
+                                    <div class="side top"></div>
+                                    <div class="side cover">
+                                        <img th:src="@{/assets/img/book03.jpg}">
+                                    </div>
                                 </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book02.jpg}">
+                                <div class="book" data-width="135" data-height="200" data-depth="30">
+                                    <div class="spine">
+                                        <span class="spine-title">무엇이 나를 행복하게 만드는가</span>
+                                    </div>
+                                    <div class="side top"></div>
+                                    <div class="side cover">
+                                        <img th:src="@{/assets/img/book04.jpg}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="book" data-width="140" data-height="210" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">일류의 조건</span>
+                                <div class="book" data-width="125" data-height="188" data-depth="16">
+                                    <div class="spine">
+                                        <span class="spine-title">나를 소모하지 않는 현명한 태도에 관하여</span>
+                                    </div>
+                                    <div class="side top"></div>
+                                    <div class="side cover">
+                                        <img th:src="@{/assets/img/book05.jpg}">
+                                    </div>
                                 </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book03.jpg}">
+                                <div class="book" data-width="155" data-height="235" data-depth="40">
+                                    <div class="spine">
+                                        <span class="spine-title">듄 1</span>
+                                    </div>
+                                    <div class="side top"></div>
+                                    <div class="side cover">
+                                        <img th:src="@{/assets/img/book06.jpg}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="book" data-width="135" data-height="200" data-depth="30">
-                                <div class="spine">
-                                    <span class="spine-title">무엇이 나를 행복하게 만드는가</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book04.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="125" data-height="188" data-depth="16">
-                                <div class="spine">
-                                    <span class="spine-title">나를 소모하지 않는 현명한 태도에 관하여</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book05.jpg}">
-                                </div>
-                            </div>
-                            <div class="book" data-width="155" data-height="235" data-depth="40">
-                                <div class="spine">
-                                    <span class="spine-title">듄 1</span>
-                                </div>
-                                <div class="side top"></div>
-                                <div class="side cover">
-                                    <img th:src="@{/assets/img/book06.jpg}">
-                                </div>
-                            </div>
-                        </th:block>
+                            </th:block>
+                        </div>
+                        <div class="more">
+                            <a th:href="@{/my/reading-books}" class="">
+                                <i class="bx bx-right-arrow-circle"></i>
+                                <span class="align-middle d-none d-md-inline-block">더보기</span>
+                            </a>
+                        </div>
                     </div>
-                    <div class="more">
-                        <a th:href="@{/mypage/my-book-list}" class="">
-                            <i class="bx bx-right-arrow-circle"></i>
-                            <span class="align-middle">더보기</span>
-                        </a>
-                    </div>
-                    <div class="shelf"></div>
                 </div>
             </div>
         </div>
@@ -298,9 +301,9 @@
     </div>
 </div>
 
+<script th:src="@{/assets/js/bookshelf.js}"></script>
 <script th:src="@{/assets/js/book-calendar.js}"></script>
 <script th:src="@{/assets/js/reading-report.js}"></script>
-<script th:src="@{/assets/js/bookshelf.js}"></script>
 <script>
     /**
      * 내 책장 - 책 목록 뷰 옵션 토글 이벤트
@@ -317,6 +320,10 @@
         const el = e.target;
         toggleBookViewOption(el);
     })
+
+    document.addEventListener('DOMContentLoaded', function (event) {
+        initializeBookshelfUI();
+    });
 </script>
 </body>
 </html>

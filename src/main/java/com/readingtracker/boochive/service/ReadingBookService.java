@@ -3,7 +3,6 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.enums.ReadingStatus;
-import com.readingtracker.boochive.mapper.ReadingBookDetailMapper;
 import com.readingtracker.boochive.mapper.ReadingBookMapper;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
@@ -42,20 +41,53 @@ public class ReadingBookService {
     @Transactional(readOnly = true)
     public Optional<ReadingBookDetailResponse> findReadingBookById(Long id) {
         return readingBookRepository.findById(id)
-                .map(ReadingBookDetailMapper.INSTANCE::toDto);
+                .map(ReadingBookMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
     public Optional<ReadingBookDetailResponse> findReadingBookByUserAndBook(Long userId, String bookIsbn) {
         return readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
-                .map(ReadingBookDetailMapper.INSTANCE::toDto);
+                .map(ReadingBookMapper.INSTANCE::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, List<BookParameter>> getBookListGroupByReadingStatus(Long userId) {
+        List<ReadingBookDetailResponse> readingList = readingBookRepository.findAllByUserId(userId)
+                .stream()
+                .map(ReadingBookMapper.INSTANCE::toDto)
+                .toList();
+
+        // 2. ISBN을 기반으로 책 상세 정보 한 번에 조회
+        List<String> isbnList = readingList.stream()
+                .map(ReadingBookDetailResponse::getBookIsbn)
+                .toList();
+        Map<String, BookParameter> bookInfoMap = getReadingBookDetailData(isbnList);
+
+        // 3. Reading Status를 기준으로 그룹화하고, 정렬
+        return readingList.stream()
+                .collect(Collectors.groupingBy(
+                        ReadingBookDetailResponse::getReadingStatus, // 독서 상태가 key
+                        Collectors.mapping(
+                                book -> bookInfoMap.get(book.getBookIsbn()), // 책 상세 정보가 value가 되게 변환
+                                Collectors.toList()
+                        )
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey(Comparator.comparingInt(ReadingStatus::getPriority))) // 독서 상태 우선순위에 따라 정렬
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getName(), // Enum 코드 값에서 name으로 변환
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new // 최종 결과도 LinkedHashMap으로 정렬 순서 유지
+                ));
     }
 
     @Transactional(readOnly = true)
     public List<ReadingBookDetailResponse> getReadingListByUserAndBookList(Long userId, List<String> bookIsbnList) {
         return readingBookRepository.findAllByUserIdAndBookIsbnIn(userId, bookIsbnList)
                 .stream()
-                .map(ReadingBookDetailMapper.INSTANCE::toDto)
+                .map(ReadingBookMapper.INSTANCE::toDto)
                 .toList();
     }
 
@@ -63,7 +95,7 @@ public class ReadingBookService {
     public List<ReadingBookDetailResponse> getReadingListByUserAndCollectionList(Long userId, List<Long> collectionIdList) {
         return readingBookRepository.findAllByUserIdAndCollectionIdIn(userId, collectionIdList)
                 .stream()
-                .map(ReadingBookDetailMapper.INSTANCE::toDto)
+                .map(ReadingBookMapper.INSTANCE::toDto)
                 .toList();
     }
 
@@ -72,7 +104,7 @@ public class ReadingBookService {
         List<ReadingBookDetailResponse> readingList = readingBookRepository
                 .findAllByUserIdAndReadingStatus(userId, ReadingStatus.READING)
                 .stream()
-                .map(ReadingBookDetailMapper.INSTANCE::toDto)
+                .map(ReadingBookMapper.INSTANCE::toDto)
                 .toList();
 
         // 2. ISBN을 기반으로 책 상세 정보, 독서 이력(독서 시작일 추출)을 한 번에 조회
@@ -96,10 +128,10 @@ public class ReadingBookService {
     public Page<ReadingBookDetailResponse> getReadingListWithBookDetailByUserAndFilters(User user, ReadingBookCondition condition, Pageable pageable) {
         Page<ReadingBook> pageableReadingList = readingBookDslRepository.findAllByUserAndFilters(user, condition, pageable);
 
-        // 1. Page<ReadingBook>를 List<ReadingBookDetailResponse>로 변환
+        // 1. Page<Domain>를 List<Dto>로 변환
         List<ReadingBookDetailResponse> readingList = pageableReadingList.getContent()
                 .stream()
-                .map(ReadingBookDetailMapper.INSTANCE::toDto)
+                .map(ReadingBookMapper.INSTANCE::toDto)
                 .toList();
 
         // 2. ISBN을 기반으로 책 상세 정보, 책 구매 이력(소장 여부 추출)을 한 번에 조회
@@ -148,7 +180,7 @@ public class ReadingBookService {
         // 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
         saveReadingRecord(createdReadingBook);
 
-        return ReadingBookDetailMapper.INSTANCE.toDto(createdReadingBook);
+        return ReadingBookMapper.INSTANCE.toDto(createdReadingBook);
     }
 
     /**
@@ -174,7 +206,7 @@ public class ReadingBookService {
             saveReadingRecord(existingReadingBook);
         }
 
-        return ReadingBookDetailMapper.INSTANCE.toDto(existingReadingBook);
+        return ReadingBookMapper.INSTANCE.toDto(existingReadingBook);
     }
 
     @Transactional

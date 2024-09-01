@@ -1,10 +1,169 @@
-class SimpleEditor {
+import {
+    ClassicEditor,
+    AccessibilityHelp,
+    Alignment,
+    AutoLink,
+    Autosave,
+    BlockQuote,
+    Bold,
+    Essentials,
+    Heading,
+    HorizontalLine,
+    Indent,
+    IndentBlock,
+    Italic,
+    Link,
+    Paragraph,
+    Strikethrough,
+    Underline,
+    Undo
+} from 'ckeditor5';
+import translations from 'ckeditor5/translations/ko.js';
+
+const ckEditorConfig = {
+    toolbar: {
+        items: [
+            'undo',
+            'redo',
+            '|',
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'underline',
+            'strikethrough',
+            '|',
+            'horizontalLine',
+            'link',
+            'blockQuote',
+            '|',
+            'alignment',
+            '|',
+            'indent',
+            'outdent',
+            '|',
+            'accessibilityHelp'
+        ],
+        shouldNotGroupWhenFull: false
+    },
+    plugins: [
+        AccessibilityHelp,
+        Alignment,
+        AutoLink,
+        Autosave,
+        BlockQuote,
+        Bold,
+        Essentials,
+        Heading,
+        HorizontalLine,
+        Indent,
+        IndentBlock,
+        Italic,
+        Link,
+        Paragraph,
+        Strikethrough,
+        Underline,
+        Undo
+    ],
+    heading: {
+        options: [
+            {
+                model: 'paragraph',
+                title: 'Paragraph',
+                class: 'ck-heading_paragraph'
+            },
+            {
+                model: 'heading1',
+                view: 'h1',
+                title: 'Heading 1',
+                class: 'ck-heading_heading1'
+            },
+            {
+                model: 'heading2',
+                view: 'h2',
+                title: 'Heading 2',
+                class: 'ck-heading_heading2'
+            },
+            {
+                model: 'heading3',
+                view: 'h3',
+                title: 'Heading 3',
+                class: 'ck-heading_heading3'
+            },
+            {
+                model: 'heading4',
+                view: 'h4',
+                title: 'Heading 4',
+                class: 'ck-heading_heading4'
+            },
+            {
+                model: 'heading5',
+                view: 'h5',
+                title: 'Heading 5',
+                class: 'ck-heading_heading5'
+            },
+            {
+                model: 'heading6',
+                view: 'h6',
+                title: 'Heading 6',
+                class: 'ck-heading_heading6'
+            }
+        ]
+    },
+    initialData: '',
+    link: {
+        addTargetToExternalLinks: true,
+        defaultProtocol: 'https://',
+        decorators: {
+            toggleDownloadable: {
+                mode: 'manual',
+                label: 'Downloadable',
+                attributes: {
+                    download: 'file'
+                }
+            }
+        }
+    },
+    placeholder: '',
+    language: 'ko',
+    translations: [translations]
+};
+
+
+export class CKEditor {
+    static instance = null;
+    static promise = null;
+
+    constructor(idProperty) {
+        if (CKEditor.instance) {
+            CKEditor.instance.destroy();
+        }
+        CKEditor.promise = ClassicEditor.create(document.getElementById(idProperty), ckEditorConfig)
+            .then(editor => {
+                CKEditor.instance = editor;
+            });
+    }
+
+    async fill(content) {
+        await CKEditor.promise;
+        CKEditor.instance.setData(content);
+    }
+
+    save() {
+        try {
+            return CKEditor.instance.getData();
+        } catch (error) {
+            console.error('Error getting content:', error);
+        }
+    }
+}
+
+export class SimpleEditor {
     static instance = null;
 
     constructor(idProperty) {
         if (SimpleEditor.instance) {
             SimpleEditor.instance.destroy();
-            SimpleEditor.instance = null;
         }
         SimpleEditor.instance = new EditorJS(idProperty);
     }

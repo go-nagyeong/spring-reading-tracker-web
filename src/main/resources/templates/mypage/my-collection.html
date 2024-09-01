@@ -29,6 +29,7 @@
             </div>
         </div>
 
+        <div th:replace="~{common/loading :: local}"></div>
         <div th:replace="~{common/result-message :: div('컬렉션이 없습니다.')}"></div>
 
         <div id="collectionListWrap">
@@ -42,9 +43,9 @@
                                 <i class="bx bx-dots-horizontal-rounded text-muted"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item collection-edit-modal-btn" href="javascript:void(0);"
-                                   data-bs-toggle="modal" data-bs-target="#smallModal">수정</a>
-                                <a class="dropdown-item text-danger collection-delete-btn" href="javascript:void(0);">삭제</a>
+                                <a class="dropdown-item collection-edit-modal-btn" role="button" data-bs-toggle="modal"
+                                   data-bs-target="#smallModal">수정</a>
+                                <a class="dropdown-item text-danger collection-delete-btn" role="button">삭제</a>
                             </div>
                         </div>
                     </div>
@@ -147,11 +148,11 @@
 
         const promise = axios.get('/api/collections/with-books/me');
 
-        const onSuccess = async (result) => {
+        const onSuccess = (result) => {
             const collectionList = result.data;
 
             if (collectionList.length) {
-                appendCollectionElement(collectionList);
+                setCollectionList(collectionList);
                 // TODO: setPagination
 
                 // 책장 UI 초기화
@@ -169,7 +170,7 @@
     /**
      * 컬랙션 목록 결과 html 동적 추가
      */
-    function appendCollectionElement(collectionList) {
+    function setCollectionList(collectionList) {
         const collectionListWrap = document.getElementById('collectionListWrap');
         const templateTag = collectionListWrap.querySelector('.template-tag');
 

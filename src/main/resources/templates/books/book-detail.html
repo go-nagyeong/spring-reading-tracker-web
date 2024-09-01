@@ -228,7 +228,7 @@
                 <h5 class="card-header">내 독서 노트</h5>
                 <div class="card-body">
                     <div class="list-group">
-                        <a th:href="@{/notes/pencil-note(book=1)}"
+                        <a th:href="@{/notes/pencil(book=1)}"
                            class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex justify-content-between w-100">
                                 <span class="fw-medium">연필</span>
@@ -238,7 +238,7 @@
                                 <i class="bx bx-pencil bx-xs me-1"></i>책에 대한 나의 생각을 정리해 보세요.
                             </small>
                         </a>
-                        <a th:href="@{/notes/highlight-note(book=1)}"
+                        <a th:href="@{/notes/highlight(book=1)}"
                            class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex justify-content-between w-100">
                                 <span class="fw-medium">형광펜</span>
@@ -259,8 +259,8 @@
                                 <i class="bx bx-tag bx-xs me-1"></i>간단한 한 줄 메모를 해보세요.
                             </small>
                         </a>
-                        <a href="javascript:void(0);" role="button"
-                           class="list-group-item list-group-item-action flex-column align-items-start under-construction">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start under-construction"
+                           role="button">
                             <div class="d-flex justify-content-between w-100">
                                 <span class="fw-medium">독서 카드</span>
                                 <small class="text-muted">3 days ago</small>
@@ -322,6 +322,10 @@
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
 <script th:src="@{/assets/js/editor-util.js}"></script>
+<script type="module">
+    import { SimpleEditor } from '/assets/js/editor-util.js';
+    window.SimpleEditor = SimpleEditor;
+</script>
 <script async>
     loadUserCollectionList();
 </script>
@@ -330,8 +334,8 @@
     const bookIsbn = queryParameters[queryParameters.length - 1];
 
     document.addEventListener('DOMContentLoaded', function (e) {
-        lookupBook(); // 책 상세 조회 결과 세팅
-        loadReviewData(); // 리뷰 목록 및 사용자 리뷰 데이터 세팅
+        getBookDetail(); // 책 상세 조회 결과 세팅
+        getReviewData(); // 리뷰 목록 및 사용자 리뷰 데이터 세팅
     });
 
     /**
@@ -393,7 +397,7 @@
     /**
      * 책 조회 (쿼리 파라미터를 통해 파라미터 자동 처리)
      */
-    function lookupBook() {
+    function getBookDetail() {
         globalLoading(true);
 
         const promise = axios.get(`/api/books/detail/${bookIsbn}`);
@@ -410,7 +414,7 @@
      */
     function setBookData(data) {
         const { lookupResult, readingInfo } = data;
-        const categoryTag = (text) => `<span class="tag"><a href="javascript:void(0);">${text}</a></span>`;
+        const categoryTag = (text) => `<span class="tag"><a role="button">${text}</a></span>`;
 
         const item = lookupResult.item[0];
         const targetElement = document.querySelector('.dataset-el')
@@ -453,7 +457,7 @@
     /**
      * 리뷰 목록 조회 (쿼리 파라미터를 통해 파라미터 자동 처리)
      */
-    function loadReviewData() {
+    function getReviewData() {
         hideNoResultsMessage();
         clearReviewList();
         globalLoading(true);
@@ -464,7 +468,7 @@
             const { reviewList, userReview } = result.data;
 
             if (reviewList.length) {
-                appendReviewElement(reviewList);
+                setReviewList(reviewList);
                 // TODO: setPagination
             } else {
                 showNoResultMessage();
@@ -480,7 +484,7 @@
     /**
      * 리뷰 목록 결과 html 동적 추가
      */
-    function appendReviewElement(reviewList) {
+    function setReviewList(reviewList) {
         const reviewListWrap = document.querySelector('.rv-list');
         const templateTag = reviewListWrap.querySelector('.template-tag');
 

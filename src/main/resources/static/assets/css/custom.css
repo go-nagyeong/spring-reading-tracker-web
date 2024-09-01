@@ -461,7 +461,7 @@ input[type=color]::-moz-color-swatch {
 .spinner-wrap {
     display: none;
     text-align: center;
-    padding: 1rem 0;
+    padding: 3rem 0;
 }
 .spinner-wrap.show {
     display: block;
@@ -579,8 +579,14 @@ input[type=color]::-moz-color-swatch {
  * ---- Bootstrap Component 8. Tooltip -----------------------
  */
 .tooltip {
-    --bs-tooltip-bg: var(--bs-primary);
-    --bs-tooltip-padding-x: 0.8rem;
+    --bs-tooltip-max-width: 240px;
+    --bs-tooltip-font-size: 0.875rem;
+    --bs-tooltip-bg: white;
+    --bs-tooltip-color: var(--bs-dark);
+    box-shadow: 0 0.25rem 1rem rgba(var(--bs-muted-color-rgb), 0.45);
+}
+.tooltip-inner {
+    text-align: left;
 }
 
 /**
@@ -736,14 +742,6 @@ input[type=color]::-moz-color-swatch {
 .with-collapse {
     transition: width 0.35s ease;
 }
-@media (min-width: 992px) {
-    .with-collapse.reduce-col-lg-5 {
-        width: 41.66666667%;
-    }
-    .with-collapse.reduce-col-lg-7 {
-        width: 58.33333333%;
-    }
-}
 
 form.edit-or-view-mode {
     position: relative;
@@ -794,6 +792,17 @@ form.edit-or-view-mode .lcslt-disabled:after {
     animation: blink 1s linear infinite;
 }
 
+.summary-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.summary-text p {
+    display: inline;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+}
+
 /**
  * ---- Vendor - LC Select -----------------------
  */
@@ -829,8 +838,12 @@ form.edit-or-view-mode .lcslt-disabled:after {
 }
 
 .lcslt span, #lc-select-dd span {
-    display: flex !important;
-    align-items: center;
+    line-height: 1.6rem !important;
+    vertical-align: middle;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .lcslt > span:not(.lcslt-placeholder):not(.lcslt-multi-callout),

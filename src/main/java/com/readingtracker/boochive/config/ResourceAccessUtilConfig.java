@@ -56,4 +56,11 @@ public class ResourceAccessUtilConfig {
         util.init(UserConfig.class);
         return util;
     }
+
+    @Bean
+    public ResourceAccessUtil<ReadingNote> readingNoteAccessUtil() {
+        ResourceAccessUtil<ReadingNote> util = new ResourceAccessUtil<>();
+        util.init(ReadingNote.class);
+        return util;
+    }
 }

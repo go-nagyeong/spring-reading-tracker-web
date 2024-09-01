@@ -49,7 +49,7 @@
             : axios.post(`/api/reviews`, data);
 
         const onSuccess = (result) => {
-            loadReviewData();
+            getReviewData();
             closeUIComponents();
         };
 
@@ -70,7 +70,7 @@
         const promise = axios.delete(`/api/reviews/${id}`)
 
         const onSuccess = (result) => {
-            loadReviewData();
+            getReviewData();
             closeUIComponents();
         };
 

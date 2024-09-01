@@ -6,8 +6,8 @@
     <title>북카이브 - 독서 노트</title>
 </head>
 
-<body th:replace="~{layouts/base :: _body('reading-note', ~{::div}, ~{::script}, true)}">
-<div class="container-xxl flex-grow-1 container-p-y">
+<body th:replace="~{layouts/base :: _body('reading-note', ~{::section}, ~{::script}, true)}">
+<section class="container-xxl flex-grow-1 container-p-y">
     <ul th:replace="~{notes/note-nav :: nav('pencil')}"></ul>
 
     <div class="row">
@@ -21,142 +21,275 @@
                         </div>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-icon btn-primary btn-md" data-bs-show="collapse"
-                                data-bs-target=".collapse">
+                        <button type="button" class="btn btn-icon btn-primary btn-md new-note-btn"
+                                data-bs-show="collapse" data-bs-target="#noteDetailCont" data-mode="edit">
                             <i class="bx bx-plus"></i>
                         </button>
                     </div>
                 </div>
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th>책</th>
-                            <th>본문</th>
-                            <th>작성일자</th>
-                            <th>공개여부</th>
-                            <th>수정</th>
-                        </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                        <tr role="button" data-bs-show="collapse" href=".collapse">
-                            <td>
-                                <img th:src="@{/assets/img/book01.jpg}"
-                                     class="img-thumbnail square rounded-circle bx-sm me-2" width="30">
-                                <span class="fw-medium">배움의 발견</span>
-                            </td>
-                            <td>블라블라블라 제목</td>
-                            <td class="text-muted">2024-06-02</td>
-                            <td>
-                                <span class="badge bg-label-primary">비공개</span>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                            data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" data-bs-show="collapse" href=".collapse">
-                                            <i class="bx bx-edit-alt me-1"></i> 수정
-                                        </a>
-                                        <button class="dropdown-item" href="javascript:void(0);">
-                                            <i class="bx bx-trash me-1"></i> 삭제
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr role="button" data-bs-show="collapse" href=".collapse">
-                            <td>
-                                <img th:src="@{/assets/img/book02.jpg}"
-                                     class="img-thumbnail square rounded-circle bx-sm me-2" width="30">
-                                <span class="fw-medium">종의 기원</span>
-                            </td>
-                            <td>블라블라블라 제목</td>
-                            <td class="text-muted">2024-06-02</td>
-                            <td>
-                                <span class="badge bg-label-success">전체 공개</span>
-                            </td>
-                            <td>
-                                <div class="dropdown">
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                            data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" data-bs-show="collapse" href=".collapse">
-                                            <i class="bx bx-edit-alt me-1"></i> 수정</a>
-                                        <button class="dropdown-item" href="javascript:void(0);">
-                                            <i class="bx bx-trash me-1"></i> 삭제</button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+
+                <div class="card-body">
+                    <div th:replace="~{common/loading :: local}"></div>
+                    <div th:replace="~{common/result-message :: div('노트가 없습니다.')}"></div>
+
+                    <div class="table-responsive text-nowrap mb-3" id="noteListWrap">
+                    </div>
+
+                    <nav th:replace="~{common/pagination :: nav}"></nav>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-7 mb-4 order-0 order-lg-1 collapse collapse-horizontal">
-            <div class="card">
-                <div class="card-header d-flex justify-content-end pb-0">
-                    <div class="dropdown view-mode">
-                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" data-bs-show="collapse" data-bs-target=".collapse">
-                                <i class="bx bx-edit-alt me-1"></i> 수정
-                            </a>
-                            <a class="dropdown-item" href="javascript:void(0);">
-                                <i class="bx bx-trash me-1"></i> 삭제
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body" id="noteDetailCont">
-                </div>
-            </div>
+        <div class="col-lg-7 mb-4 order-0 order-lg-1 collapse collapse-horizontal" id="noteDetailCont">
         </div>
     </div>
-</div>
+</section>
 
-<script type="module" th:src="@{/assets/js/ckeditor5.js}"></script>
+<script id="note-list-template" type="text/x-handlebars-template">
+    <table class="table table-hover fs-6">
+        <thead>
+        <tr>
+            <th width="70" style="min-width: 70px;">책</th>
+            <th width="*">본문</th>
+            <th width="14%">작성일자</th>
+            <th width="14%">공개여부</th>
+            <th width="8%">수정</th>
+        </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        {{#each notes}}
+            <tr class="existing-note-btn" data-bs-show="collapse" data-bs-target="#noteDetailCont" role="button"
+                data-mode="view" data-id="{{id}}">
+                <td>
+                    {{#with bookInfo}}
+                        <img src="{{cover}}" class="img-thumbnail square rounded-circle bx-sm" width="30"
+                             data-bs-toggle="tooltip" data-bs-offset="0,10" data-bs-placement="bottom"
+                             data-bs-title="{{title}}">
+                    {{/with}}
+                </td>
+                <td class="summary-text">{{{noteText}}}</td>
+                <td class="text-muted">{{createDate}}</td>
+                <td>
+                    {{#if isPublic}}
+                        <span class="badge bg-label-success">전체 공개</span>
+                    {{else}}
+                        <span class="badge bg-label-primary">비공개</span>
+                    {{/if}}
+                </td>
+                <td>
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-sm btn-icon dropdown-toggle hide-arrow"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item existing-note-btn" data-bs-show="collapse"
+                                   data-bs-target="#noteDetailCont" role="button" data-mode="edit">수정</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger delete-row-btn" role="button">삭제</a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<script type="module">
+    import { CKEditor } from '/assets/js/editor-util.js';
+    window.CKEditor = CKEditor;
+</script>
 <script>
-    /**
-     * (HTML 동적 로드) 노트 신규/상세보기 콜랩스
-     */
-    const collapseButtons = document.querySelectorAll('[data-bs-show=collapse]');
-    collapseButtons.forEach(el => {
-        el.addEventListener('click', function (event) {
-            const target = document.querySelector('#noteDetailCont');
-            let mode = 'edit';
-            if (el.tagName === 'TR') mode = 'view';
-            const callback = () => {
-                switchMode(mode); // TODO: 임시
+    let userBookList = null;
+
+    document.addEventListener('DOMContentLoaded', async function (e) {
+        loadUserBookList(); // 사용자 책 목록 미리 로드 (신규 노트 폼에서 책 선택 옵션에 사용)
+        setNewNoteButtonEvent(); // [신규 노트] 버튼 이벤트
+        getNoteList();
+    });
+
+    async function loadUserBookList() {
+        try {
+            if (!userBookList) {
+                const response = await axios.get('/api/reading-notes/book-options');
+                userBookList = response.data.data;
             }
-            loadHTML('/notes/pencil-note-detail', target, callback);
-        });
-    })
-    // 부모 이벤트 전파 막기
-    const buttonsInRow = document.querySelectorAll('tr button');
-    buttonsInRow.forEach(el => {
-        el.addEventListener('click', function (event) {
-            event.stopPropagation();
-        })
-    })
+        } catch (error) {
+            console.error('axios 요청 오류:', error);
+            showToast('알 수 없는 오류가 발생했습니다.', 'error');
+        }
+        return userBookList;
+    }
 
     /**
-     * 상세보기 카드 show/hide 시 이벤트 (크기 조정)
+     * UI 이벤트 - 상세보기 콜랩스 show/hide 시 자동 크기 조정
      */
     const leftCard = document.querySelector('.with-collapse');
     const collapseCard = document.querySelector('.collapse');
     collapseCard.addEventListener('show.bs.collapse', function (event) {
-        leftCard.classList.add('reduce-col-lg-5');
+        leftCard.classList.add('col-lg-5');
     });
     collapseCard.addEventListener('hide.bs.collapse', function (event) {
-        leftCard.classList.remove('reduce-col-lg-5');
+        leftCard.classList.remove('col-lg-5');
     });
+
+
+    /**
+     * 노트 목록 조회
+     */
+    function getNoteList() {
+        hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
+        clearPageButtons(); // 페이지네이션 버튼 초기화
+        clearNoteList(); // 이전 목록 초기화
+        localLoading(true);
+
+        const promise = axios.get('/api/reading-notes/pencil/me');
+
+        const onSuccess = (result) => {
+            const data = result.data;
+
+            if (data.numberOfElements) {
+                setNoteList(data);
+                setPagination(data.number + 1, data.totalPages);
+            } else {
+                showNoResultMessage();
+            }
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    function setNoteList(data) {
+        const noteListWrap = document.getElementById('noteListWrap')
+
+        // 노트 목록 세팅
+        const source = document.getElementById('note-list-template').innerHTML;
+        const template = Handlebars.compile(source);
+        const html = template({notes: data.content});
+        noteListWrap.innerHTML = sanitizeHtml(html);
+
+        // 버튼 이벤트 세팅
+        setNoteDetailButtonEvent();
+    }
+
+    function clearNoteList() {
+        const noteListWrap = document.getElementById('noteListWrap')
+        while (noteListWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
+            noteListWrap.removeChild(noteListWrap.children[1]);
+        }
+    }
+
+    /**
+     * 노트 신규 및 상세보기 버튼 이벤트
+     */
+    function setNewNoteButtonEvent() {
+        const button = document.querySelector('.new-note-btn');
+        button.addEventListener('click', function (event) {
+            showDetailCard(null, button.dataset.mode);
+        });
+    }
+    function setNoteDetailButtonEvent() {
+        // 컴포넌트 이벤트 초기화
+        Helpers.initializeCollapses();
+        Helpers.initializeTooltips();
+        Helpers.initializeDropdowns();
+
+        // 노트 상세 보기 / 수정
+        const detailButtons = document.querySelectorAll('.existing-note-btn');
+        detailButtons.forEach(el => {
+            el.addEventListener('click', function (event) {
+                event.stopImmediatePropagation();
+                const row = el.closest('tr');
+                showDetailCard(row.dataset.id, el.dataset.mode);
+            });
+        })
+
+        // 노트 삭제
+        const deleteButtons = document.querySelectorAll('.delete-row-btn');
+        deleteButtons.forEach(el => {
+            el.addEventListener('click', function(event) {
+                const content = '삭제한 노트는 복구가 불가능합니다.<br/>그래도 삭제하시겠습니까?'
+                const row = el.closest('tr');
+                confirmDeleteModal(content).then(() => {
+                    deleteNote(row.dataset.id);
+                });
+            })
+        })
+
+        // 부모 이벤트 전파 막기 (드롭다운 버튼 > 행 클릭 이벤트로 전파되지 않게)
+        const buttonsInRow = document.querySelectorAll('tr button, tr a');
+        buttonsInRow.forEach(el => {
+            el.addEventListener('click', function (event) {
+                event.stopPropagation();
+            })
+        })
+    }
+
+    function showDetailCard(id, mode) { // mode = edit(편집모드) / view(읽기모드)
+        const target = document.querySelector('#noteDetailCont');
+        const callback = () => {
+            if (id) {
+                globalLoading(true);
+
+                const promise = axios.get(`/api/reading-notes/pencil/${id}`);
+                const onSuccess = (result) => {
+                    setNoteDetailData(result.data, mode);
+                };
+                handleApiResponse(promise, onSuccess);
+            } else {
+                setNoteDetailData({}, mode);
+            }
+        };
+        loadHTML(`/notes/pencil-note-detail`, target, callback);
+    }
+
+    let noteEditor = null;
+    async function setNoteDetailData(data, mode) {
+        const noteDetailForm = document.getElementById('noteDetailForm');
+        const source = document.getElementById(`note-${mode}-template`).innerHTML;
+        const template = Handlebars.compile(source);
+
+        noteDetailForm.dataset.id = data.id ?? '';
+
+        if (mode === 'edit') {
+            const bookOptions = await loadUserBookList();
+            const html = template({note: data, bookOptions: bookOptions});
+            noteDetailForm.innerHTML = sanitizeHtml(html);
+
+            // 에디터 플러그인 초기화
+            noteEditor = new CKEditor('editor');
+            if (data.noteText) {
+                noteEditor.fill(data.noteText);
+            }
+        } else if (mode === 'view') {
+            const html = template(data);
+            noteDetailForm.innerHTML = sanitizeHtml(html);
+        }
+
+        // 렌더링 후 이벤트 리스너 세팅
+        setModalEventAfterRender();
+    }
+
+    function deleteNote(id) {
+        globalLoading(true);
+
+        if (!id) { // 삭제 예외 처리
+            globalLoading(false);
+            return false;
+        }
+
+        const promise = axios.delete(`/api/reading-notes/pencil/${id}`)
+        const onSuccess = (result) => {
+            getNoteList();
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
 </script>
 </body>
 </html>

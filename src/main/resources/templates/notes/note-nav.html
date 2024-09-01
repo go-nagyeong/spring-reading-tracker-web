@@ -1,20 +1,20 @@
 <ul th:fragment="nav (menu)" class="nav nav-pills mb-3">
     <li class="nav-item col-6 col-md-auto">
         <a class="nav-link" th:classappend="${menu == 'pencil' ? 'active' : ''}"
-           th:href="@{/notes/pencil-note}">
+           th:href="@{/my/notes}">
             <i class="bx bx-pencil me-1"></i>
             <span class="align-middle">연필</span>
         </a>
     </li>
     <li class="nav-item col-6 col-md-auto">
         <a class="nav-link" th:classappend="${menu == 'highlight' ? 'active' : ''}"
-           th:href="@{/notes/highlight-note}">
+           th:href="@{/my/notes/highlight}">
             <i class="bx bx-highlight me-1"></i> 형광펜
         </a>
     </li>
     <li class="nav-item col-6 col-md-auto">
         <a class="nav-link" th:classappend="${menu == 'post-it' ? 'active' : ''}"
-           th:href="@{/notes/post-it}">
+           th:href="@{/my/notes/post-it}">
             <i class="bx bx-tag me-1"></i>
             <span class="align-middle">포스트잇</span>
         </a>

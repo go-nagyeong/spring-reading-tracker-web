@@ -19,19 +19,23 @@ function loadScript(src, type, callback = null) {
     if (callback) script.onload = callback;
     document.body.appendChild(script);
 }
-function executeInlineScript(text, type) {
+function executeInlineScript(text, attributes) {
     const script = document.createElement('script');
     script.text = text;
-    script.type = type || 'text/javascript';
+    for (const attr of attributes) {
+        script.setAttribute(attr.name, attr.value);
+    }
     document.body.appendChild(script);
-    document.body.removeChild(script); // clean up the DOM
+    if (script.getAttribute('type') !== 'text/x-handlebars-template') {
+        document.body.removeChild(script); // clean up the DOM
+    }
 }
 function handleScripts(scripts) {
     scripts.forEach(script => {
         if (script.src) {
             loadScript(script.src, script.type);
         } else {
-            executeInlineScript(script.textContent, script.type);
+            executeInlineScript(script.text, script.attributes);
         }
     });
     // Remove inline scripts after execution
@@ -271,6 +275,11 @@ function closeUIComponents() {
         const offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
         offcanvasInstance.hide();
     }
+    const collapseEl = document.querySelector('.collapse.show');
+    if (collapseEl) {
+        const collapseInstance = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+        collapseInstance.hide();
+    }
 }
 
 /**
@@ -339,7 +348,7 @@ function confirmDeleteModal(content = null) {
         const target = document.querySelector('#smallModal .modal-content');
         const callback = () => {
             if (content) {
-                target.querySelector('#confirmContent').textContent = content;
+                target.querySelector('#confirmContent').innerHTML = content;
             }
             target.querySelector('#confirmBtn').addEventListener('click', resolve);
         }
@@ -373,4 +382,34 @@ function confirmDeleteButton(button) {
         button.classList.add('blinking');
         button.addEventListener('click', confirmHandler);
     })
+}
+
+/**
+ * HTML 이스케이프를 처리하는 함수
+ */
+function sanitizeHtml(html) {
+    return DOMPurify.sanitize(html);
+}
+
+/**
+ * 날짜 포맷 변환 함수
+ */
+function formatDate(date, format) {
+    // Date 객체로 변환
+    const dt = typeof date === 'string' ? new Date(date) : date;
+
+    // 날짜 추출
+    const year = String(dt.getFullYear());
+    const month = String(dt.getMonth() + 1);
+    const day = String(dt.getDate());
+
+    // 형식 문자열에 따라 날짜 문자열 생성
+    return format
+    .replace('yyyy', year)                 // 4자리 연도
+    .replace('yy', year.slice(-2))         // 2자리 연도
+    .replace('y', year.slice(-1))          // 1자리 연도
+    .replace('MM', month.padStart(2, '0')) // 2자리 월
+    .replace('M', month)                   // 1자리 또는 2자리 월
+    .replace('dd', day.padStart(2, '0'))   // 2자리 일
+    .replace('d', day);                    // 1자리 또는 2자리 일
 }

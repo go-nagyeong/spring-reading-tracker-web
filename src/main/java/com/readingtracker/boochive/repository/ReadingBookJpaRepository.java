@@ -14,6 +14,8 @@ public interface ReadingBookJpaRepository extends JpaRepository<ReadingBook, Lon
 
     Optional<ReadingBook> findByUserIdAndBookIsbn(Long userId, String bookIsbn);
 
+    List<ReadingBook> findAllByUserId(Long userId);
+
     List<ReadingBook> findAllByUserIdAndBookIsbnIn(Long userId, List<String> bookIsbnList);
 
     List<ReadingBook> findAllByUserIdAndCollectionIdIn(Long userId, List<Long> collectionIdList);

@@ -106,6 +106,24 @@ public class ViewController {
         return "mypage/partials/"+partial;
     }
 
+    @GetMapping("/my/notes")
+    public String showPencilNoteList() {
+        return "notes/pencil-note";
+    }
+
+    @GetMapping("/my/notes/highlight")
+    public String showHighlightNoteList() {
+        return "notes/highlight-note";
+    }
+
+    @GetMapping("/my/notes/post-it")
+    public String showPostItNoteList() {
+        return "notes/post-it-note";
+    }
+
+    /**
+     * Reading Note
+     */
 
     /**
      * TODO: 임시

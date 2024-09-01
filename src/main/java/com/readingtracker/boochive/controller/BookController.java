@@ -102,7 +102,7 @@ public class BookController {
     /**
      * (공통 메서드) 검색 키워드 검증
      */
-    public void validateSearchQuery(String query) {
+    private void validateSearchQuery(String query) {
         if (query == null || query.isEmpty() || !query.matches("^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\\s.,!?'\"(){}\\[\\]/\\\\-]+$")) {
             throw new IllegalArgumentException("유효하지 않은 검색어입니다.");
         }

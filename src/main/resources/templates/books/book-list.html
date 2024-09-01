@@ -116,13 +116,13 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function (e) {
-        searchBooks();
+        getSearchResult();
     });
 
     /**
      * 책 검색 (쿼리스트링을 통해 파라미터 자동 처리)
      */
-    function searchBooks() {
+    function getSearchResult() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
         clearPageButtons(); // 페이지네이션 버튼 초기화
         clearBookList(); // 이전 검색 결과 목록 초기화
@@ -134,7 +134,7 @@
             const data = result.data;
             const searchResult = data.searchResult;
             if (searchResult.item.length) {
-                appendBookElement(data);
+                setBookList(data);
                 setPagination(searchResult.startIndex, searchResult.totalPages);
             } else {
                 showNoResultMessage();
@@ -147,7 +147,7 @@
     /**
      * 책 검색 결과 html 동적 추가
      */
-    function appendBookElement(data) {
+    function setBookList(data) {
         const { searchResult, readingInfoList } = data;
         const bookListWrap = document.getElementById('bookSearchList');
         const templateTag = bookListWrap.querySelector('.template-tag');
@@ -171,7 +171,7 @@
                 }
                 targetElement.querySelector('.info-pub a').textContent = item.publisher;
                 targetElement.querySelector('.info-date a').textContent = item.pubDate;
-                targetElement.querySelector('.info-detail .bk-intro').textContent = item.description;
+                targetElement.querySelector('.info-detail .bk-intro').innerHTML = item.description;
 
                 // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
                 updateBookStatistics(item.subInfo, targetElement);

@@ -77,6 +77,12 @@ let menu, animate;
         new lc_select('select.lc-select', {
             wrap_width: '100%',
             min_for_search: 5,
+            labels : [
+                '키워드 검색',
+                'add options',
+                'Select options ..',
+                '검색 결과가 없습니다.',
+            ],
         });
     }
     window.Helpers.initializeLCSelect();
@@ -84,62 +90,82 @@ let menu, animate;
     /**
      * Initialize Bootstrap Component
      */
-    // Init BS Tooltip
+    // Tooltip
     window.Helpers.initializeTooltips = () => {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl, {html: true, sanitize: false, trigger: 'hover'});
         });
     }
-
-    // Init BS Popover
+    // Popover
     let openPopover = null;
     window.Helpers.initializePopovers = () => {
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
         popoverTriggerList.map(function (popoverTriggerEl) {
             const popover = new bootstrap.Popover(popoverTriggerEl, {html: true, sanitize: false, trigger: 'click'});
-            popoverTriggerEl.addEventListener('click', function (event) {
+            popoverTriggerEl.addEventListener('show.bs.popover', () => {
                 openPopover = popover;
-            });
+            })
         });
     }
-    // Close popover when clicking outside, but not when clicking inside
-    document.addEventListener('mousedown', function (event) {
-        const isClickInside = event.target.closest('.popover');
-        const isClickCloseBtn = event.target.closest('[data-bs-dismiss=popover]');
-        if (openPopover && (!isClickInside || isClickCloseBtn)) {
-            openPopover.hide();
-            openPopover = null;
-        }
-    });
-
-    // Init BS Show Collapse (Not Toggle)
+    // Collapse (Not Toggle, Only Show)
+    let openCollapse = null;
     window.Helpers.initializeCollapses = () => {
         const collapseTriggerList = [].slice.call(document.querySelectorAll('[data-bs-show="collapse"]'));
         collapseTriggerList.map(function (collapseTriggerEl) {
-            const target = collapseTriggerEl.getAttribute('data-bs-target') || collapseTriggerEl.getAttribute('href');
-            const collapseElement = document.querySelector(target);
+            const targetSelector = collapseTriggerEl.getAttribute('data-bs-target') || collapseTriggerEl.getAttribute('href');
+            const collapseElement = document.querySelector(targetSelector);
             const collapse = new bootstrap.Collapse(collapseElement, {toggle: false});
             collapseTriggerEl.addEventListener('click', function (event) {
                 collapse.show();
             });
+            collapseElement.addEventListener('show.bs.collapse', () => {
+                openCollapse = collapse;
+            })
         });
     }
-    // Close collapse when clicking [data-bs-dismiss] button
-    document.addEventListener('mousedown', function (event) {
-        const openCollapseEl = document.querySelector('.collapse.show');
-        if (openCollapseEl) {
-            const collapse = bootstrap.Collapse.getInstance(openCollapseEl);
-            const isClickCloseBtn = event.target.closest('[data-bs-dismiss=collapse]');
-            if (collapse && isClickCloseBtn) {
-                collapse.hide();
-            }
-        }
-    });
+    // Dropdown
+    let openDropdown = null;
+    window.Helpers.initializeDropdowns = () => {
+        const dropdownTriggerList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        dropdownTriggerList.map(function (dropdownTriggerEl) {
+            const dropdown = new bootstrap.Dropdown(dropdownTriggerEl, {autoClose: true});
+            dropdownTriggerEl.addEventListener('show.bs.dropdown', () => {
+                openDropdown = dropdown;
+            })
+            return dropdown;
+        });
+
+    }
 
     window.Helpers.initializeTooltips();
     window.Helpers.initializePopovers();
     window.Helpers.initializeCollapses();
+    window.Helpers.initializeDropdowns();
+
+    /**
+     * Bootstrap UI Component Lifecycle Handling
+     */
+    document.addEventListener('mousedown', function (event) {
+        // Close popover on [data-bs-dismiss] click; keep open if clicking inside
+        if (openPopover) {
+            const isClickInside = event.target.closest('.popover');
+            const isClickCloseBtn = event.target.closest('[data-bs-dismiss=popover]');
+            if (!isClickInside || isClickCloseBtn) {
+                openPopover.hide();
+                openPopover = null;
+            }
+        }
+
+        // Close collapse on [data-bs-dismiss] click
+        if (openCollapse) {
+            const isClickCloseBtn = event.target.closest('[data-bs-dismiss=collapse]');
+            if (isClickCloseBtn) {
+                openCollapse.hide();
+                openCollapse = null;
+            }
+        }
+    });
 
     // Accordion active class
     const accordionActiveFunction = function (e) {
@@ -188,6 +214,23 @@ let menu, animate;
     axios.defaults.headers.post['Content-Type'] = 'application/json';
     axios.defaults.responseType = 'json';
     axios.defaults.withCredentials = true; // 쿠키를 서버로 전송 (Jwt 토큰을 헤더에 담지 않고 쿠키로 전달 <- MPA 형식의 프론트 때문)
+
+    // Handlebars (Javascript Template Engine)
+    Handlebars.registerHelper('inc', function(value) {
+        return parseInt(value) + 1;
+    });
+    Handlebars.registerHelper('eq', function (arg1, arg2) {
+        return arg1 === arg2;
+    });
+    Handlebars.registerHelper('rowIdx', function (curPage, rowsPerPage) {
+        return (curPage - 1) * rowsPerPage + 1;
+    });
+    Handlebars.registerHelper('default', function(value, defaultValue) {
+        return value || defaultValue;
+    });
+    Handlebars.registerHelper('defaultDate', function(value) {
+        return value || formatDate(new Date(), 'yyyy-MM-dd');
+    });
 
     /**
      * Custom

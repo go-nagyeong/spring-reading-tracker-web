@@ -317,11 +317,11 @@
 
         const promise = axios.get('/api/reading-books/me'+window.location.search);
 
-        const onSuccess = async (result) => {
+        const onSuccess = (result) => {
             const data = result.data;
             const getListResult = data.getListResult;
 
-            appendBookElement(data);
+            setBookList(data);
             setPagination(getListResult.startIndex, getListResult.totalPages);
 
             if (getListResult.item.length < 1) {
@@ -335,7 +335,7 @@
     /**
      * 책 조회 결과 html 동적 추가
      */
-    function appendBookElement(data) {
+    function setBookList(data) {
         const { getListResult, readingInfoList } = data;
         const bookListWrap = document.getElementById('myBookList');
         const templateTag = bookListWrap.querySelector('.template-tag');
@@ -368,7 +368,7 @@
                 }
                 targetElement.querySelector('.info-pub a').textContent = item.publisher;
                 targetElement.querySelector('.info-date a').textContent = item.pubDate;
-                targetElement.querySelector('.info-detail .bk-intro').textContent = item.description;
+                targetElement.querySelector('.info-detail .bk-intro').innerHTML = item.description;
 
                 // 책 관련 통계 세팅 (작성 평점, 노트 수, 완독 수)
                 updateUserBookStatistics(item.subInfo, targetElement);

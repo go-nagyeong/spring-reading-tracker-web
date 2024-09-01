@@ -1,102 +1,194 @@
-<form class="edit-or-view-mode">
-    <div class="mb-3 mb-md-4">
-        <label class="form-label">본문</label>
-        <div class="editor-container editor-container_classic-editor edit-mode" id="editor-container">
-            <div class="editor-container__editor"><div id="editor"></div></div>
-        </div>
-        <div class="form-border overflow-auto view-mode" style="height: 30vh;">
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
-            <p>그저 그랬어요</p>
+<div class="card" id="noteDetailWrap">
+    <form id="noteDetailForm">
+    </form>
+</div>
+
+<script id="note-view-template" type="text/x-handlebars-template">
+    <div class="card-header d-flex justify-content-end pb-0">
+        <div class="dropdown">
+            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
+                    data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" role="button" id="changeEditMode">수정</a>
+                <a class="dropdown-item text-danger" role="button" id="deleteNoteBtn">삭제</a>
+            </div>
         </div>
     </div>
-
-    <div class="row mb-2 mb-md-3">
-        <label class="col-3 col-sm-2 col-form-label">책 선택</label>
-        <div class="col-9 col-sm-10 d-flex align-items-center">
-            <div class="w-100 edit-mode">
-                <select class="lc-select" name="">
-                    <optgroup label="읽는 중">
-                        <option value="배움의 발견" th:data-image="@{/assets/img/book01.jpg}">배움의 발견</option>
-                        <option value="종의 기원" th:data-image="@{/assets/img/book02.jpg}">종의 기원</option>
-                    </optgroup>
-                    <optgroup label="그 외">
-                        <option value="일류의 조건" th:data-image="@{/assets/img/book03.jpg}">일류의 조건</option>
-                    </optgroup>
-                </select>
+    <div class="card-body">
+        <div class="mb-3 mb-md-4">
+            <label class="form-label">본문</label>
+            <div class="form-border overflow-auto nt-content" style="height: 30vh;">
+                {{{noteText}}}
             </div>
-            <div class="view-mode">
-                <select class="lc-select" name="" disabled>
-                    <optgroup label="읽는 중">
-                        <option value="배움의 발견" th:data-image="@{/assets/img/book01.jpg}">배움의 발견</option>
-                        <option value="종의 기원" th:data-image="@{/assets/img/book02.jpg}">종의 기원</option>
-                    </optgroup>
-                    <optgroup label="그 외">
-                        <option value="일류의 조건" th:data-image="@{/assets/img/book03.jpg}">일류의 조건</option>
-                    </optgroup>
+        </div>
+
+        <div class="row mb-2 mb-md-3">
+            <label class="col-3 col-sm-2 col-form-label">책 선택</label>
+            <div class="col-9 col-sm-10 d-flex align-items-center">
+                <select class="lc-select" name="simple" disabled>
+                    {{#with bookInfo}}
+                        <option value="{{isbn13}}" data-image="{{cover}}" selected>{{title}}</option>
+                    {{/with}}
                 </select>
             </div>
         </div>
-    </div>
 
-    <div class="row mb-2 mb-md-3">
-        <label class="col-3 col-sm-2 col-form-label">작성일자</label>
-        <div class="col-9 col-sm-10 d-flex align-items-center">
-            <input type="date" class="form-control edit-mode" value="2024-07-01">
-            <p class="view-mode">2024-07-01</p>
+        <div class="row mb-2 mb-md-3">
+            <label class="col-3 col-sm-2 col-form-label">작성일자</label>
+            <div class="col-9 col-sm-10 d-flex align-items-center">
+                <p>{{createDate}}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3 mb-md-4">
+            <label class="col-3 col-sm-2 col-form-label">공개여부</label>
+            <div class="col-9 col-sm-10 d-flex align-items-center">
+                {{#if isPublic}}
+                    <span class="badge bg-label-success">전체 공개</span>
+                {{else}}
+                    <span class="badge bg-label-primary">비공개</span>
+                {{/if}}
+            </div>
+        </div>
+
+        <div>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="collapse">닫기</button>
         </div>
     </div>
+</script>
 
-    <div class="row mb-3 mb-md-4">
-        <label class="col-3 col-sm-2 col-form-label">공개여부</label>
-        <div class="col-9 col-sm-10 d-flex align-items-center">
-            <div class="form-check form-check-inline edit-mode">
-                <input class="form-check-input" type="radio" name="gender" id="genderMale" value="M"
-                       checked="">
-                <label class="form-check-label" for="genderMale">비공개</label>
+<script id="note-edit-template" type="text/x-handlebars-template">
+    <div class="card-body">
+        <div class="mb-3 mb-md-4">
+            <label class="form-label">본문</label>
+            <div class="editor-container editor-container_classic-editor" id="editor-container">
+                <div class="editor-container__editor">
+                    <div id="editor"></div>
+                </div>
             </div>
-            <div class="form-check form-check-inline edit-mode">
-                <input class="form-check-input" type="radio" name="gender" id="genderFemale"
-                       value="F">
-                <label class="form-check-label" for="genderFemale">전체 공개</label>
+        </div>
+
+        <div class="row mb-2 mb-md-3">
+            <label class="col-3 col-sm-2 col-form-label">책 선택</label>
+            <div class="col-9 col-sm-10 d-flex align-items-center">
+                <div class="w-100">
+                    <select class="lc-select" name="bookIsbn" {{#if note.id}} disabled {{/if}}>
+                        {{#each bookOptions}}
+                            <optgroup label="{{@key}}">
+                                {{#each this}}
+                                    <option value="{{isbn13}}" data-image="{{cover}}">{{title}}</option>
+                                {{/each}}
+                            </optgroup>
+                        {{/each}}
+                    </select>
+                </div>
             </div>
-            <span class="badge bg-label-primary view-mode">비공개</span>
+        </div>
+
+        <div class="row mb-2 mb-md-3">
+            <label class="col-3 col-sm-2 col-form-label">작성일자</label>
+            <div class="col-9 col-sm-10 d-flex align-items-center">
+                <input type="date" class="form-control" name="createDate" value="{{defaultDate note.createDate}}">
+            </div>
+        </div>
+
+        <div class="row mb-3 mb-md-4">
+            <label class="col-3 col-sm-2 col-form-label">공개여부</label>
+            <div class="col-9 col-sm-10 d-flex align-items-center">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isPublic" value="0" {{#unless note.isPublic}} checked {{/unless}}>
+                    <label class="form-check-label">비공개</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isPublic" value="1" {{#if note.isPublic}} checked {{/if}}>
+                    <label class="form-check-label">전체 공개</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <div>
+                <button type="submit" class="btn btn-primary me-2">저장</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="collapse">취소</button>
+            </div>
+            {{#if note.id}}
+                <button type="button" class="btn btn-outline-danger" id="deleteNoteBtn">삭제</button>
+            {{/if}}
         </div>
     </div>
-
-    <div>
-        <button type="submit" class="btn btn-primary me-2 edit-mode">저장</button>
-        <button type="reset" class="btn btn-outline-secondary edit-mode" onclick="switchMode('view')">취소</button>
-        <button type="reset" class="btn btn-outline-secondary view-mode" data-bs-dismiss="collapse">닫기</button>
-    </div>
-</form>
+</script>
 
 <script>
-    window.Helpers.initializeLCSelect();
-    window.initializeEditor();
-
     /**
-     * 읽기/편집 모드 전환
+     * 노트 저장 및 삭제
      */
-    function switchMode(mode) {
-        for(const el of document.querySelectorAll('.view-mode')) {
-            el.style.display = mode === 'view' ? 'revert' : 'none';
+    // HTML 템플릿 렌더링 후 이벤트 세팅
+    function setModalEventAfterRender() {
+        Helpers.initializeLCSelect();
+
+        // 편집 모드 전환 ('수정' 버튼)
+        const editModeBtn = document.getElementById('changeEditMode');
+        if (editModeBtn) {
+            editModeBtn.addEventListener('click', function (event) {
+                const form = event.target.closest('form');
+                showDetailCard(form.dataset.id, 'edit');
+            });
         }
-        for(const el of document.querySelectorAll('.edit-mode')) {
-            el.style.display = mode === 'edit' ? 'revert' : 'none';
+
+        // 저장
+        document.getElementById('noteDetailForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            saveNote();
+        })
+
+        // 삭제
+        document.getElementById('deleteNoteBtn').addEventListener('click', function(event) {
+            const content = '삭제한 노트는 복구가 불가능합니다.<br/>그래도 삭제하시겠습니까?'
+            confirmDeleteModal(content).then(deleteNote);
+        })
+    }
+
+    async function saveNote() {
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const form = document.getElementById('noteDetailForm');
+        const data = formToJson(new FormData(form));
+        data['noteText'] = noteEditor.save();
+
+        console.log(data);
+        const id = form.dataset.id;
+        const promise = id
+            ? axios.put(`/api/reading-notes/pencil/${id}`, data)
+            : axios.post(`/api/reading-notes/pencil`, data);
+
+        const onSuccess = (result) => {
+            getNoteList();
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    function deleteNote() {
+        globalLoading(true);
+
+        const form = document.getElementById('noteDetailForm');
+        const id = form.dataset.id;
+
+        if (!id) { // 삭제 예외 처리
+            globalLoading(false);
+            return false;
         }
+
+        const promise = axios.delete(`/api/reading-notes/pencil/${id}`)
+
+        const onSuccess = (result) => {
+            getNoteList();
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 </script>

@@ -151,7 +151,7 @@ function setCollectionButtonOptions(collectionList, targetElement = document) {
         for (const collection of collectionList) {
             collectionButtonList.insertAdjacentHTML('afterbegin', `
                 <li>
-                    <a class="dropdown-item" href="javascript:void(0);" data-value="${collection.id}">
+                    <a class="dropdown-item" role="button" data-value="${collection.id}">
                         ${collection.collectionName}
                     </a>
                 </li>
