@@ -3,7 +3,8 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.PasswordUpdateRequest;
 import com.readingtracker.boochive.dto.RegisterRequest;
-import com.readingtracker.boochive.dto.UserInfoParameter;
+import com.readingtracker.boochive.dto.UserInfoRequest;
+import com.readingtracker.boochive.dto.UserInfoResponse;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.RegisterMapper;
 import com.readingtracker.boochive.mapper.UserInfoMapper;
@@ -26,20 +27,14 @@ public class UserService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<UserInfoParameter> findUserById(Long id) {
-        return userRepository.findByIdAndDeletedAtIsNull(id)
-                .map(UserInfoMapper.INSTANCE::toDto);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<UserInfoParameter> findUserByEmail(String email) {
+    public Optional<UserInfoResponse> findUserByEmail(String email) {
         return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .map(UserInfoMapper.INSTANCE::toDto);
     }
 
     // 탈퇴한 계정도 포함해서 조회
     @Transactional(readOnly = true)
-    public Optional<UserInfoParameter> findUserByEmailIncludingDeleted(String email) {
+    public Optional<UserInfoResponse> findUserByEmailIncludingDeleted(String email) {
         return userRepository.findByEmail(email)
                 .map(UserInfoMapper.INSTANCE::toDto);
     }
@@ -48,7 +43,7 @@ public class UserService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public UserInfoParameter createUser(RegisterRequest request) {
+    public UserInfoResponse createUser(RegisterRequest request) {
         // 비밀번호 해시 변환
         request.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -61,7 +56,7 @@ public class UserService {
      * CR[U]D - UPDATE
      */
     @Transactional
-    public UserInfoParameter updateUser(Long id, UserInfoParameter userInfo) {
+    public UserInfoResponse updateUser(Long id, UserInfoRequest userInfo) {
         User existingUser = userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ResourceNotFoundException("회원"));
 

@@ -231,6 +231,9 @@ let menu, animate;
     Handlebars.registerHelper('defaultDate', function(value) {
         return value || formatDate(new Date(), 'yyyy-MM-dd');
     });
+    Handlebars.registerHelper('uploadUrl', function(value) {
+        return getUploadFileUrl(value);
+    });
 
     /**
      * Custom

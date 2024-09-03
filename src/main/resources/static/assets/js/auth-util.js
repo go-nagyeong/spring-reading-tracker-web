@@ -76,7 +76,7 @@ function invalidateLoggedInUserConfigCache() {
  */
 function setGlobalUserData(userInfo) {
     document.querySelectorAll('.user-profile').forEach(el => {
-        setProfileImage(userInfo.profileImage, el);
+        el.src = getProfileImageURL(userInfo.profileImage);
     })
     document.querySelectorAll('.user-name').forEach(el => {
         el.textContent = userInfo.username;

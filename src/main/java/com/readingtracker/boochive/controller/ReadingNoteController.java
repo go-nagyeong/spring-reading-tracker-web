@@ -5,50 +5,73 @@ import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.enums.ResourceName;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
-import com.readingtracker.boochive.service.PencilNoteService;
+import com.readingtracker.boochive.service.ReadingNoteService;
 import com.readingtracker.boochive.service.ReadingBookService;
 import com.readingtracker.boochive.util.ApiResponse;
+import com.readingtracker.boochive.util.FileStorageUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/reading-notes")
 @RequiredArgsConstructor
+@Slf4j
 public class ReadingNoteController {
 
-    private final PencilNoteService pencilNoteService;
+    private final ReadingNoteService readingNoteService;
+    private final FileStorageUtil fileStorageUtil;
 
     private final ReadingBookService readingBookService;
 
+    private final String uploadDir = "images/notes/";
+
     /**
-     * GET - 로그인 유저의 특정 [연필 노트] 조회
+     * GET - 로그인 유저의 특정 노트 상세 조회
      */
     @GetMapping("/pencil/{id}")
-    public ResponseEntity<ApiResponse<PencilNoteResponse>> getPencilNoteList(@PathVariable Long id,
-                                                                             @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<PencilNoteResponse>> getPencilNoteDetail(@PathVariable Long id) {
         ResourceName resourceName = ResourceName.fromClassName(ReadingNote.class.getSimpleName());
 
-        return pencilNoteService.findNoteById(id)
+        return readingNoteService.findPencilNoteById(id)
+                .map(note -> ApiResponse.success(null, note))
+                .orElseThrow(() -> new ResourceNotFoundException(resourceName.getName()));
+    }
+    @GetMapping("/highlight/{id}")
+    public ResponseEntity<ApiResponse<HighlightNoteResponse>> getHighlightNoteDetail(@PathVariable Long id) {
+        ResourceName resourceName = ResourceName.fromClassName(ReadingNote.class.getSimpleName());
+
+        return readingNoteService.findHighlightNoteById(id)
                 .map(note -> ApiResponse.success(null, note))
                 .orElseThrow(() -> new ResourceNotFoundException(resourceName.getName()));
     }
 
     /**
-     * GET - 로그인 유저의 [연필 노트] 목록 조회
+     * GET - 로그인 유저의 노트 목록 조회
      */
     @GetMapping("/pencil/me")
     public ResponseEntity<ApiResponse<Page<PencilNoteResponse>>> getPencilNoteList(@AuthenticationPrincipal User user,
-                                                                                   Pageable pageable) {
-        Page<PencilNoteResponse> noteList = pencilNoteService.getNotesByUserAndNoteType(user.getId(), pageable);
+                                                                                   @PageableDefault Pageable pageable) {
+        Page<PencilNoteResponse> noteList = readingNoteService.getPencilNotesByUserAndNoteType(user.getId(), pageable);
+
+        return ApiResponse.success(null, noteList);
+    }
+    @GetMapping("/highlight/me")
+    public ResponseEntity<ApiResponse<Page<HighlightNoteResponse>>> getHighlightNoteList(@AuthenticationPrincipal User user,
+                                                                                         @PageableDefault(value = 12) Pageable pageable) {
+        Page<HighlightNoteResponse> noteList = readingNoteService.getHighlightNotesByUserAndNoteType(user.getId(), pageable);
 
         return ApiResponse.success(null, noteList);
     }
@@ -66,6 +89,26 @@ public class ReadingNoteController {
     }
 
     /**
+     * POST - 이미지 첨부 파일 업로드
+     */
+    @PostMapping("/upload")
+    public ResponseEntity<ApiResponse<String>> uploadImageFile(@RequestParam(required = false) Long noteId,
+                                                               @RequestParam MultipartFile file) throws IOException {
+
+        String directory = uploadDir;
+        if (noteId == null) {
+            directory += "temp";
+        } else {
+            directory += noteId;
+            fileStorageUtil.clearDirectory(directory); // 업로드 전 기존 이미지 삭제
+        }
+
+        String saveUrl = fileStorageUtil.upload(directory, file);
+
+        return ApiResponse.success(null, saveUrl);
+    }
+
+    /**
      * POST - [연필 노트] 생성
      */
     @PostMapping("/pencil")
@@ -73,7 +116,16 @@ public class ReadingNoteController {
                                                                             BindingResult bindingResult) {
         handleValidationErrors(bindingResult); // 유효성 검사
 
-        PencilNoteResponse savedNote = pencilNoteService.createPencilNote(pencilNote);
+        PencilNoteResponse savedNote = readingNoteService.createPencilNote(pencilNote);
+
+        return ApiResponse.success("노트가 작성되었습니다.", savedNote);
+    }
+    @PostMapping("/highlight")
+    public ResponseEntity<ApiResponse<HighlightNoteResponse>> createHighlightNote(@Valid @RequestBody HighlightNoteRequest highlightNote,
+                                                                                  BindingResult bindingResult) throws IOException {
+        handleValidationErrors(bindingResult); // 유효성 검사
+
+        HighlightNoteResponse savedNote = readingNoteService.createHighlightNote(highlightNote);
 
         return ApiResponse.success("노트가 작성되었습니다.", savedNote);
     }
@@ -87,17 +139,27 @@ public class ReadingNoteController {
                                                                             BindingResult bindingResult) {
         handleValidationErrors(bindingResult); // 유효성 검사
 
-        PencilNoteResponse savedNote = pencilNoteService.updatePencilNote(id, pencilNote);
+        PencilNoteResponse savedNote = readingNoteService.updatePencilNote(id, pencilNote);
 
         return ApiResponse.success("노트가 수정되었습니다.", savedNote);
+    }
+    @PutMapping("/highlight/{id}")
+    public ResponseEntity<ApiResponse<HighlightNoteResponse>> updateHighlightNote(@PathVariable Long id,
+                                                                                  @Valid @RequestBody HighlightNoteRequest highlightNote,
+                                                                                  BindingResult bindingResult) {
+        handleValidationErrors(bindingResult); // 유효성 검사
+
+        HighlightNoteResponse savedNote = readingNoteService.updateHighlightNote(id, highlightNote);
+
+        return ApiResponse.success("노트가 작성되었습니다.", savedNote);
     }
 
     /**
      * DELETE - [연필 노트] 수정
      */
-    @DeleteMapping("/pencil/{id}")
-    public ResponseEntity<ApiResponse<PencilNoteResponse>> deletePencilNote(@PathVariable Long id) {
-        pencilNoteService.deletePencilNote(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Object>> deletePencilNote(@PathVariable Long id) throws IOException {
+        readingNoteService.deleteNoteById(id);
 
         return ApiResponse.success("노트가 삭제되었습니다.");
     }
@@ -113,12 +175,15 @@ public class ReadingNoteController {
             priorityMap.put("createDate", 2); // 예: email 필드의 오류가 그 다음으로 나오도록
             priorityMap.put("isPublic", 3); // 예: password 필드의 오류가 마지막에 나오도록
 
-            List<FieldError> fieldErrors = new ArrayList<>(bindingResult.getFieldErrors());
-            fieldErrors.sort(Comparator
-                    .comparing(fieldError -> priorityMap.getOrDefault(fieldError.getField(), Integer.MAX_VALUE)));
+            List<ObjectError> errors = new ArrayList<>(bindingResult.getAllErrors());
+            errors.forEach(error -> {
+                log.info("error object name: {}", error.getObjectName());
+            });
+            errors.sort(Comparator
+                    .comparing(error -> priorityMap.getOrDefault(error.getObjectName(), Integer.MAX_VALUE)));
 
             // throw IllegalArgumentException
-            throw new IllegalArgumentException(fieldErrors.get(0).getDefaultMessage());
+            throw new IllegalArgumentException(errors.get(0).getDefaultMessage());
         }
     }
 }

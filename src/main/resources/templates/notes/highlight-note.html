@@ -6,8 +6,8 @@
     <title>북카이브 - 독서 노트</title>
 </head>
 
-<body th:replace="~{layouts/base :: _body('reading-note', ~{::div}, ~{::script}, true)}">
-<div class="container-xxl flex-grow-1 container-p-y">
+<body th:replace="~{layouts/base :: _body('reading-note', ~{::section}, ~{::script}, true)}">
+<section class="container-xxl flex-grow-1 container-p-y">
     <ul th:replace="~{notes/note-nav :: nav('highlight')}"></ul>
 
     <div class="row" id="highlightNoteCard">
@@ -21,106 +21,227 @@
                         </div>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-icon btn-primary btn-md" data-bs-show="collapse"
-                                data-bs-target=".collapse">
+                        <button type="button" class="btn btn-icon btn-primary btn-md new-note-btn"
+                                data-bs-show="collapse" data-bs-target="#noteDetailCont" data-mode="edit">
                             <i class="bx bx-plus"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="d-grid grid-2-column grid-md-3-column grid-lg-4-column gap-3" id="noteGridCard">
-                <div class="card" role="button" data-bs-show="collapse" href=".collapse">
-                    <div class="card-img-top overflow-hidden">
-                        <img th:src="@{/assets/img/highlight-example.jpg}">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">배움의 발견</h5>
-                        <p class="card-text">
-                            p.246
-                        </p>
-                        <p class="card-text">
-                            <small class="text-muted">2024-05-24</small>
-                        </p>
-                    </div>
-                </div>
-                <div class="card" role="button" data-bs-show="collapse" href=".collapse">
-                    <div class="card-img-top overflow-hidden">
-                        <div class="card-img-overlay">
-                            <p>
-                                <mark>
-                                    "두려움은 정신을 죽인다. 두려움은 완전한 소멸을 초래하는 작은 죽 음이다. 나는 두려움에 맞설 것이며 두려움이 나를 통과해서 지나가도록 허락할 것이다.
-                                    두려움이 지나가고 나면 나는 마음의 눈으로 그것이 지나간 길을 살펴보리라.
-                                </mark>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">배움의 발견</h5>
-                        <p class="card-text">
-                            p.246
-                        </p>
-                        <p class="card-text">
-                            <small class="text-muted">2024-05-24</small>
-                        </p>
-                    </div>
-                </div>
+            <div th:replace="~{common/loading :: local}"></div>
+            <div th:replace="~{common/result-message :: div('노트가 없습니다.')}"></div>
+
+            <div class="d-grid grid-2-column grid-md-3-column grid-lg-4-column gap-3 mb-3" id="noteListWrap">
             </div>
+
+            <nav th:replace="~{common/pagination :: nav}"></nav>
         </div>
 
-        <div class="col-lg-5 mb-4 order-0 order-lg-1 collapse collapse-horizontal">
-            <div class="card">
-                <div class="card-header d-flex justify-content-end pb-0">
-                    <div class="dropdown">
-                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" data-bs-show="collapse" data-bs-target=".collapse">수정</a>
-                            <a class="dropdown-item text-danger" href="javascript:void(0);">삭제</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body" id="noteDetailCont">
-                </div>
-            </div>
+        <div class="col-lg-5 mb-4 order-0 order-lg-1 collapse collapse-horizontal" id="noteDetailCont">
         </div>
     </div>
-</div>
+</section>
 
+<script id="note-list-template" type="text/x-handlebars-template">
+    {{#each notes}}
+        <div class="card existing-note-btn" data-bs-show="collapse" data-bs-target="#noteDetailCont" role="button"
+             data-mode="view" data-id="{{id}}">
+            <div class="card-img-top overflow-hidden">
+                {{#if attachmentImage}}
+                    <img src="{{uploadUrl attachmentImage}}">
+                {{else}}
+                    <div class="card-img-overlay">
+                        {{{highlight noteText highlightColor}}}
+                    </div>
+                {{/if}}
+            </div>
+            <div class="card-body p-3">
+                {{#with bookInfo}}
+                    <div class="card-title d-flex align-items-center gap-2 mb-2">
+                        <img src="{{cover}}" class="img-thumbnail square rounded" width="24">
+                        <h6 class="fs-6 summary-text">{{title}}</h6>
+                    </div>
+                {{/with}}
+                <p class="card-text">
+                    <small class="text-muted">{{createDate}}</small>
+                    {{#if pageNumber}}
+                        <span class="badge bg-label-dark float-end">
+                            {{pageNumber}}<em> p</em>
+                        </span>
+                    {{/if}}
+                </p>
+            </div>
+        </div>
+    {{/each}}
+</script>
+
+<script th:src="@{/assets/js/image-util.js}"></script>
+<script type="module">
+    import { SimpleEditor } from '/assets/js/editor-util.js';
+    window.SimpleEditor = SimpleEditor;
+</script>
 <script>
-    /**
-     * (HTML 동적 로드) 노트 신규/상세보기 콜랩스
-     */
-    const collapseButtons = document.querySelectorAll('[data-bs-show=collapse]');
-    collapseButtons.forEach(el => {
-        el.addEventListener('click', function (event) {
-            const target = document.querySelector('#noteDetailCont');
-            let mode = 'edit';
-            if (el.tagName === 'DIV') mode = 'view';
-            const callback = () => {
-                switchMode(mode); // TODO: 임시
-            }
-            loadHTML('/notes/highlight-note-detail', target, callback);
+    let userBookList = null;
+
+    // 하이라이터 스타일 적용 헬퍼
+    Handlebars.registerHelper('highlight', function(html, color) {
+        // 텍스트를 mark 태그로 감싸기
+        return html.replace(/>([^<]+)</g, function(match, text) {
+            return `><mark style="background-color: ${color};">${text}</mark><`;
         });
-    })
+    });
+
+    document.addEventListener('DOMContentLoaded', async function (e) {
+        loadUserBookList(); // 사용자 책 목록 미리 로드 (신규 노트 폼에서 책 선택 옵션에 사용)
+        setNewNoteButtonEvent(); // [신규 노트] 버튼 이벤트
+        getNoteList();
+    });
+
+    async function loadUserBookList() {
+        try {
+            if (!userBookList) {
+                const response = await axios.get('/api/reading-notes/book-options');
+                userBookList = response.data.data;
+            }
+        } catch (error) {
+            console.error('axios 요청 오류:', error);
+            showToast('알 수 없는 오류가 발생했습니다.', 'error');
+        }
+        return userBookList;
+    }
 
     /**
-     * 상세보기 카드 show/hide 시 이벤트 (크기 조정)
+     * UI 이벤트 - 상세보기 콜랩스 show/hide 시 크기 조정
      */
     const leftCard = document.querySelector('.with-collapse');
     const collapseCard = document.querySelector('.collapse');
-    const noteGridCard = document.querySelector('#noteGridCard');
+    const noteGridCard = document.querySelector('#noteListWrap');
     collapseCard.addEventListener('show.bs.collapse', function (event) {
-        leftCard.classList.add('reduce-col-lg-7');
+        leftCard.classList.add('col-lg-7');
         noteGridCard.classList.remove('grid-lg-4-column');
         noteGridCard.classList.add('grid-lg-3-column');
     });
     collapseCard.addEventListener('hide.bs.collapse', function (event) {
-        leftCard.classList.remove('reduce-col-lg-7');
+        leftCard.classList.remove('col-lg-7');
         noteGridCard.classList.add('grid-lg-4-column');
         noteGridCard.classList.remove('grid-lg-3-column');
     });
+
+
+    /**
+     * 노트 목록 조회
+     */
+    function getNoteList() {
+        hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
+        clearPageButtons(); // 페이지네이션 버튼 초기화
+        clearNoteList(); // 이전 목록 초기화
+        localLoading(true);
+
+        const promise = axios.get('/api/reading-notes/highlight/me'+window.location.search);
+
+        const onSuccess = (result) => {
+            const data = result.data;
+
+            if (data.numberOfElements) {
+                setNoteList(data);
+                setPagination(data.number + 1, data.totalPages);
+            } else {
+                showNoResultMessage();
+            }
+        };
+
+        handleApiResponse(promise, onSuccess);
+    }
+
+    function setNoteList(data) {
+        const noteListWrap = document.getElementById('noteListWrap')
+
+        // 노트 목록 세팅
+        const source = document.getElementById('note-list-template').innerHTML;
+        const template = Handlebars.compile(source);
+        const html = template({notes: data.content});
+        noteListWrap.innerHTML = sanitizeHtml(html);
+
+        // 버튼 이벤트 세팅
+        setNoteDetailButtonEvent();
+    }
+
+    function clearNoteList() {
+        const noteListWrap = document.getElementById('noteListWrap')
+        while (noteListWrap.children[0]) {
+            noteListWrap.removeChild(noteListWrap.children[0]);
+        }
+    }
+
+    /**
+     * 노트 신규 및 상세보기 버튼 이벤트
+     */
+    function setNewNoteButtonEvent() {
+        const button = document.querySelector('.new-note-btn');
+        button.addEventListener('click', function (event) {
+            showDetailCard(null, button.dataset.mode);
+        });
+    }
+    function setNoteDetailButtonEvent() {
+        // 컴포넌트 이벤트 초기화
+        Helpers.initializeCollapses();
+
+        // 노트 상세 보기
+        const detailButtons = document.querySelectorAll('.existing-note-btn');
+        detailButtons.forEach(el => {
+            el.addEventListener('click', function (event) {
+                event.stopImmediatePropagation();
+                const card = el.closest('.card');
+                showDetailCard(card.dataset.id, el.dataset.mode);
+            });
+        })
+    }
+
+    function showDetailCard(id, mode) { // mode = edit(편집모드) / view(읽기모드)
+        const target = document.querySelector('#noteDetailCont');
+        const callback = () => {
+            if (id) {
+                globalLoading(true);
+
+                const promise = axios.get(`/api/reading-notes/highlight/${id}`);
+                const onSuccess = (result) => {
+                    setNoteDetailData(result.data, mode);
+                };
+                handleApiResponse(promise, onSuccess);
+            } else {
+                setNoteDetailData({}, mode);
+            }
+        };
+        loadHTML(`/notes/partials/highlight-note-detail`, target, callback);
+    }
+
+    let noteEditor = null;
+    async function setNoteDetailData(data, mode) {
+        const noteDetailForm = document.getElementById('noteDetailForm');
+        const source = document.getElementById(`note-${mode}-template`).innerHTML;
+        const template = Handlebars.compile(source);
+
+        noteDetailForm.dataset.id = data.id ?? '';
+
+        if (mode === 'edit') {
+            const bookOptions = await loadUserBookList();
+            const html = template({note: data, bookOptions: bookOptions});
+            noteDetailForm.innerHTML = sanitizeHtml(html);
+
+            // 에디터 플러그인 초기화
+            noteEditor = new SimpleEditor('editor');
+            if (data.noteText) {
+                noteEditor.initialize(data.noteText);
+            }
+        } else if (mode === 'view') {
+            const html = template(data);
+            noteDetailForm.innerHTML = sanitizeHtml(html);
+        }
+
+        // 렌더링 후 이벤트 리스너 세팅
+        setModalEventAfterRender();
+    }
 </script>
 </body>
 </html>

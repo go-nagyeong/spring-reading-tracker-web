@@ -41,7 +41,7 @@
 
         data['bookIsbn'] = queryParameters[queryParameters.length - 1];
         data['rating'] = parseFloat(form.querySelector('span.star-rating').dataset.rating);
-        await reviewSimpleEditor.save().then(result => data['reviewText'] = result);
+        await reviewSimpleEditor.getContent().then(result => data['reviewText'] = result);
 
         const id = form.dataset.id;
         const promise = id

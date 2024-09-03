@@ -2,7 +2,8 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.PasswordUpdateRequest;
-import com.readingtracker.boochive.dto.UserInfoParameter;
+import com.readingtracker.boochive.dto.UserInfoRequest;
+import com.readingtracker.boochive.dto.UserInfoResponse;
 import com.readingtracker.boochive.mapper.UserInfoMapper;
 import com.readingtracker.boochive.service.UserService;
 import com.readingtracker.boochive.util.ApiResponse;
@@ -36,8 +37,8 @@ public class UserController {
      * GET - 로그인 유저 세부 회원 정보 조회 (이름, 프로필 이미지, 성별, 생년월일 등)
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserInfoParameter>> getLoggedInUserInfoDetail(@AuthenticationPrincipal User user) {
-        UserInfoParameter loggedInUser = UserInfoMapper.INSTANCE.toDto(user);
+    public ResponseEntity<ApiResponse<UserInfoResponse>> getLoggedInUserInfoDetail(@AuthenticationPrincipal User user) {
+        UserInfoResponse loggedInUser = UserInfoMapper.INSTANCE.toDto(user);
 
         return ApiResponse.success(null, loggedInUser);
     }
@@ -59,16 +60,16 @@ public class UserController {
      * PUT - 회원정보 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserInfoParameter>> updateUser(@PathVariable Long id,
-                                                                     @Valid @RequestBody UserInfoParameter userInfo,
-                                                                     BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<UserInfoResponse>> updateUser(@PathVariable Long id,
+                                                                    @Valid @RequestBody UserInfoRequest userInfo,
+                                                                    BindingResult bindingResult) {
         // 유효성 검사
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMap = handleValidationErrors(bindingResult);
             return ApiResponse.failure(null, errorMap);
         }
 
-        UserInfoParameter savedUser = userService.updateUser(id, userInfo);
+        UserInfoResponse savedUser = userService.updateUser(id, userInfo);
 
         return ApiResponse.success("회원정보가 수정되었습니다.", savedUser);
     }

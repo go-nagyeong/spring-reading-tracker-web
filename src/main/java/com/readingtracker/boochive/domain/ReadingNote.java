@@ -70,10 +70,8 @@ public class ReadingNote implements Own {
     /**
      * [연필]노트 수정
      */
-    public void updatePencilNote(String noteText, LocalDate createDate, Integer isPublic) {
+    public void updatePencilNote(String noteText) {
         this.noteText = noteText;
-        this.createDate = createDate;
-        this.isPublic = isPublic;
     }
 
     /**
@@ -93,6 +91,13 @@ public class ReadingNote implements Own {
         this.noteText = noteText;
         this.highlightColor = highlightColor;
         this.pageNumber = pageNumber;
+    }
+
+    /**
+     * 파일 저장 경로 변경
+     */
+    public void updateAttachmentImageUrl(String attachmentImage) {
+        this.attachmentImage = attachmentImage;
     }
 
     /**

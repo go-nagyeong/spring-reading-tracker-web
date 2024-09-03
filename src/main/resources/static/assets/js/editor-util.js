@@ -142,19 +142,39 @@ export class CKEditor {
             .then(editor => {
                 CKEditor.instance = editor;
             });
+
+        this.initialContent = null;
     }
 
-    async fill(content) {
+    async initialize(content) {
+        await CKEditor.promise;
+
+        this.initialContent = content;
+        this.setContent(content);
+    }
+
+    async reset() {
+        await CKEditor.promise;
+
+        await this.clear();
+        if (this.initialContent) {
+            await this.setContent(this.initialContent);
+        }
+    }
+
+    async clear() {
+        await CKEditor.promise;
+        this.setContent('');
+    }
+
+    async setContent(content) {
         await CKEditor.promise;
         CKEditor.instance.setData(content);
     }
 
-    save() {
-        try {
-            return CKEditor.instance.getData();
-        } catch (error) {
-            console.error('Error getting content:', error);
-        }
+    async getContent() {
+        await CKEditor.promise;
+        return CKEditor.instance.getData();
     }
 }
 
@@ -166,27 +186,52 @@ export class SimpleEditor {
             SimpleEditor.instance.destroy();
         }
         SimpleEditor.instance = new EditorJS(idProperty);
+
+        this.initialContent = null;
     }
 
-    async fill(content) {
+    async initialize(content) {
         await SimpleEditor.instance.isReady;
-        this.convertHtmlToData(content).map(data => {
-            SimpleEditor.instance.blocks.insert('paragraph', { text: data });
-        })
+
+        this.initialContent = content;
+        this.setContent(content);
     }
 
-    async save() {
-        try {
-            const outputData = await SimpleEditor.instance.save();
-            return this.convertDataToHtml(outputData.blocks)
-        } catch (error) {
-            console.error('Error getting content:', error);
+    async reset() {
+        await SimpleEditor.instance.isReady;
+
+        await this.clear();
+        if (this.initialContent) {
+            this.setContent(this.initialContent);
         }
     }
 
+    async clear() {
+        await SimpleEditor.instance.isReady;
+        SimpleEditor.instance.blocks.clear();
+    }
+
+    async setContent(content) {
+        await SimpleEditor.instance.isReady;
+
+        const dataBlocks = this.convertHtmlToData(content);
+        SimpleEditor.instance.blocks.render({blocks: dataBlocks});
+    }
+
+    async getContent() {
+        await SimpleEditor.instance.isReady;
+
+        const outputData = await SimpleEditor.instance.save();
+        return this.convertDataToHtml(outputData.blocks);
+    }
+
     convertHtmlToData(htmlString) {
-        const lastIndex = htmlString.lastIndexOf('</p>');
-        return htmlString.substring(0, lastIndex).replaceAll('<p>','').split('</p>');
+        return Array.from(
+            new DOMParser().parseFromString(htmlString, 'text/html').querySelectorAll('p')
+        ).map(p => ({
+            type: "paragraph",
+            data: { text: p.textContent.trim() }
+        }))
     }
 
     convertDataToHtml(blocks) {

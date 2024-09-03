@@ -74,13 +74,17 @@
             <div class="col-9 col-sm-10 d-flex align-items-center">
                 <div class="w-100">
                     <select class="lc-select" name="bookIsbn" {{#if note.id}} disabled {{/if}}>
-                        {{#each bookOptions}}
-                            <optgroup label="{{@key}}">
-                                {{#each this}}
-                                    <option value="{{isbn13}}" data-image="{{cover}}">{{title}}</option>
-                                {{/each}}
-                            </optgroup>
-                        {{/each}}
+                        {{#with note.bookInfo}}
+                            <option value="{{isbn13}}" data-image="{{cover}}" selected>{{title}}</option>
+                        {{else}}
+                            {{#each bookOptions}}
+                                <optgroup label="{{@key}}">
+                                    {{#each this}}
+                                        <option value="{{isbn13}}" data-image="{{cover}}">{{title}}</option>
+                                    {{/each}}
+                                </optgroup>
+                            {{/each}}
+                        {{/with}}
                     </select>
                 </div>
             </div>
@@ -97,11 +101,13 @@
             <label class="col-3 col-sm-2 col-form-label">공개여부</label>
             <div class="col-9 col-sm-10 d-flex align-items-center">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="isPublic" value="0" {{#unless note.isPublic}} checked {{/unless}}>
+                    <input class="form-check-input" type="radio" name="isPublic" value="0"
+                        {{#unless note.isPublic}} checked {{/unless}}>
                     <label class="form-check-label">비공개</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="isPublic" value="1" {{#if note.isPublic}} checked {{/if}}>
+                    <input class="form-check-input" type="radio" name="isPublic" value="1"
+                        {{#if note.isPublic}} checked {{/if}}>
                     <label class="form-check-label">전체 공개</label>
                 </div>
             </div>
@@ -143,10 +149,13 @@
         })
 
         // 삭제
-        document.getElementById('deleteNoteBtn').addEventListener('click', function(event) {
-            const content = '삭제한 노트는 복구가 불가능합니다.<br/>그래도 삭제하시겠습니까?'
-            confirmDeleteModal(content).then(deleteNote);
-        })
+        const deleteButton = document.getElementById('deleteNoteBtn');
+        if (deleteButton) {
+            deleteButton.addEventListener('click', function(event) {
+                const content = '삭제한 노트는 복구가 불가능합니다.<br/>그래도 삭제하시겠습니까?'
+                confirmDeleteModal(content).then(deleteNote);
+            })
+        }
     }
 
     async function saveNote() {
@@ -155,9 +164,8 @@
         // 폼 데이터 전처리
         const form = document.getElementById('noteDetailForm');
         const data = formToJson(new FormData(form));
-        data['noteText'] = noteEditor.save();
+        data['noteText'] = await noteEditor.getContent();
 
-        console.log(data);
         const id = form.dataset.id;
         const promise = id
             ? axios.put(`/api/reading-notes/pencil/${id}`, data)
@@ -182,7 +190,7 @@
             return false;
         }
 
-        const promise = axios.delete(`/api/reading-notes/pencil/${id}`)
+        const promise = axios.delete(`/api/reading-notes/${id}`)
 
         const onSuccess = (result) => {
             getNoteList();

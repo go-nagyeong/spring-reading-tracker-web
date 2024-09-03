@@ -106,7 +106,15 @@ public class ViewController {
         return "mypage/partials/"+partial;
     }
 
+    /**
+     * Reading Note - My Notes
+     */
     @GetMapping("/my/notes")
+    public String showNoteList() {
+        return "redirect:/my/notes/pencil";
+    }
+
+    @GetMapping("/my/notes/pencil")
     public String showPencilNoteList() {
         return "notes/pencil-note";
     }
@@ -121,9 +129,11 @@ public class ViewController {
         return "notes/post-it-note";
     }
 
-    /**
-     * Reading Note
-     */
+    @GetMapping("/notes/partials/{partial}")
+    public String showNotePartial(@PathVariable String partial) {
+        return "notes/partials/"+partial;
+    }
+
 
     /**
      * TODO: 임시
@@ -131,11 +141,6 @@ public class ViewController {
     @RequestMapping("/common/{page}")
     public String custom1(@PathVariable("page") String page) {
         return "common/"+page;
-    }
-
-    @RequestMapping("/notes/{page}")
-    public String custom2(@PathVariable("page") String page) {
-        return "notes/"+page;
     }
 
     @RequestMapping("/dashboard/{page}")
@@ -146,10 +151,5 @@ public class ViewController {
     @RequestMapping("/mypage/{page}")
     public String custom4(@PathVariable("page") String page) {
         return "mypage/"+page;
-    }
-
-    @RequestMapping("/settings/{page}")
-    public String custom5(@PathVariable("page") String page) {
-        return "settings/"+page;
     }
 }

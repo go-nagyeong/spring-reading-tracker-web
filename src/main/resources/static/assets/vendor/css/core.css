@@ -188,12 +188,6 @@
   --bs-breakpoint-xxl: 1400px;
 }
 
-@media (max-width: 414px) {
-  #bestSellerCont .card-img-top { height: 135px; }
-}
-@media (max-width: 375px) {
-  #bestSellerCont .card-img-top { height: 125px; }
-}
 
 *,
 *::before,

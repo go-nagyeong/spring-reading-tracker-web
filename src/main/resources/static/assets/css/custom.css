@@ -171,7 +171,7 @@ input[type='number'] {
     border: 0.5px solid rgba(0, 0, 0, 0.1);
     display: inline-block;
 }
-img.square {
+.square {
     aspect-ratio: 1 / 1;
     object-fit: cover;
 }
@@ -261,6 +261,19 @@ input[type=color]::-webkit-color-swatch {
 input[type=color]::-moz-color-swatch {
     border-radius: 0.25rem;
     border: 0;
+}
+
+/**
+ * ---- Table -----------------------
+ */
+.table > :not(caption) > * > * {
+    padding: 0.625rem 0.5rem;
+}
+.table > :not(caption) > * > *:first-child {
+    padding-left: 1rem;
+}
+.table > :not(caption) > * > *:last-child{
+    padding-right: 1rem;
 }
 
 /**
@@ -701,11 +714,22 @@ input[type=color]::-moz-color-swatch {
     --bs-card-title-spacer-y: 0.25rem;
     --bs-card-img-overlay-padding: 1.25rem;
 }
+
 #highlightNoteCard .card-img-top {
     aspect-ratio: 1 / 1;
-    object-fit: contain;
     border-bottom: 1px solid #d9dee3;
+    position: relative;
+    overflow: hidden;
 }
+#highlightNoteCard .card-img-top img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
 #highlightNoteCard .card-img-overlay {
     position: relative;
     height: 100%;
@@ -802,6 +826,48 @@ form.edit-or-view-mode .lcslt-disabled:after {
     margin-right: 0.5rem;
     white-space: nowrap;
 }
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-zoom-control {
+    --base-width: 50%;
+    cursor: pointer;
+    position: relative;
+    max-width: 100%;
+    width: var(--base-width);
+    transition: transform 0.3s ease; /* 확대/축소 시 부드러운 전환 효과 */
+}
+.image-zoom-control.zoom-in {
+    width: calc(var(--base-width) * 2);
+}
+
+.image-zoom-control::after {
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    font-size: 14px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    opacity: 0;
+}
+.image-zoom-control.zoom-in::after {
+    content: "작게 보기";
+}
+.image-zoom-control.zoom-out::after {
+    content: "크게 보기";
+}
+.image-zoom-control:hover::after {
+    opacity: 1;
+}
+
 
 /**
  * ---- Vendor - LC Select -----------------------

@@ -242,17 +242,20 @@ function calculateRowIndex(curPage, rowsPerPage, currentRow) {
 }
 
 /**
- * 사용자 프로필 이미지 세팅 함수
+ * 업로드 파일 URL 전처리 함수
  */
-function setProfileImage(profileImage, element) {
-    element = element || document.getElementById('profileImage');
-    const defaultAvatar = '/assets/img/default-profile.jpg';
-    element.src = profileImage || defaultAvatar;
+function getUploadFileUrl(fileUrl) {
+    return '/uploads/' + fileUrl;
 }
 
-function getProfileImage(profileImage) {
+function getProfileImageURL(profileImage) {
     const defaultAvatar = '/assets/img/default-profile.jpg';
-    return profileImage || defaultAvatar;
+
+    if (profileImage) {
+        const isSystemRandomProfile = profileImage.includes('/assets/img/system-profile');
+        return isSystemRandomProfile ? profileImage : getUploadFileUrl(profileImage);
+    }
+    return defaultAvatar;
 }
 
 

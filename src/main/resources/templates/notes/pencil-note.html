@@ -46,14 +46,14 @@
 </section>
 
 <script id="note-list-template" type="text/x-handlebars-template">
-    <table class="table table-hover fs-6">
+    <table class="table table-hover fs-6" style="table-layout: fixed; min-width: 540px;">
         <thead>
         <tr>
-            <th width="70" style="min-width: 70px;">책</th>
+            <th width="60">책</th>
             <th width="*">본문</th>
-            <th width="14%">작성일자</th>
-            <th width="14%">공개여부</th>
-            <th width="8%">수정</th>
+            <th width="120">작성일자</th>
+            <th width="90">공개여부</th>
+            <th width="55">수정</th>
         </tr>
         </thead>
         <tbody class="table-border-bottom-0">
@@ -62,7 +62,7 @@
                 data-mode="view" data-id="{{id}}">
                 <td>
                     {{#with bookInfo}}
-                        <img src="{{cover}}" class="img-thumbnail square rounded-circle bx-sm" width="30"
+                        <img src="{{cover}}" class="img-thumbnail square rounded-circle" width="30"
                              data-bs-toggle="tooltip" data-bs-offset="0,10" data-bs-placement="bottom"
                              data-bs-title="{{title}}">
                     {{/with}}
@@ -126,7 +126,7 @@
     }
 
     /**
-     * UI 이벤트 - 상세보기 콜랩스 show/hide 시 자동 크기 조정
+     * UI 이벤트 - 상세보기 콜랩스 show/hide 시 크기 조정
      */
     const leftCard = document.querySelector('.with-collapse');
     const collapseCard = document.querySelector('.collapse');
@@ -147,7 +147,7 @@
         clearNoteList(); // 이전 목록 초기화
         localLoading(true);
 
-        const promise = axios.get('/api/reading-notes/pencil/me');
+        const promise = axios.get('/api/reading-notes/pencil/me'+window.location.search);
 
         const onSuccess = (result) => {
             const data = result.data;
@@ -178,8 +178,8 @@
 
     function clearNoteList() {
         const noteListWrap = document.getElementById('noteListWrap')
-        while (noteListWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
-            noteListWrap.removeChild(noteListWrap.children[1]);
+        while (noteListWrap.children[0]) {
+            noteListWrap.removeChild(noteListWrap.children[0]);
         }
     }
 
@@ -244,7 +244,7 @@
                 setNoteDetailData({}, mode);
             }
         };
-        loadHTML(`/notes/pencil-note-detail`, target, callback);
+        loadHTML(`/notes/partials/pencil-note-detail`, target, callback);
     }
 
     let noteEditor = null;
@@ -263,7 +263,7 @@
             // 에디터 플러그인 초기화
             noteEditor = new CKEditor('editor');
             if (data.noteText) {
-                noteEditor.fill(data.noteText);
+                noteEditor.initialize(data.noteText);
             }
         } else if (mode === 'view') {
             const html = template(data);

@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReadingNoteRepository extends JpaRepository<ReadingNote, Long> {
 
-    Page<ReadingNote> findAllByUserIdAndNoteType(Long userId, NoteType noteType, Pageable pageable);
+    Page<ReadingNote> findAllByUserIdAndNoteTypeOrderByIdDesc(Long userId, NoteType noteType, Pageable pageable);
 }

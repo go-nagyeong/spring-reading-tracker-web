@@ -494,7 +494,7 @@
                 targetElement.classList.remove('template-tag');
 
                 // 리뷰 내용 및 사용자 정보
-                setProfileImage(item.reviewerProfile,  targetElement.querySelector('.rv-left img'))
+                targetElement.querySelector('.rv-left img').src = getProfileImageURL(item.reviewerProfile);
                 targetElement.querySelector('.rv-user').textContent = item.reviewerName;
                 targetElement.querySelector('.rv-date').textContent = item.createdDate;
                 const reviewContent = targetElement.querySelector('.rv-content div');
@@ -577,7 +577,7 @@
             modalForm.querySelector('#deleteReviewBtn').toggle(review); // 신규 작성이면 삭제 버튼 숨기기
             if (review) {
                 modalForm.dataset.id = review.id;
-                reviewSimpleEditor.fill(review.reviewText); // 리뷰 내용
+                reviewSimpleEditor.initialize(review.reviewText); // 리뷰 내용
                 starRatingEl.dataset.value = review.rating;
             }
 
