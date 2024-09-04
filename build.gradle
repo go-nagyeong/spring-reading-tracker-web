@@ -31,6 +31,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
+	implementation 'org.jsoup:jsoup:1.18.1'
+
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 
@@ -42,7 +44,6 @@ dependencies {
 
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -70,11 +71,11 @@ tasks.withType(JavaCompile) {
 }
 
 // querydsl QClass 소스도 함께 빌드
-sourceSets {
-	main.java.srcDirs += [ querydslDir ]
-}
+//sourceSets {
+//	main.java.srcDirs += [ querydslDir ]
+//}
 
 // gradle clean 시에 QClass 디렉토리 삭제
-clean {
-	delete file(querydslDir)
-}
+//clean {
+//	delete file(querydslDir)
+//}
