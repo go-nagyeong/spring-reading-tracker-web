@@ -256,10 +256,10 @@ function updateReadingCarouselCardUI(readingStatus) {
             let url, callback = null;
             if (readingStatus === 'READING') {
                 callback = () => setReadingRecordCardData();
-                url = '/books/partials/carousel-reading-status-card';
+                url = '/books/partials/reading-status-card';
             } else {
                 callback = () => setReadRecordCardData();
-                url = '/books/partials/carousel-read-status-card';
+                url = '/books/partials/read-status-card';
             }
             loadHTML(url, carouselInner, callback);
         } else {
