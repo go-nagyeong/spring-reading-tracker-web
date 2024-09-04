@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.ReviewRequest;
-import com.readingtracker.boochive.dto.ReviewResponse;
+import com.readingtracker.boochive.dto.review.ReviewRequest;
+import com.readingtracker.boochive.dto.review.ReviewResponse;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.util.ApiResponse;

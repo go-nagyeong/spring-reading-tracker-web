@@ -1,9 +1,9 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.BookCollection;
-import com.readingtracker.boochive.dto.BookDto;
-import com.readingtracker.boochive.dto.CollectionResponse;
-import com.readingtracker.boochive.dto.ReadingBookResponse;
+import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.collection.CollectionResponse;
+import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.mapper.CollectionMapper;
 import com.readingtracker.boochive.repository.CollectionRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;

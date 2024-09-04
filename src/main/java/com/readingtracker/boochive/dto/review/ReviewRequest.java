@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.review;
 
 import com.readingtracker.boochive.config.AppConstants;
 import com.readingtracker.boochive.validator.PlainTextLength;

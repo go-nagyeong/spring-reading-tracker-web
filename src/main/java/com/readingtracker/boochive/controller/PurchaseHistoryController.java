@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.PurchaseHistoryRequest;
-import com.readingtracker.boochive.dto.PurchaseHistoryResponse;
+import com.readingtracker.boochive.dto.purchase.PurchaseHistoryRequest;
+import com.readingtracker.boochive.dto.purchase.PurchaseHistoryResponse;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.service.PurchaseHistoryService;
 import com.readingtracker.boochive.util.ApiResponse;

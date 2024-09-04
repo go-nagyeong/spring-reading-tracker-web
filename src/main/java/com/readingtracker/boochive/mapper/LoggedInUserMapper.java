@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.LoggedInUserResponse;
+import com.readingtracker.boochive.dto.auth.LoggedInUserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.PurchaseHistory;
-import com.readingtracker.boochive.dto.PurchaseHistoryRequest;
-import com.readingtracker.boochive.dto.PurchaseHistoryResponse;
+import com.readingtracker.boochive.dto.purchase.PurchaseHistoryRequest;
+import com.readingtracker.boochive.dto.purchase.PurchaseHistoryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

@@ -1,9 +1,9 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.PasswordUpdateRequest;
-import com.readingtracker.boochive.dto.UserInfoRequest;
-import com.readingtracker.boochive.dto.UserInfoResponse;
+import com.readingtracker.boochive.dto.user.PasswordUpdateRequest;
+import com.readingtracker.boochive.dto.user.UserInfoRequest;
+import com.readingtracker.boochive.dto.user.UserInfoResponse;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.mapper.UserInfoMapper;
 import com.readingtracker.boochive.service.UserService;

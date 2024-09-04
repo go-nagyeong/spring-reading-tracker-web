@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.Book;
-import com.readingtracker.boochive.dto.BookDto;
+import com.readingtracker.boochive.dto.book.BookDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

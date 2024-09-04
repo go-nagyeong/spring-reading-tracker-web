@@ -1,5 +1,6 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.collection;
 
+import com.readingtracker.boochive.dto.book.BookDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

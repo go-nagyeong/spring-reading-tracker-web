@@ -1,12 +1,12 @@
 package com.readingtracker.boochive.controller;
 
-import com.readingtracker.boochive.dto.LoggedInUserResponse;
+import com.readingtracker.boochive.dto.auth.LoggedInUserResponse;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.mapper.LoggedInUserMapper;
 import com.readingtracker.boochive.util.ApiResponse;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.LoginRequest;
-import com.readingtracker.boochive.dto.RegisterRequest;
+import com.readingtracker.boochive.dto.auth.LoginRequest;
+import com.readingtracker.boochive.dto.auth.RegisterRequest;
 import com.readingtracker.boochive.service.UserService;
 import com.readingtracker.boochive.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;

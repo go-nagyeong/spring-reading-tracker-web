@@ -3,7 +3,6 @@ package com.readingtracker.boochive.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.util.CurrentUserContext;
-import com.readingtracker.boochive.util.Own;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;

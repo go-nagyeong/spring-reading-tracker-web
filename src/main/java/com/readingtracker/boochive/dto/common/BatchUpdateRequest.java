@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

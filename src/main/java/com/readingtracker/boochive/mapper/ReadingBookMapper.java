@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.ReadingBook;
-import com.readingtracker.boochive.dto.ReadingBookResponse;
-import com.readingtracker.boochive.dto.ReadingBookRequest;
+import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
+import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

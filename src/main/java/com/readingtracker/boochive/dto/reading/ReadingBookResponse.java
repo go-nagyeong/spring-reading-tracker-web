@@ -1,5 +1,6 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.reading;
 
+import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

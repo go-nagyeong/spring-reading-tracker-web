@@ -1,6 +1,6 @@
 package com.readingtracker.boochive.validator;
 
-import com.readingtracker.boochive.dto.PasswordUpdateRequest;
+import com.readingtracker.boochive.dto.user.PasswordUpdateRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

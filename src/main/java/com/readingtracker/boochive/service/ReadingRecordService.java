@@ -2,7 +2,7 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.enums.ReadingStatus;
-import com.readingtracker.boochive.dto.BatchUpdateRequest;
+import com.readingtracker.boochive.dto.common.BatchUpdateRequest;
 import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.repository.ReadingRecordRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;

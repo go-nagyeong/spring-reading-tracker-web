@@ -2,10 +2,14 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.ReadingNote;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.enums.ResourceName;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
+import com.readingtracker.boochive.dto.note.HighlightNoteRequest;
+import com.readingtracker.boochive.dto.note.HighlightNoteResponse;
+import com.readingtracker.boochive.dto.note.PencilNoteRequest;
+import com.readingtracker.boochive.dto.note.PencilNoteResponse;
 import com.readingtracker.boochive.service.ReadingNoteService;
 import com.readingtracker.boochive.service.ReadingBookService;
 import com.readingtracker.boochive.util.ApiResponse;

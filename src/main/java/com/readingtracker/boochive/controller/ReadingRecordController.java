@@ -2,7 +2,7 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.ReadingRecord;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.BatchUpdateRequest;
+import com.readingtracker.boochive.dto.common.BatchUpdateRequest;
 import com.readingtracker.boochive.service.ReadingRecordService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;

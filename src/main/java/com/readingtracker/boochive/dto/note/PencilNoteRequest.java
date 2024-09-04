@@ -1,7 +1,6 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.note;
 
 import com.readingtracker.boochive.enums.NoteType;
-import com.readingtracker.boochive.validator.AtLeastOneNotBlank;
 import com.readingtracker.boochive.validator.PlainTextLength;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -11,26 +10,15 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
-@AtLeastOneNotBlank(
-        fields = {"noteText", "attachmentImage"},
-        message = "노트 내용 또는 첨부 이미지를 입력하셔야 합니다."
-)
-public class HighlightNoteRequest {
+public class PencilNoteRequest {
 
-    private final NoteType noteType = NoteType.HIGHLIGHT;
+    private final NoteType noteType = NoteType.PENCIL;
 
     private final String bookIsbn;
 
-    @PlainTextLength(min = 2, max = 1500, message = "노트 내용은 2~1500자 이내로 입력하셔야 합니다.")
+    @NotEmpty(message = "본문을 입력해 주세요.")
+    @PlainTextLength(min = 2, max = 1500, message = "본문은 2~1500자 이내로 입력하셔야 합니다.")
     private final String noteText;
-
-    private final String attachmentImage;
-
-    private final String highlightColor;
-
-    @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.")
-    @Max(value = 5000, message = "페이지 번호는 최대 5000까지 입력할 수 있습니다.")
-    private final Integer pageNumber;
 
     @NotNull(message = "작성일자를 입력해 주세요.")
     @PastOrPresent(message = "유효하지 않은 날짜입니다.<br/>오늘 또는 오늘 이전의 날짜를 선택해 주세요.")

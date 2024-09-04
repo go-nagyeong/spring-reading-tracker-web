@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.CollectionResponse;
+import com.readingtracker.boochive.dto.collection.CollectionResponse;
 import com.readingtracker.boochive.service.CollectionService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.util;
 
+import com.readingtracker.boochive.domain.Own;
 import com.readingtracker.boochive.enums.ResourceName;
 import com.readingtracker.boochive.exception.ResourceAccessDeniedException;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;

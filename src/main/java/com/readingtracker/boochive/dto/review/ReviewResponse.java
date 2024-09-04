@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.review;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.PurchaseHistory;
-import com.readingtracker.boochive.dto.PurchaseHistoryRequest;
-import com.readingtracker.boochive.dto.PurchaseHistoryResponse;
+import com.readingtracker.boochive.dto.purchase.PurchaseHistoryRequest;
+import com.readingtracker.boochive.dto.purchase.PurchaseHistoryResponse;
 import com.readingtracker.boochive.mapper.PurchaseHistoryMapper;
 import com.readingtracker.boochive.repository.PurchaseHistoryRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;

@@ -1,7 +1,12 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.book.PageableBookListResponse;
+import com.readingtracker.boochive.dto.common.BatchUpdateRequest;
+import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
+import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
+import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.enums.ResourceName;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;

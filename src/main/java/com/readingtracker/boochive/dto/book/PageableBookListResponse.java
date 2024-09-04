@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.book;
 
 import lombok.Getter;
 import lombok.Setter;

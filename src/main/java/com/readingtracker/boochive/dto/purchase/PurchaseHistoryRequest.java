@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.purchase;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.NotNull;

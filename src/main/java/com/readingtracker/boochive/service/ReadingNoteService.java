@@ -1,7 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.ReadingNote;
-import com.readingtracker.boochive.dto.*;
+import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.note.*;
 import com.readingtracker.boochive.enums.NoteType;
 import com.readingtracker.boochive.mapper.HighlightNoteMapper;
 import com.readingtracker.boochive.mapper.PencilNoteMapper;

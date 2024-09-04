@@ -1,10 +1,10 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.PasswordUpdateRequest;
-import com.readingtracker.boochive.dto.RegisterRequest;
-import com.readingtracker.boochive.dto.UserInfoRequest;
-import com.readingtracker.boochive.dto.UserInfoResponse;
+import com.readingtracker.boochive.dto.user.PasswordUpdateRequest;
+import com.readingtracker.boochive.dto.auth.RegisterRequest;
+import com.readingtracker.boochive.dto.user.UserInfoRequest;
+import com.readingtracker.boochive.dto.user.UserInfoResponse;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.mapper.RegisterMapper;
 import com.readingtracker.boochive.mapper.UserInfoMapper;

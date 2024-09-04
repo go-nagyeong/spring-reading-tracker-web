@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.Review;
-import com.readingtracker.boochive.dto.ReviewRequest;
-import com.readingtracker.boochive.dto.ReviewResponse;
+import com.readingtracker.boochive.dto.review.ReviewRequest;
+import com.readingtracker.boochive.dto.review.ReviewResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

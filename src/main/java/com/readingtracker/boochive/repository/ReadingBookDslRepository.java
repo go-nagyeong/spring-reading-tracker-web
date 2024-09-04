@@ -2,7 +2,7 @@ package com.readingtracker.boochive.repository;
 
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.ReadingBookCondition;
+import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

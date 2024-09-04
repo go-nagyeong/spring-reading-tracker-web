@@ -2,8 +2,8 @@ package com.readingtracker.boochive.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.readingtracker.boochive.dto.BookDto;
-import com.readingtracker.boochive.dto.PageableBookListResponse;
+import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.book.PageableBookListResponse;
 import com.readingtracker.boochive.enums.QueryType;
 import com.readingtracker.boochive.exception.AladinApiException;
 import io.jsonwebtoken.io.IOException;

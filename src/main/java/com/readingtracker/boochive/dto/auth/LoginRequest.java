@@ -1,4 +1,4 @@
-package com.readingtracker.boochive.dto;
+package com.readingtracker.boochive.dto.auth;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

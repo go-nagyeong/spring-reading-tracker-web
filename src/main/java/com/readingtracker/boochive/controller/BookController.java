@@ -1,9 +1,9 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.BookDto;
-import com.readingtracker.boochive.dto.PageableBookListResponse;
-import com.readingtracker.boochive.dto.ReadingBookResponse;
+import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.book.PageableBookListResponse;
+import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.ApiResponse;

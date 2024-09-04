@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.RentalHistory;
-import com.readingtracker.boochive.dto.RentalHistoryRequest;
-import com.readingtracker.boochive.dto.RentalHistoryResponse;
+import com.readingtracker.boochive.dto.rental.RentalHistoryRequest;
+import com.readingtracker.boochive.dto.rental.RentalHistoryResponse;
 import com.readingtracker.boochive.mapper.RentalHistoryMapper;
 import com.readingtracker.boochive.repository.RentalHistoryRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;

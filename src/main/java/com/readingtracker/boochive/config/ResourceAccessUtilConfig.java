@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.config;
 
 import com.readingtracker.boochive.domain.*;
+import com.readingtracker.boochive.domain.ReadingNote;
 import com.readingtracker.boochive.util.ResourceAccessUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

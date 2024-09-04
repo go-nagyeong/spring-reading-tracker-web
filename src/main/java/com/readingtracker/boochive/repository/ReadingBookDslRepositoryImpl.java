@@ -7,7 +7,7 @@ import com.readingtracker.boochive.domain.QPurchaseHistory;
 import com.readingtracker.boochive.domain.QReadingBook;
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.ReadingBookCondition;
+import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

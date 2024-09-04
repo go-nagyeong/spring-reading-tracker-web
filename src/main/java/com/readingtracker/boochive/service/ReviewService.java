@@ -1,8 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.Review;
-import com.readingtracker.boochive.dto.ReviewRequest;
-import com.readingtracker.boochive.dto.ReviewResponse;
+import com.readingtracker.boochive.dto.review.ReviewRequest;
+import com.readingtracker.boochive.dto.review.ReviewResponse;
 import com.readingtracker.boochive.mapper.ReviewMapper;
 import com.readingtracker.boochive.repository.ReviewRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;
