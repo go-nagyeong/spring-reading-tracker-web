@@ -10,13 +10,6 @@ import java.util.List;
 public class BatchUpdateRequest<T> {
 
     private final List<T> updateList;
+
     private final List<Long> deleteList;
-
-    public boolean hasUpdateList() {
-        return !updateList.isEmpty();
-    }
-
-    public boolean hasDeleteList() {
-        return !deleteList.isEmpty();
-    }
 }

@@ -4,6 +4,7 @@ import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.PasswordUpdateRequest;
 import com.readingtracker.boochive.dto.UserInfoRequest;
 import com.readingtracker.boochive.dto.UserInfoResponse;
+import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.mapper.UserInfoMapper;
 import com.readingtracker.boochive.service.UserService;
 import com.readingtracker.boochive.util.ApiResponse;
@@ -17,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,11 +62,9 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserInfoResponse>> updateUser(@PathVariable Long id,
                                                                     @Valid @RequestBody UserInfoRequest userInfo,
-                                                                    BindingResult bindingResult) {
-        // 유효성 검사
+                                                                    BindingResult bindingResult) throws CustomArgumentNotValidException {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = handleValidationErrors(bindingResult);
-            return ApiResponse.failure(null, errorMap);
+            throw new CustomArgumentNotValidException("multiple", createValidationPriorityMap(), bindingResult);
         }
 
         UserInfoResponse savedUser = userService.updateUser(id, userInfo);
@@ -80,11 +78,9 @@ public class UserController {
     @PutMapping("/{id}/password")
     public ResponseEntity<ApiResponse<Object>> updatePassword(@PathVariable Long id,
                                                               @Valid @RequestBody PasswordUpdateRequest request,
-                                                              BindingResult bindingResult) {
-        // 유효성 검사
+                                                              BindingResult bindingResult) throws CustomArgumentNotValidException {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = handleValidationErrors(bindingResult);
-            return ApiResponse.failure(null, errorMap);
+            throw new CustomArgumentNotValidException("multiple", createValidationPriorityMap(), bindingResult);
         }
 
         userService.updatePassword(id, request);
@@ -121,28 +117,23 @@ public class UserController {
     }
 
     /**
-     * (공통 메서드) 유효성 검사 결과 전처리
+     * (공통 메서드) 유효성 검사 결과의 우선 순위 정의
      */
-    private Map<String, String> handleValidationErrors(BindingResult bindingResult) {
-        // 유효성 검사 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)
-        List<FieldError> fieldErrors = new ArrayList<>(bindingResult.getFieldErrors());
-        fieldErrors.sort(Comparator
-                .comparing(FieldError::getField)
-                .thenComparing(Comparator.comparing(FieldError::getCode).reversed()));
+    private Map<String, Integer> createValidationPriorityMap() {
+        Map<String, Integer> priorityMap = new HashMap<>();
 
-        // <필드(key): 에러메세지(value)> 구조로 저장
-        Map<String, String> errorMap = new LinkedHashMap<>(); // 순서 적용을 위해 LinkedHashMap 사용
-        bindingResult.getGlobalErrors().forEach(error -> { // @ConfirmPassword
-            if (error.getCode().equals("NewPassword")) {
-                errorMap.put("password", error.getDefaultMessage());
-            } else { // "ConfirmPassword"
-                errorMap.put("confirmPassword", error.getDefaultMessage());
-            }
-        });
-        fieldErrors.forEach(error -> {
-            errorMap.put(error.getField(), error.getDefaultMessage());
-        });
+        // 회원정보 수정
+        priorityMap.put("username", 1);
+        priorityMap.put("profileImage", 2);
+        priorityMap.put("sex", 3);
+        priorityMap.put("birthdate", 4);
+        priorityMap.put("phoneNumber", 5);
 
-        return errorMap;
+        // 비밀번호 변경
+        priorityMap.put("originPassword", 1);
+        priorityMap.put("password", 2);
+        priorityMap.put("confirmPassword", 3);
+
+        return priorityMap;
     }
 }

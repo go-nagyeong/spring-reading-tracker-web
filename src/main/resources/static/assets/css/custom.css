@@ -821,11 +821,6 @@ form.edit-or-view-mode .lcslt-disabled:after {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.summary-text p {
-    display: inline;
-    margin-right: 0.5rem;
-    white-space: nowrap;
-}
 
 .flex-center {
     display: flex;

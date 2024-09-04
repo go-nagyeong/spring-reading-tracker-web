@@ -4,6 +4,7 @@ import com.readingtracker.boochive.domain.ReadingNote;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.enums.ResourceName;
+import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.service.ReadingNoteService;
 import com.readingtracker.boochive.service.ReadingBookService;
@@ -11,14 +12,12 @@ import com.readingtracker.boochive.util.ApiResponse;
 import com.readingtracker.boochive.util.FileStorageUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +27,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/reading-notes")
 @RequiredArgsConstructor
-@Slf4j
 public class ReadingNoteController {
 
     private final ReadingNoteService readingNoteService;
@@ -80,9 +78,8 @@ public class ReadingNoteController {
      * GET - 로그인 유저의 독서 책 목록 조회 (노트 작성에서 책 선택 옵션 세팅)
      */
     @GetMapping("/book-options")
-    public ResponseEntity<ApiResponse<Map<String, List<BookParameter>>>> getBookOptionsForNoteCreation(
-            @AuthenticationPrincipal User user) {
-        Map<String, List<BookParameter>> readingList = readingBookService
+    public ResponseEntity<ApiResponse<Map<String, List<BookDto>>>> getBookOptionsForNoteCreation(@AuthenticationPrincipal User user) {
+        Map<String, List<BookDto>> readingList = readingBookService
                 .getBookListGroupByReadingStatus(user.getId());
 
         return ApiResponse.success(null, readingList);
@@ -113,8 +110,10 @@ public class ReadingNoteController {
      */
     @PostMapping("/pencil")
     public ResponseEntity<ApiResponse<PencilNoteResponse>> createPencilNote(@Valid @RequestBody PencilNoteRequest pencilNote,
-                                                                            BindingResult bindingResult) {
-        handleValidationErrors(bindingResult); // 유효성 검사
+                                                                            BindingResult bindingResult) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
 
         PencilNoteResponse savedNote = readingNoteService.createPencilNote(pencilNote);
 
@@ -122,8 +121,10 @@ public class ReadingNoteController {
     }
     @PostMapping("/highlight")
     public ResponseEntity<ApiResponse<HighlightNoteResponse>> createHighlightNote(@Valid @RequestBody HighlightNoteRequest highlightNote,
-                                                                                  BindingResult bindingResult) throws IOException {
-        handleValidationErrors(bindingResult); // 유효성 검사
+                                                                                  BindingResult bindingResult) throws IOException, CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
 
         HighlightNoteResponse savedNote = readingNoteService.createHighlightNote(highlightNote);
 
@@ -136,8 +137,10 @@ public class ReadingNoteController {
     @PutMapping("/pencil/{id}")
     public ResponseEntity<ApiResponse<PencilNoteResponse>> updatePencilNote(@PathVariable Long id,
                                                                             @Valid @RequestBody PencilNoteRequest pencilNote,
-                                                                            BindingResult bindingResult) {
-        handleValidationErrors(bindingResult); // 유효성 검사
+                                                                            BindingResult bindingResult) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
 
         PencilNoteResponse savedNote = readingNoteService.updatePencilNote(id, pencilNote);
 
@@ -146,12 +149,14 @@ public class ReadingNoteController {
     @PutMapping("/highlight/{id}")
     public ResponseEntity<ApiResponse<HighlightNoteResponse>> updateHighlightNote(@PathVariable Long id,
                                                                                   @Valid @RequestBody HighlightNoteRequest highlightNote,
-                                                                                  BindingResult bindingResult) {
-        handleValidationErrors(bindingResult); // 유효성 검사
+                                                                                  BindingResult bindingResult) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
 
         HighlightNoteResponse savedNote = readingNoteService.updateHighlightNote(id, highlightNote);
 
-        return ApiResponse.success("노트가 작성되었습니다.", savedNote);
+        return ApiResponse.success("노트가 수정되었습니다.", savedNote);
     }
 
     /**
@@ -165,25 +170,15 @@ public class ReadingNoteController {
     }
 
     /**
-     * (공통 메서드) 유효성 검사 결과 처리
+     * (공통 메서드) 유효성 검사 결과의 우선 순위 정의
      */
-    private void handleValidationErrors(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // 유효성 검사 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)
-            Map<String, Integer> priorityMap = new HashMap<>();
-            priorityMap.put("noteText", 1);  // 예: name 필드의 오류가 가장 먼저 나오도록
-            priorityMap.put("createDate", 2); // 예: email 필드의 오류가 그 다음으로 나오도록
-            priorityMap.put("isPublic", 3); // 예: password 필드의 오류가 마지막에 나오도록
+    private Map<String, Integer> createValidationPriorityMap() {
+        Map<String, Integer> priorityMap = new HashMap<>();
+        priorityMap.put("noteText", 1);
+        priorityMap.put("AtLeastOneNotBlank", 1);
+        priorityMap.put("createDate", 2);
+        priorityMap.put("isPublic", 3);
 
-            List<ObjectError> errors = new ArrayList<>(bindingResult.getAllErrors());
-            errors.forEach(error -> {
-                log.info("error object name: {}", error.getObjectName());
-            });
-            errors.sort(Comparator
-                    .comparing(error -> priorityMap.getOrDefault(error.getObjectName(), Integer.MAX_VALUE)));
-
-            // throw IllegalArgumentException
-            throw new IllegalArgumentException(errors.get(0).getDefaultMessage());
-        }
+        return priorityMap;
     }
 }

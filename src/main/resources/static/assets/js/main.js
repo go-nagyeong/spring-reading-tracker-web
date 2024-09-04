@@ -234,6 +234,24 @@ let menu, animate;
     Handlebars.registerHelper('uploadUrl', function(value) {
         return getUploadFileUrl(value);
     });
+    Handlebars.registerHelper('contentPreview', function(value) {
+        if (!value) return '';
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(value, 'text/html');
+
+        // 내용이 있는 첫 블록 태그의 텍스트 반환
+        const blockTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'ul', 'ol', 'li'];
+        for (const el of doc.querySelectorAll('body *')) {
+            if (blockTags.includes(el.tagName.toLowerCase())) {
+                if (el.textContent.trim()) {
+                    return el.textContent.trim();
+                }
+            }
+        }
+
+        return '';
+    });
 
     /**
      * Custom
@@ -273,18 +291,29 @@ let menu, animate;
             if (input.value.length > 1 && input.value.startsWith('0')) {
                 input.value = input.value.replace(/^0+/, '');
             }
+
             // 음수 입력 제한
             if (!input.classList.contains('whole-num')) {
                 if (input.value < 0) {
                     input.value = 0;
                 }
             }
+
             // min, max 제한
             if (input.value < parseInt(input.min)) {
                 input.value = input.min;
             }
             if (input.value > parseInt(input.max)) {
                 input.value = input.max;
+            }
+
+            // 소수점 자리 제한 (두 자리까지만 허용)
+            if (input.classList.contains('float')) {
+                const [integerPart, decimalPart] = input.value.split('.');
+
+                if (decimalPart && decimalPart.length > 2) {
+                    input.value = `${integerPart}.${decimalPart.slice(0, 2)}`;
+                }
             }
         }
 

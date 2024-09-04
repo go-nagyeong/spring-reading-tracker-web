@@ -27,5 +27,5 @@ public class HighlightNoteResponse implements NoteResponse {
     private final LocalDate createDate;
 
     @Setter
-    private BookParameter bookInfo; // 매핑 이후 조회 변수
+    private BookDto bookInfo; // 매핑 이후 조회 변수
 }

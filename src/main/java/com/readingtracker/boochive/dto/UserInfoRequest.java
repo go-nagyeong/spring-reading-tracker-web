@@ -1,12 +1,13 @@
 package com.readingtracker.boochive.dto;
 
+import com.readingtracker.boochive.config.AppConstants;
+import com.readingtracker.boochive.validator.OneOf;
+import com.readingtracker.boochive.validator.ValidDate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
@@ -18,11 +19,12 @@ public class UserInfoRequest {
 
     private final String profileImage;
 
+    @OneOf(range = {0,1,2,9}, message = "성별 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final Integer sex;
 
-    private final LocalDate birthdate;
+    @ValidDate
+    private final String birthdate;
 
-    @Pattern(regexp = "^(01[016789]{1})?[0-9]{3,4}?[0-9]{4}|$",
-            message = "휴대폰번호 형식이 올바르지 않습니다.")
+    @Pattern(regexp = AppConstants.PHONE_NUMBER_REGEX, message = "휴대폰번호 형식이 올바르지 않습니다.")
     private final String phoneNumber;
 }

@@ -7,12 +7,15 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
-public class RentalHistoryParameter {
+public class RentalHistoryResponse {
 
     private final Long id;
-    private final String bookIsbn;
+
     private final LocalDate rentalDate;
+
     private final LocalDate returnDate;
+
     private final String rentalFrom;
+
     private final String memo;
 }

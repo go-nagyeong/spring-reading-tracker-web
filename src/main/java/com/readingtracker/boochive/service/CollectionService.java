@@ -1,10 +1,10 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.BookCollection;
-import com.readingtracker.boochive.dto.CollectionDetailResponse;
-import com.readingtracker.boochive.dto.BookParameter;
-import com.readingtracker.boochive.dto.ReadingBookDetailResponse;
-import com.readingtracker.boochive.mapper.CollectionDetailMapper;
+import com.readingtracker.boochive.dto.BookDto;
+import com.readingtracker.boochive.dto.CollectionResponse;
+import com.readingtracker.boochive.dto.ReadingBookResponse;
+import com.readingtracker.boochive.mapper.CollectionMapper;
 import com.readingtracker.boochive.repository.CollectionRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,46 +28,40 @@ public class CollectionService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<CollectionDetailResponse> findCollectionById(Long id) {
-        return collectionRepository.findById(id)
-                .map(CollectionDetailMapper.INSTANCE::toDto);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CollectionDetailResponse> getCollectionsByUser(Long userId) {
+    public List<CollectionResponse> getCollectionsByUser(Long userId) {
         return collectionRepository.findAllByUserId(userId)
                 .stream()
-                .map(CollectionDetailMapper.INSTANCE::toDto)
+                .map(CollectionMapper.INSTANCE::toDto)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<CollectionDetailResponse> getCollectionsWithBooksByUser(Long userId) {
+    public List<CollectionResponse> getCollectionsWithBooksByUser(Long userId) {
         List<Long> collectionIdList = new ArrayList<>(); //
 
-        List<CollectionDetailResponse> collectionList = collectionRepository.findAllByUserIdOrderByIdDesc(userId)
+        List<CollectionResponse> collectionList = collectionRepository.findAllByUserIdOrderByIdDesc(userId)
                 .stream()
                 .map(collection -> {
                     collectionIdList.add(collection.getId());
-                    return CollectionDetailMapper.INSTANCE.toDto(collection);
+                    return CollectionMapper.INSTANCE.toDto(collection);
                 })
                 .toList();
 
         // 1. 각 컬렉션에 속한 독서 정보 조회
-        List<ReadingBookDetailResponse> readingInfoList = readingBookService.getReadingListByUserAndCollectionList(userId, collectionIdList);
+        List<ReadingBookResponse> readingInfoList = readingBookService.getReadingListByUserAndCollectionList(userId, collectionIdList);
 
         // 2. 독서 정보를 기반으로 책 목록을 한 번에 조회
         List<String> isbnList = readingInfoList.stream()
-                .map(ReadingBookDetailResponse::getBookIsbn)
+                .map(ReadingBookResponse::getBookIsbn)
                 .toList();
 
-        Map<String, BookParameter> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
+        Map<String, BookDto> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
                 .stream()
-                .collect(Collectors.toMap(BookParameter::getIsbn13, bookInfo -> bookInfo));
+                .collect(Collectors.toMap(BookDto::getIsbn13, bookInfo -> bookInfo));
 
         // 3. 각 컬렉션에 책 목록을 설정
         collectionList.forEach(collection -> {
-            List<BookParameter> books = readingInfoList.stream()
+            List<BookDto> books = readingInfoList.stream()
                     .filter(readingInfo -> readingInfo.getCollectionId().equals(collection.getId()))
                     .map(readingInfo -> bookInfoMap.get(readingInfo.getBookIsbn()))
                     .collect(Collectors.toList());
@@ -83,20 +77,24 @@ public class CollectionService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public CollectionDetailResponse createCollection(BookCollection collection) {
-        return CollectionDetailMapper.INSTANCE.toDto(collectionRepository.save(collection));
+    public CollectionResponse createCollection(Map<String, String> collection) {
+        BookCollection newCollection = BookCollection.builder()
+                .collectionName(collection.get("collectionName"))
+                .build();
+
+        return CollectionMapper.INSTANCE.toDto(collectionRepository.save(newCollection));
     }
 
     /**
      * CR[U]D - UPDATE
      */
     @Transactional
-    public CollectionDetailResponse updateCollection(Long id, BookCollection bookCollection) {
+    public CollectionResponse updateCollection(Long id, Map<String, String> collection) {
         BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id);
 
-        existingBookCollection.updateCollectionName(bookCollection.getCollectionName());
+        existingBookCollection.updateCollectionName(collection.get("collectionName"));
 
-        return CollectionDetailMapper.INSTANCE.toDto(existingBookCollection);
+        return CollectionMapper.INSTANCE.toDto(existingBookCollection);
     }
 
     /**

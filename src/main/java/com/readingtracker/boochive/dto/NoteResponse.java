@@ -4,5 +4,5 @@ public interface NoteResponse {
 
     String getBookIsbn();
 
-    void setBookInfo(BookParameter bookInfo);
+    void setBookInfo(BookDto bookInfo);
 }

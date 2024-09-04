@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.Review;
+import com.readingtracker.boochive.dto.ReviewRequest;
 import com.readingtracker.boochive.dto.ReviewResponse;
 import com.readingtracker.boochive.mapper.ReviewMapper;
 import com.readingtracker.boochive.repository.ReviewRepository;
@@ -23,12 +24,6 @@ public class ReviewService {
     /**
      * C[R]UD - READ
      */
-    @Transactional(readOnly = true)
-    public Optional<ReviewResponse> findReviewById(Long id) {
-        return reviewRepository.findById(id)
-                .map(ReviewMapper.INSTANCE::toDto);
-    }
-
     @Transactional(readOnly = true)
     public Optional<ReviewResponse> findReviewByUserAndBook(Long userId, String bookIsbn) {
         return reviewRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
@@ -76,15 +71,17 @@ public class ReviewService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public ReviewResponse createReview(Review review) {
-        return ReviewMapper.INSTANCE.toDto(reviewRepository.save(review));
+    public ReviewResponse createReview(ReviewRequest review) {
+        Review newReview = ReviewMapper.INSTANCE.toEntity(review);
+
+        return ReviewMapper.INSTANCE.toDto(reviewRepository.save(newReview));
     }
 
     /**
      * CR[U]D - UPDATE
      */
     @Transactional
-    public ReviewResponse updateReview(Long id, Review review) {
+    public ReviewResponse updateReview(Long id, ReviewRequest review) {
         Review existingReview = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingReview.updateReviewRatingAndText(review.getRating(), review.getReviewText());

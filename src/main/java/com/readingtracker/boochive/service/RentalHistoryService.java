@@ -1,7 +1,8 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.RentalHistory;
-import com.readingtracker.boochive.dto.RentalHistoryParameter;
+import com.readingtracker.boochive.dto.RentalHistoryRequest;
+import com.readingtracker.boochive.dto.RentalHistoryResponse;
 import com.readingtracker.boochive.mapper.RentalHistoryMapper;
 import com.readingtracker.boochive.repository.RentalHistoryRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;
@@ -22,13 +23,7 @@ public class RentalHistoryService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<RentalHistoryParameter> findHistoryById(Long id) {
-        return rentalHistoryRepository.findById(id)
-                .map(RentalHistoryMapper.INSTANCE::toDto);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<RentalHistoryParameter> findHistoryByUserAndBook(Long userId, String bookIsbn) {
+    public Optional<RentalHistoryResponse> findHistoryByUserAndBook(Long userId, String bookIsbn) {
         return rentalHistoryRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
                 .map(RentalHistoryMapper.INSTANCE::toDto);
     }
@@ -37,7 +32,7 @@ public class RentalHistoryService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public RentalHistoryParameter createHistory(RentalHistoryParameter history) {
+    public RentalHistoryResponse createHistory(RentalHistoryRequest history) {
         RentalHistory newHistory = RentalHistoryMapper.INSTANCE.toEntity(history);
 
         return RentalHistoryMapper.INSTANCE.toDto(rentalHistoryRepository.save(newHistory));
@@ -47,7 +42,7 @@ public class RentalHistoryService {
      * CR[U]D - UPDATE
      */
     @Transactional
-    public RentalHistoryParameter updateHistory(Long id, RentalHistoryParameter history) {
+    public RentalHistoryResponse updateHistory(Long id, RentalHistoryRequest history) {
         RentalHistory existingRentalHistory = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         existingRentalHistory.updateHistory(

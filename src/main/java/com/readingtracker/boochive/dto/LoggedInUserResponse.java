@@ -8,6 +8,8 @@ import lombok.Getter;
 public class LoggedInUserResponse {
 
     private final String email;
+
     private final String username;
+
     private final String profileImage;
 }

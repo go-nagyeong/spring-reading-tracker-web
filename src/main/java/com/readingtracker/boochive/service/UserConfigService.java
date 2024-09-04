@@ -22,11 +22,6 @@ public class UserConfigService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<UserConfig> findConfigByUserAndKey(Long userId, String key) {
-        return userConfigRepository.findByUserIdAndConfigKey(userId, key);
-    }
-
-    @Transactional(readOnly = true)
     public List<UserConfig> getConfigsByUser(Long userId) {
         return userConfigRepository.findAllByUserId(userId);
     }

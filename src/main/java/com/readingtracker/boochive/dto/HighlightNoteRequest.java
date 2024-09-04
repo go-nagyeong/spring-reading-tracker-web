@@ -26,6 +26,8 @@ public class HighlightNoteRequest {
 
     private final String highlightColor;
 
+    @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.")
+    @Max(value = 5000, message = "페이지 번호는 최대 5000까지 입력할 수 있습니다.")
     private final Integer pageNumber;
 
     @NotNull(message = "작성일자를 입력해 주세요.")

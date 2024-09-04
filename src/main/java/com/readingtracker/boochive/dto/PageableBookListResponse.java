@@ -17,5 +17,5 @@ public class PageableBookListResponse {
     private Integer errorCode;
     private String errorMessage;
 
-    private List<BookParameter> item;
+    private List<BookDto> item;
 }

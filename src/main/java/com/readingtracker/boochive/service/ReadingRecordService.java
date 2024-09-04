@@ -27,11 +27,6 @@ public class ReadingRecordService {
      *   2. ReadingRecord : '읽는 중' 상태의 독서 이력 (완독일 Null)
      *   3. ReadRecord : 완독 이력 (완독일 Not Null)
      */
-    @Transactional
-    public Optional<ReadingRecord> findRecordById(Long id) {
-        return readingRecordRepository.findById(id);
-    }
-
     // 독서시작일 기준으로 독서 이력 찾기 (완독 여부 상관 X)
     @Transactional(readOnly = true)
     public Optional<ReadingRecord> findRecordByUserAndBookAndStartDate(Long userId, String bookIsbn, LocalDate starDate) {

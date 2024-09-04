@@ -1,15 +1,18 @@
 package com.readingtracker.boochive.controller;
 
-import com.readingtracker.boochive.domain.Review;
 import com.readingtracker.boochive.domain.User;
+import com.readingtracker.boochive.dto.ReviewRequest;
 import com.readingtracker.boochive.dto.ReviewResponse;
+import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.service.ReviewService;
 import com.readingtracker.boochive.util.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -60,8 +63,11 @@ public class ReviewController {
      * POST - 리뷰 등록
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(@RequestBody Review review) {
-        validateReview(review);
+    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(@Valid @RequestBody ReviewRequest review,
+                                                                    BindingResult bindingResult) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
 
         ReviewResponse savedReview = reviewService.createReview(review);
 
@@ -73,8 +79,11 @@ public class ReviewController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(@PathVariable Long id,
-                                                                    @RequestBody Review review) {
-        validateReview(review);
+                                                                    @Valid @RequestBody ReviewRequest review,
+                                                                    BindingResult bindingResult) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
 
         ReviewResponse savedReview = reviewService.updateReview(id, review);
 
@@ -92,11 +101,13 @@ public class ReviewController {
     }
 
     /**
-     * (공통 메서드) 리뷰 내용 검증
+     * (공통 메서드) 유효성 검사 결과의 우선 순위 정의
      */
-    private void validateReview(Review review) {
-        if (review.getReviewText().isBlank()) {
-            throw new IllegalArgumentException("리뷰 내용을 입력해 주세요.");
-        }
+    private Map<String, Integer> createValidationPriorityMap() {
+        Map<String, Integer> priorityMap = new HashMap<>();
+        priorityMap.put("rating", 1);
+        priorityMap.put("reviewText", 2);
+
+        return priorityMap;
     }
 }

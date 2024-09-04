@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -64,7 +65,7 @@ public class UserService {
                 userInfo.getUsername(),
                 userInfo.getProfileImage(),
                 userInfo.getSex(),
-                userInfo.getBirthdate(),
+                LocalDate.parse(userInfo.getBirthdate()),
                 userInfo.getPhoneNumber()
         );
 

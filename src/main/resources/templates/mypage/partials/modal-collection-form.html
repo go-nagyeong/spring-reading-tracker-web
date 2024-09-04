@@ -4,7 +4,6 @@
 </div>
 <form id="collectionForm">
     <div class="modal-body">
-        <input type="hidden" name="id">
         <input type="text" class="form-control" id="collectionName" name="collectionName" placeholder="컬렉션 이름">
     </div>
     <div class="modal-footer">
@@ -28,8 +27,9 @@
         const form = document.getElementById('collectionForm');
         const data = formToJson(new FormData(form));
 
-        const promise = data.id
-            ? axios.put(`/api/collections/${data.id}`, data)
+        const id = form.dataset.id;
+        const promise = id
+            ? axios.put(`/api/collections/${id}`, data)
             : axios.post('/api/collections', data);
 
         const onSuccess = (result) => {

@@ -188,9 +188,9 @@ public class ReadingNoteService {
                 .map(NoteResponse::getBookIsbn)
                 .distinct()
                 .toList();
-        Map<String, BookParameter> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
+        Map<String, BookDto> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
                 .stream()
-                .collect(Collectors.toMap(BookParameter::getIsbn13, bookInfo -> bookInfo));
+                .collect(Collectors.toMap(BookDto::getIsbn13, bookInfo -> bookInfo));
 
         // 3. 각 노트 레코드에 추가 정보 세팅
         noteList.forEach(note -> note.setBookInfo(bookInfoMap.get(note.getBookIsbn())));

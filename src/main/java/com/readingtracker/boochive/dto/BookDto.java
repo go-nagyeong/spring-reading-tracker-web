@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class BookParameter {
+public class BookDto {
 
     private String title;
     private String author;

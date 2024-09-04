@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -39,7 +40,7 @@ public class PurchaseHistory implements Own {
 
     private String purchaseFrom;
 
-    private Integer price;
+    private BigDecimal price;
 
     private String memo;
 
@@ -63,7 +64,7 @@ public class PurchaseHistory implements Own {
     /**
      * 구매 이력 정보 변경
      */
-    public void updateHistory(LocalDate purchaseDate, String purchaseFrom, Integer price, String memo) {
+    public void updateHistory(LocalDate purchaseDate, String purchaseFrom, BigDecimal price, String memo) {
         this.purchaseDate = purchaseDate;
         this.purchaseFrom = purchaseFrom;
         this.price = price;

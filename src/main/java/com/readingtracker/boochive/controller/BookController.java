@@ -1,9 +1,9 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.BookParameter;
+import com.readingtracker.boochive.dto.BookDto;
 import com.readingtracker.boochive.dto.PageableBookListResponse;
-import com.readingtracker.boochive.dto.ReadingBookDetailResponse;
+import com.readingtracker.boochive.dto.ReadingBookResponse;
 import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.ApiResponse;
@@ -50,10 +50,10 @@ public class BookController {
                 .toList();
 
         // 사용자의 독서 상태 및 컬렉션 정보
-        Map<String, ReadingBookDetailResponse> readingInfoList = readingBookService
+        Map<String, ReadingBookResponse> readingInfoList = readingBookService
                 .getReadingListByUserAndBookList(user.getId(), bookIsbnList)
                 .stream()
-                .collect(Collectors.toMap(ReadingBookDetailResponse::getBookIsbn, readingBook -> readingBook));
+                .collect(Collectors.toMap(ReadingBookResponse::getBookIsbn, readingBook -> readingBook));
 
         Map<String, Object> data = new HashMap<>();
         data.put("searchResult", searchResult);
@@ -70,13 +70,13 @@ public class BookController {
                                                                            @AuthenticationPrincipal User user) {
         // 책 조회 결과
         PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
-        BookParameter book = lookupResult.getItem().get(0);
+        BookDto book = lookupResult.getItem().get(0);
 
         // 책 통계 정보 세팅
         setBookStatistics(book);
 
         // 사용자의 독서 상태 및 컬렉션 정보
-        Optional<ReadingBookDetailResponse> readingInfo = readingBookService
+        Optional<ReadingBookResponse> readingInfo = readingBookService
                 .findReadingBookByUserAndBook(user.getId(), isbn);
 
         Map<String, Object> data = new HashMap<>();
@@ -89,8 +89,8 @@ public class BookController {
     /**
      * (공통 메서드) 책 통계 정보 세팅 - 리뷰 개수, 평균 평점, 독자 수
      */
-    private void setBookStatistics(BookParameter book) {
-        BookParameter.SubInfo subInfo = book.getSubInfo();
+    private void setBookStatistics(BookDto book) {
+        BookDto.SubInfo subInfo = book.getSubInfo();
 
         Map<String, Object> reviewInfo = reviewService.getBookReviewInfo(book.getIsbn13());
 

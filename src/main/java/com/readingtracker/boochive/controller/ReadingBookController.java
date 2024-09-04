@@ -3,9 +3,11 @@ package com.readingtracker.boochive.controller;
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.*;
 import com.readingtracker.boochive.enums.ResourceName;
+import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
 import com.readingtracker.boochive.service.*;
 import com.readingtracker.boochive.util.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -32,19 +35,24 @@ public class ReadingBookController {
      * GET - 사용자 독서 목록 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserReadingBookList(ReadingBookCondition condition,
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserReadingBookList(@Valid ReadingBookCondition condition,
+                                                                                   BindingResult bindingResult,
                                                                                    @PageableDefault(value = 3) Pageable pageable,
-                                                                                   @AuthenticationPrincipal User user) {
+                                                                                   @AuthenticationPrincipal User user) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", new HashMap<>(), bindingResult);
+        }
+
         // 사용자의 독서 책 목록
-        Page<ReadingBookDetailResponse> readingList = readingBookService
+        Page<ReadingBookResponse> readingList = readingBookService
                 .getReadingListWithBookDetailByUserAndFilters(user, condition, pageable);
 
         // 데이터 전처리 (Page<ReadingBookDetailResponse> -> PageableBookListResponse)
         PageableBookListResponse getListResult = createPageableBookList(readingList, user.getId());
 
         // 사용자의 독서 상태 정보
-        Map<String, ReadingBookDetailResponse> readingInfoList = readingList.stream()
-                .collect(Collectors.toMap(ReadingBookDetailResponse::getBookIsbn, readingBook -> readingBook));
+        Map<String, ReadingBookResponse> readingInfoList = readingList.stream()
+                .collect(Collectors.toMap(ReadingBookResponse::getBookIsbn, readingBook -> readingBook));
 
         Map<String, Object> data = new HashMap<>();
         data.put("getListResult", getListResult);
@@ -57,9 +65,9 @@ public class ReadingBookController {
      * GET - 사용자가 현재 읽고 있는 독서 목록 조회
      */
     @GetMapping("/me/reading")
-    public ResponseEntity<ApiResponse<List<ReadingBookDetailResponse>>> getUserIncompleteReadingBookList(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<List<ReadingBookResponse>>> getUserIncompleteReadingBookList(@AuthenticationPrincipal User user) {
         // 사용자의 독서 책 목록
-        List<ReadingBookDetailResponse> readingList = readingBookService
+        List<ReadingBookResponse> readingList = readingBookService
                 .getIncompleteReadingListWithBookDetailByUser(user.getId());
 
         return ApiResponse.success(null, readingList);
@@ -69,9 +77,14 @@ public class ReadingBookController {
      * POST - 독서 목록에 추가
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@RequestBody ReadingBookRequest readingBook,
-                                                                           @AuthenticationPrincipal User user) {
-        ReadingBookDetailResponse savedReadingBook = readingBookService.createReadingBook(readingBook);
+    public ResponseEntity<ApiResponse<Map<String, Object>>> addReadingBook(@Valid @RequestBody ReadingBookRequest readingBook,
+                                                                           BindingResult bindingResult,
+                                                                           @AuthenticationPrincipal User user) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
+
+        ReadingBookResponse savedReadingBook = readingBookService.createReadingBook(readingBook);
 
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
@@ -86,9 +99,14 @@ public class ReadingBookController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> updateReadingBook(@PathVariable Long id,
-                                                                              @RequestBody ReadingBookRequest readingBook,
-                                                                              @AuthenticationPrincipal User user) {
-        ReadingBookDetailResponse savedReadingBook = readingBookService.updateReadingBook(id, readingBook);
+                                                                              @Valid @RequestBody ReadingBookRequest readingBook,
+                                                                              BindingResult bindingResult,
+                                                                              @AuthenticationPrincipal User user) throws CustomArgumentNotValidException {
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
+        }
+
+        ReadingBookResponse savedReadingBook = readingBookService.updateReadingBook(id, readingBook);
 
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
@@ -105,7 +123,7 @@ public class ReadingBookController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteReadingBook(@PathVariable Long id,
                                                                               @AuthenticationPrincipal User user) {
         ResourceName resourceName = ResourceName.fromClassName(ReadingBook.class.getSimpleName());
-        ReadingBookDetailResponse existing = readingBookService.findReadingBookById(id)
+        ReadingBookResponse existing = readingBookService.findReadingBookById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(resourceName.getName()));
         String bookIsbn = existing.getBookIsbn();
 
@@ -130,7 +148,7 @@ public class ReadingBookController {
     /**
      * (공통 메서드) 책 목록 데이터 전처리 > DTO 변환
      */
-    private PageableBookListResponse createPageableBookList(Page<ReadingBookDetailResponse> readingList, Long userId) {
+    private PageableBookListResponse createPageableBookList(Page<ReadingBookResponse> readingList, Long userId) {
         PageableBookListResponse pageableBookList = new PageableBookListResponse();
 
         // 페이지네이션 정보 세팅
@@ -140,9 +158,9 @@ public class ReadingBookController {
         pageableBookList.setTotalPages(readingList.getTotalPages()); // 전체 페이지 수
 
         // 책 목록 세팅
-        List<BookParameter> bookList = readingList.stream()
+        List<BookDto> bookList = readingList.stream()
                 .map(readingBook -> {
-                    BookParameter book = readingBook.getBookInfo();
+                    BookDto book = readingBook.getBookInfo();
                     setReadingBookStatistics(book, userId); // 책 통계 정보 세팅
                     return book;
                 })
@@ -155,8 +173,8 @@ public class ReadingBookController {
     /**
      * (공통 메서드) 책 통계 정보 세팅 - 리뷰 개수, 평균 평점, 독자 수
      */
-    private void setReadingBookStatistics(BookParameter book, Long userId) {
-        BookParameter.SubInfo subInfo = book.getSubInfo();
+    private void setReadingBookStatistics(BookDto book, Long userId) {
+        BookDto.SubInfo subInfo = book.getSubInfo();
 
         reviewService.findReviewByUserAndBook(userId, book.getIsbn13())
                 .ifPresent(review -> subInfo.setUserRating(review.getRating()));
@@ -170,5 +188,17 @@ public class ReadingBookController {
     private void onUpdateReadingBook(Map<String, Object> data, String bookIsbn, Long userId) {
         data.put("readerCount", readingBookService.getBookReaderCount(bookIsbn)); // 책의 독자 수
         data.put("userReadCount", readingRecordService.getUserBookReadCount(userId, bookIsbn)); // 유저의 완독 수
+    }
+
+    /**
+     * (공통 메서드) 유효성 검사 결과의 우선 순위 정의
+     */
+    private Map<String, Integer> createValidationPriorityMap() {
+        Map<String, Integer> priorityMap = new HashMap<>();
+        priorityMap.put("bookIsbn", 1);
+        priorityMap.put("collectionId", 2);
+        priorityMap.put("readingStatus", 3);
+
+        return priorityMap;
     }
 }

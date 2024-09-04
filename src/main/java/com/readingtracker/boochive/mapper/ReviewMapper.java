@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.Review;
+import com.readingtracker.boochive.dto.ReviewRequest;
 import com.readingtracker.boochive.dto.ReviewResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,6 +11,8 @@ import org.mapstruct.factory.Mappers;
 public interface ReviewMapper {
 
     ReviewMapper INSTANCE = Mappers.getMapper(ReviewMapper.class);
+
+    Review toEntity(ReviewRequest reviewRequest);
 
     @Mapping(target = "reviewerId", source = "user.id")
     @Mapping(target = "reviewerName", source = "user.name")

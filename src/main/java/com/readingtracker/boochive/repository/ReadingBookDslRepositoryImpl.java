@@ -8,6 +8,7 @@ import com.readingtracker.boochive.domain.QReadingBook;
 import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.ReadingBookCondition;
+import com.readingtracker.boochive.enums.ReadingStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -57,9 +58,11 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
     }
 
     private BooleanExpression equalsReadingStatus(QReadingBook readingBook, ReadingBookCondition condition) {
-        return condition.getReadingStatus() != null
-                ? readingBook.readingStatus.eq(condition.getReadingStatus())
-                : null;
+        if (condition.getReadingStatus() != null) {
+            ReadingStatus readingStatus = ReadingStatus.valueOf(condition.getReadingStatus());
+            return readingBook.readingStatus.eq(readingStatus);
+        }
+        return null;
     }
 
     private BooleanExpression equalsCollectionId(QReadingBook readingBook, ReadingBookCondition condition) {

@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.*;
-import com.readingtracker.boochive.dto.BookParameter;
+import com.readingtracker.boochive.dto.BookDto;
 import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ public class BookService {
      * C[R]UD - READ
      */
     @Transactional(readOnly = true)
-    public Optional<BookParameter> findBookByIsbn(String isbn) {
+    public Optional<BookDto> findBookByIsbn(String isbn) {
         return bookRepository.findByIsbn13(isbn)
                 .map(BookMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public List<BookParameter> getBooksByIsbnList(List<String> isbnList) {
+    public List<BookDto> getBooksByIsbnList(List<String> isbnList) {
         return bookRepository.findAllByIsbn13In(isbnList)
                 .stream()
                 .map(BookMapper.INSTANCE::toDto)
@@ -37,7 +37,7 @@ public class BookService {
      * [C]RUD - CREATE
      */
     @Transactional
-    public BookParameter createBook(BookParameter book) {
+    public BookDto createBook(BookDto book) {
         Book newBook = BookMapper.INSTANCE.toEntity(book);
 
         return BookMapper.INSTANCE.toDto(bookRepository.save(newBook));

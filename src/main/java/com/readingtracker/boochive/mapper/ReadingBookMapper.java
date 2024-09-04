@@ -1,7 +1,7 @@
 package com.readingtracker.boochive.mapper;
 
 import com.readingtracker.boochive.domain.ReadingBook;
-import com.readingtracker.boochive.dto.ReadingBookDetailResponse;
+import com.readingtracker.boochive.dto.ReadingBookResponse;
 import com.readingtracker.boochive.dto.ReadingBookRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,5 +19,5 @@ public interface ReadingBookMapper {
     @Mapping(target = "readingStartDate", ignore = true)
     @Mapping(target = "bookInfo", ignore = true)
     @Mapping(target = "isOwned", ignore = true)
-    ReadingBookDetailResponse toDto(ReadingBook readingBook);
+    ReadingBookResponse toDto(ReadingBook readingBook);
 }

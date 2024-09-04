@@ -2,7 +2,7 @@ package com.readingtracker.boochive.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.readingtracker.boochive.dto.BookParameter;
+import com.readingtracker.boochive.dto.BookDto;
 import com.readingtracker.boochive.dto.PageableBookListResponse;
 import com.readingtracker.boochive.enums.QueryType;
 import com.readingtracker.boochive.exception.AladinApiException;
@@ -153,7 +153,7 @@ public class AladdinOpenAPIHandler {
                 data.setTotalPages(0);
             }
 
-            for (BookParameter item : data.getItem()) {
+            for (BookDto item : data.getItem()) {
                 // 저자 정보 전처리 (지은이, 옮긴이, 그림 분리)
                 String authorWithOthers = item.getAuthor().replaceAll("\\s*\\(", "");
 

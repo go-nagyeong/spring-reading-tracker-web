@@ -33,10 +33,10 @@
                             <img class="img-thumbnail square rounded w-15 w-lg-20 min-w-px-100 img-preview"
                                  id="userProfile" src="">
                             <div class="button-wrapper">
-                                <p class="fw-medium mt-1" id="name"><!-- 데이터 동적 로드 --></p>
-                                <small class="d-block text-muted mb-3" id="userEmail"><!-- 데이터 동적 로드 --></small>
+                                <p class="fw-medium mt-1 user-name"><!-- 데이터 동적 로드 --></p>
+                                <small class="d-block text-muted mb-3 user-email"><!-- 데이터 동적 로드 --></small>
                                 <div class="btn-group">
-                                    <button class="btn btn-md btn-outline-primary dropdown-toggle"
+                                    <button type="button" class="btn btn-md btn-outline-primary dropdown-toggle"
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                         프로필 변경
                                     </button>
@@ -74,27 +74,30 @@
                         </div>
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label">성별</label>
-                            <div class="col-sm-10 d-flex align-items-center flex-wrap">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sex" id="sexNotKnown"
-                                           value="0">
-                                    <label class="form-check-label" for="sexNotKnown">알 수 없음</label>
+                            <div class="col-sm-10">
+                                <div class="input-group gap-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="sex" id="sexNotKnown"
+                                               value="0">
+                                        <label class="form-check-label" for="sexNotKnown">알 수 없음</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="sex" id="sexMale"
+                                               value="1">
+                                        <label class="form-check-label" for="sexMale">남</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="sex" id="sexFemale"
+                                               value="2">
+                                        <label class="form-check-label" for="sexFemale">여</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="sex" id="sexNotApplicable"
+                                               value="9">
+                                        <label class="form-check-label" for="sexNotApplicable">해당 사항 없음</label>
+                                    </div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sex" id="sexMale"
-                                           value="1">
-                                    <label class="form-check-label" for="sexMale">남</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sex" id="sexFemale"
-                                           value="2">
-                                    <label class="form-check-label" for="sexFemale">여</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sex" id="sexNotApplicable"
-                                           value="9">
-                                    <label class="form-check-label" for="sexNotApplicable">해당 사항 없음</label>
-                                </div>
+                                <span class="form-text invalid-feedback error-sex"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -118,6 +121,7 @@
                                         </select>
                                     </div>
                                 </div>
+                                <span class="form-text invalid-feedback error-birthdate"></span>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -343,11 +347,7 @@
         document.querySelector('[name=profileImage]').value = userDetail.profileImage;
 
         // 이름
-        document.getElementById('name').textContent = userDetail.username;
         document.querySelector('[name=username]').value = userDetail.username;
-
-        // 이메일
-        document.getElementById('userEmail').textContent = userDetail.email;
 
         // 성별
         const sexCodeMap = {
@@ -426,22 +426,6 @@
         const month = data['birthMonth'];
         const day = data['birthDay'];
         const dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        const date = new Date(dateStr);
-
-        // 생년월일(날짜) 데이터 검증
-        if (year || month || day) {
-            if (!year || !month || !day) {
-                globalLoading(false);
-                showToast('생년월일을 모두 선택해 주세요.', 'error');
-                return false;
-            }
-            if (dateStr !== `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`) {
-                globalLoading(false);
-                showToast('생년월일이 올바르지 않습니다.', 'error');
-                return;
-            }
-        }
-
         data['birthdate'] = dateStr;
         data['phoneNumber'] = data['phoneNumber'].replaceAll('-', '');
 
@@ -523,7 +507,20 @@
      * 검증 결과 처리 메서드
      */
     function displayErrorMessages(form, errors) {
+        const fieldNameMapping = {
+            NewPassword: 'password',
+            ConfirmPassword: 'confirmPassword'
+        };
+
         Object.entries(errors).forEach(([field, message]) => {
+            // 글로벌 검증 코드 이름 전처리 (필드명 매핑)
+            if (fieldNameMapping.hasOwnProperty(field)) {
+                const mappedFieldName = fieldNameMapping[field];
+                if (!Object.hasOwn(errors, mappedFieldName)) {
+                    field = fieldNameMapping[field];
+                }
+            }
+
             const errorSpan = form.querySelector('.error-' + field);
             if (errorSpan) {
                 errorSpan.textContent = message;

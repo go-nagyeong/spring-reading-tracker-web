@@ -98,13 +98,26 @@
     }
 
     function displayErrorMessages(errors) {
+        const fieldNameMapping = {
+            ConfirmPassword: 'confirmPassword'
+        };
+
         Object.entries(errors).forEach(([field, message]) => {
+            // 글로벌 검증 코드 이름 전처리 (필드명 매핑)
+            if (fieldNameMapping.hasOwnProperty(field)) {
+                const mappedFieldName = fieldNameMapping[field];
+                if (!Object.hasOwn(errors, mappedFieldName)) {
+                    field = fieldNameMapping[field];
+                }
+            }
+
             const errorSpan = document.querySelector('.error-' + field);
             if (errorSpan) {
                 errorSpan.textContent = message;
                 errorSpan.previousElementSibling.classList.add('invalid');
             }
         });
+
         // input 자동 포커스
         const firstInvalidInput = document.querySelector('input.invalid, .invalid input:not([type=hidden])');
         if (firstInvalidInput) {

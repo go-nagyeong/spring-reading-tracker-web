@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.dto.LoggedInUserResponse;
+import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.mapper.LoggedInUserMapper;
 import com.readingtracker.boochive.util.ApiResponse;
 import com.readingtracker.boochive.domain.User;
@@ -51,11 +52,9 @@ public class AuthenticationController {
      */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Map<String, String>>> register(@Valid @RequestBody RegisterRequest request,
-                                                                     BindingResult bindingResult) {
-        // 유효성 검사 결과 전처리
+                                                                     BindingResult bindingResult) throws CustomArgumentNotValidException {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = handleValidationErrors(bindingResult);
-            return ApiResponse.failure("", errorMap);
+            throw new CustomArgumentNotValidException("multiple", createValidationPriorityMap(), bindingResult);
         }
 
         userService.createUser(request);
@@ -69,14 +68,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequest request,
                                                                   BindingResult bindingResult,
-                                                                  HttpServletResponse response) {
-        // 유효성 검사 결과 전처리
-        Map<String, String> errorMap = new LinkedHashMap<>();
-        if (bindingResult.hasErrors()) {
-            errorMap = handleValidationErrors(bindingResult);
-            return ApiResponse.failure("", errorMap);
-        }
-
+                                                                  HttpServletResponse response) throws CustomArgumentNotValidException {
         // AuthenticationManager를 사용하여 로그인 인증 (인증 객체 생성 후 전달)
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -84,15 +76,21 @@ public class AuthenticationController {
             authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
             // 잘못된 인증 정보 (이메일 또는 비밀번호)
-            errorMap.put("password", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            return ApiResponse.failure(null, errorMap);
+            bindingResult.addError(
+                new FieldError("loginRequest", "password", "이메일 또는 비밀번호가 올바르지 않습니다.")
+            );
         } catch (LockedException e) {
             // 계정이 잠겼을 경우
-            errorMap.put("password", "사용자 계정이 잠겼습니다. 관리자에게 문의하세요.");
-            return ApiResponse.failure(null, errorMap);
+            bindingResult.addError(
+                new FieldError("loginRequest", "password", "사용자 계정이 잠겼습니다. 관리자에게 문의하세요.")
+            );
         } catch (AuthenticationException e) {
             // 그 외의 인증 예외 처리
             log.error("인증 객체 생성 에러: {}", e.getMessage(), e);
+        }
+
+        if (bindingResult.hasErrors()) {
+            throw new CustomArgumentNotValidException("multiple", createValidationPriorityMap(), bindingResult);
         }
 
         // 인증 성공 시 토큰 발급
@@ -119,24 +117,15 @@ public class AuthenticationController {
     }
 
     /**
-     * (공통 메서드) 유효성 검사 결과 전처리
+     * (공통 메서드) 유효성 검사 결과의 우선 순위 정의
      */
-    private Map<String, String> handleValidationErrors(BindingResult bindingResult) {
-        // 유효성 검사 결과 순서 정렬 (원래는 정렬 없이 랜덤으로 나옴)
-        List<FieldError> fieldErrors = new ArrayList<>(bindingResult.getFieldErrors());
-        fieldErrors.sort(Comparator
-                .comparing(FieldError::getField)
-                .thenComparing(Comparator.comparing(FieldError::getCode).reversed()));
+    private Map<String, Integer> createValidationPriorityMap() {
+        Map<String, Integer> priorityMap = new HashMap<>();
+        priorityMap.put("email", 1);
+        priorityMap.put("password", 2);
+        priorityMap.put("confirmPassword", 3);
+        priorityMap.put("Email", 3);
 
-        // <필드(key): 에러메세지(value)> 구조로 저장
-        Map<String, String> errorMap = new LinkedHashMap<>(); // 순서 적용을 위해 LinkedHashMap 사용
-        bindingResult.getGlobalErrors().forEach(error -> { // @ConfirmPassword
-            errorMap.put("confirmPassword", error.getDefaultMessage());
-        });
-        fieldErrors.forEach(error -> {
-            errorMap.put(error.getField(), error.getDefaultMessage());
-        });
-
-        return errorMap;
+        return priorityMap;
     }
 }
