@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.dto;
 
+import com.readingtracker.boochive.config.AppConstants;
 import com.readingtracker.boochive.validator.ConfirmPassword;
 import com.readingtracker.boochive.validator.NewPassword;
 import jakarta.validation.constraints.NotBlank;
@@ -19,8 +20,7 @@ public class PasswordUpdateRequest {
 
     @Setter // 비밀번호 암호화 업데이트
     @NotBlank(message = "새 비밀번호를 입력해 주세요.")
-    @Pattern(regexp = "^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?:[0-9]+))$)[A-Za-z\\d~!@#$%^&*()_+=]{8,20}$",
-            message = "비밀번호는 8~20자 이내로 영문, 숫자, 특수문자 중 2가지 이상을 조합하셔야 합니다.")
+    @Pattern(regexp = AppConstants.PASSWORD_REGEX, message = AppConstants.PASSWORD_REGEX_ERROR_MSG)
     private String password;
 
     @NotBlank(message = "새 비밀번호 확인을 입력해 주세요.")

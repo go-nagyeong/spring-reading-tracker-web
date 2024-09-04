@@ -1,6 +1,7 @@
 package com.readingtracker.boochive.dto;
 
 import com.readingtracker.boochive.enums.NoteType;
+import com.readingtracker.boochive.validator.PlainTextLength;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,8 @@ public class PencilNoteRequest {
 
     private final String bookIsbn;
 
-    @NotBlank(message = "본문을 입력해 주세요.")
+    @NotEmpty(message = "본문을 입력해 주세요.")
+    @PlainTextLength(min = 2, max = 1500, message = "본문은 2~1500자 이내로 입력하셔야 합니다.")
     private final String noteText;
 
     @NotNull(message = "작성일자를 입력해 주세요.")

@@ -230,20 +230,24 @@ export class SimpleEditor {
             new DOMParser().parseFromString(htmlString, 'text/html').querySelectorAll('p')
         ).map(p => ({
             type: "paragraph",
-            data: { text: p.textContent.trim() }
+            data: { text: p.textContent }
         }))
     }
 
     convertDataToHtml(blocks) {
         let convertedHtml = '';
         blocks.map(block => {
-            switch (block.type) {
-                case 'paragraph':
-                    convertedHtml += `<p>${block.data.text}</p>`;
-                    break;
-                default:
-                    console.log('Unknown block type', block.type);
-                    break;
+            const text = block.data.text;
+            const isBlank = text.replaceAll('&nbsp;', '').trim() === '';
+            if (!isBlank) {
+                switch (block.type) {
+                    case 'paragraph':
+                        convertedHtml += `<p>${text}</p>`;
+                        break;
+                    default:
+                        console.log('Unknown block type', block.type);
+                        break;
+                }
             }
         });
         return convertedHtml;

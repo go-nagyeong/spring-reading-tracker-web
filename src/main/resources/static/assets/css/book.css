@@ -478,6 +478,7 @@
 
 .rv-list .rv-left {
     margin-right: .8rem;
+    flex: 0 0 auto;
 }
 
 .rv-list .rv-right {

@@ -2,6 +2,7 @@ package com.readingtracker.boochive.dto;
 
 import com.readingtracker.boochive.enums.NoteType;
 import com.readingtracker.boochive.validator.AtLeastOneNotBlank;
+import com.readingtracker.boochive.validator.PlainTextLength;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class HighlightNoteRequest {
 
     private final String bookIsbn;
 
+    @PlainTextLength(min = 2, max = 1500, message = "노트 내용은 2~1500자 이내로 입력하셔야 합니다.")
     private final String noteText;
 
     private final String attachmentImage;
