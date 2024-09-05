@@ -45,7 +45,7 @@ public class ReadingNote implements Own {
 
     private Integer pageNumber;
 
-    private String highlightColor; // [형광펜]노트의 하이라이트 색상 or [포스트잇]노트의 포스트잇 색상
+    private String backgroundColor; // [형광펜]노트의 하이라이트 색상 or [포스트잇]노트의 포스트잇 색상
 
     private LocalDate createDate; // 사용자가 변경할 수 있는 작성일자
 
@@ -76,19 +76,19 @@ public class ReadingNote implements Own {
     /**
      * [형광펜]노트 수정
      */
-    public void updateHighlightNote(String noteText, String attachmentImage, String highlightColor, Integer pageNumber) {
+    public void updateHighlightNote(String noteText, String attachmentImage, String backgroundColor, Integer pageNumber) {
         this.noteText = noteText;
         this.attachmentImage = attachmentImage;
-        this.highlightColor = highlightColor;
+        this.backgroundColor = backgroundColor;
         this.pageNumber = pageNumber;
     }
 
     /**
      * [포스트잇]노트 수정
      */
-    public void updatePostItNote(String noteText, String highlightColor, Integer pageNumber) {
+    public void updatePostIt(String noteText, String backgroundColor, Integer pageNumber) {
         this.noteText = noteText;
-        this.highlightColor = highlightColor;
+        this.backgroundColor = backgroundColor;
         this.pageNumber = pageNumber;
     }
 

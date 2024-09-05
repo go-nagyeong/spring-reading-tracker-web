@@ -19,7 +19,7 @@ public class HighlightNoteResponse implements NoteResponse {
 
     private final String attachmentImage;
 
-    private final String highlightColor;
+    private final String backgroundColor;
 
     private final Integer pageNumber;
 

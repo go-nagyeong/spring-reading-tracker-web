@@ -26,7 +26,7 @@ public class HighlightNoteRequest {
 
     private final String attachmentImage;
 
-    private final String highlightColor;
+    private final String backgroundColor;
 
     @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.")
     @Max(value = 5000, message = "페이지 번호는 최대 5000까지 입력할 수 있습니다.")

@@ -52,7 +52,7 @@
                     <img src="{{uploadUrl attachmentImage}}">
                 {{else}}
                     <div class="card-img-overlay">
-                        {{{highlight noteText highlightColor}}}
+                        {{{highlight noteText backgroundColor}}}
                     </div>
                 {{/if}}
             </div>
@@ -84,13 +84,16 @@
 <script>
     let userBookList = null;
 
-    // 하이라이터 스타일 적용 헬퍼
-    Handlebars.registerHelper('highlight', function(html, color) {
+    // 하이라이트 스타일 적용 헬퍼
+    Handlebars.registerHelper('highlight', function(text, color) {
         // 텍스트를 mark 태그로 감싸기
-        return html.replace(/>([^<]+)</g, function(match, text) {
-            return `><mark style="background-color: ${color};">${text}</mark><`;
-        });
+        return getHighlightedNoteText(text, color);
     });
+
+    function getHighlightedNoteText(noteText, highlightColor, type = 'hl') { // className = cdx(에디터용)/hl(보기용)
+        if (!highlightColor) return noteText;
+        return noteText.replaceAll('class="cdx-marker"', `class="${type}-marker" style="background: ${highlightColor};"`)
+    }
 
     document.addEventListener('DOMContentLoaded', async function (e) {
         loadUserBookList(); // 사용자 책 목록 미리 로드 (신규 노트 폼에서 책 선택 옵션에 사용)
@@ -226,13 +229,20 @@
 
         if (mode === 'edit') {
             const bookOptions = await loadUserBookList();
-            const html = template({note: data, bookOptions: bookOptions});
+            const defaultHighlightColor = config.highlight.default;
+            const highlightColorOptions = config.highlight.colors;
+            const html = template({
+                note: data,
+                bookOptions: bookOptions,
+                defaultHighlightColor: defaultHighlightColor,
+                highlightColorOptions: highlightColorOptions
+            });
             noteDetailForm.innerHTML = sanitizeHtml(html);
 
             // 에디터 플러그인 초기화
-            noteEditor = new SimpleEditor('editor');
+            noteEditor = new SimpleEditor('editor', ['marker']);
             if (data.noteText) {
-                noteEditor.initialize(data.noteText);
+                noteEditor.initialize(getHighlightedNoteText(data.noteText, data.backgroundColor, 'cdx'));
             }
         } else if (mode === 'view') {
             const html = template(data);

@@ -159,7 +159,7 @@ public class ReadingNoteService {
 
         existingNote.updateHighlightNote(
                 highlightNote.getNoteText(), highlightNote.getAttachmentImage(),
-                highlightNote.getHighlightColor(), highlightNote.getPageNumber()
+                highlightNote.getBackgroundColor(), highlightNote.getPageNumber()
         );
         existingNote.updateCreateDateAndIsPublic(highlightNote.getCreateDate(), highlightNote.getIsPublic());
 

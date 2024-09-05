@@ -736,11 +736,13 @@ input[type=color]::-moz-color-swatch {
     border-radius: 0;
 }
 #highlightNoteCard .card-img-overlay p {
-    line-height: 28px;
+    line-height: 1.8;
     font-size: 0.875rem;
+    font-weight: 500;
 }
-#highlightNoteCard .card-img-overlay p mark {
-    padding: 0.1rem 0.2rem;
+
+.hl-marker {
+    padding: 2px 0;
 }
 
 .grid-2-column {
@@ -862,7 +864,6 @@ form.edit-or-view-mode .lcslt-disabled:after {
 .image-zoom-control:hover::after {
     opacity: 1;
 }
-
 
 /**
  * ---- Vendor - LC Select -----------------------

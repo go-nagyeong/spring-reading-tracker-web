@@ -28,7 +28,7 @@
             {{else}}
                 <div class="form-border overflow-auto p-0" style="height: 30vh;">
                     <div class="card-img-overlay">
-                        {{{highlight noteText highlightColor}}}
+                        {{{highlight noteText backgroundColor}}}
                     </div>
                 </div>
             {{/if}}
@@ -121,14 +121,12 @@
                     <div class="row">
                         <label class="col-3 col-sm-2 col-form-label">하이라이트 색상</label>
                         <div class="col-9 col-sm-10 d-flex align-items-center">
-                            <input type="color" list="presetColors" name="highlightColor"
-                                   value="{{default note.highlightColor '#feea67'}}">
+                            <input type="color" list="presetColors" name="backgroundColor" id="markerColor"
+                                   value="{{default note.backgroundColor defaultHighlightColor}}">
                             <datalist id="presetColors">
-                                <option value="#feea67"></option>
-                                <option value="#ffc093"></option>
-                                <option value="#f0adc2"></option>
-                                <option value="#caa1cb"></option>
-                                <option value="#abdbdb"></option>
+                                {{#each highlightColorOptions}}
+                                    <option value="{{this}}"></option>
+                                {{/each}}
                             </datalist>
                         </div>
                     </div>
@@ -247,7 +245,7 @@
                 const currentFormTab = document.querySelector(el.getAttribute('href'));
                 const attachmentImage = currentFormTab.querySelector('[name=attachmentImage]'); // 이미지 선택
                 const noteText = currentFormTab.querySelector('#editor'); // 직접 입력
-                const highlightColor = currentFormTab.querySelector('[name=highlightColor]');
+                const backgroundColor = currentFormTab.querySelector('[name=backgroundColor]');
 
                 if (attachmentImage) {
                     // [이미지 선택] 폼
@@ -259,10 +257,21 @@
                     imageInput.value = '';
                 } else if (noteText) {
                     // [직접 입력] 폼
-                    highlightColor.value = highlightColor.defaultValue;
+                    backgroundColor.value = backgroundColor.defaultValue;
                     noteEditor.reset();
                 }
             })
+
+            // 하이라이트 색상 이벤트
+            const backgroundColor = document.querySelector('input[name=backgroundColor]');
+            if (backgroundColor) {
+                backgroundColor.addEventListener('change', function () {
+                    const editorMarkers = document.querySelectorAll('mark.cdx-marker');
+                    editorMarkers.forEach(el => {
+                        el.style.cssText = `background: ${backgroundColor.value};`;
+                    })
+                })
+            }
         })
     }
 
@@ -307,7 +316,7 @@
                 data['attachmentImage'] = attachmentImageUrl;
             }
             delete data['noteText'];  // 텍스트 필드를 제거
-            delete data['highlightColor'];  // 하이라이트 컬러 필드를 제거
+            delete data['backgroundColor'];  // 하이라이트 컬러 필드를 제거
         } else {
             // [직접 입력] 폼
             delete data['attachmentImage'];  // 이미지 필드를 제거
