@@ -31,8 +31,8 @@ public class ReadingNote implements Own {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_isbn")
-    private Book book;
+    @JoinColumn(name = "reading_book_id")
+    private ReadingBook readingBook;
 
     @Enumerated(EnumType.STRING)
     private NoteType noteType;

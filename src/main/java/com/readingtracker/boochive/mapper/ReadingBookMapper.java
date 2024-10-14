@@ -12,9 +12,11 @@ public interface ReadingBookMapper {
 
     ReadingBookMapper INSTANCE = Mappers.getMapper(ReadingBookMapper.class);
 
+    @Mapping(target = "book.isbn13", source = "bookIsbn")
     @Mapping(target = "collection.id", source = "collectionId")
     ReadingBook toEntity(ReadingBookRequest readingBookRequest);
 
+    @Mapping(target = "bookIsbn", source = "book.isbn13")
     @Mapping(target = "collectionId", source = "collection.id")
     @Mapping(target = "readingStartDate", ignore = true)
     @Mapping(target = "bookInfo", ignore = true)

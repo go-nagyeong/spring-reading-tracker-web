@@ -1,5 +1,7 @@
 package com.readingtracker.boochive.dto.note;
 
+import com.readingtracker.boochive.config.AppConstants;
+import com.readingtracker.boochive.dto.ValidationGroups;
 import com.readingtracker.boochive.enums.NoteType;
 import com.readingtracker.boochive.validator.AtLeastOneNotBlank;
 import com.readingtracker.boochive.validator.PlainTextLength;
@@ -19,7 +21,8 @@ public class HighlightNoteRequest {
 
     private final NoteType noteType = NoteType.HIGHLIGHT;
 
-    private final String bookIsbn;
+    @NotNull(message = "도서 ID " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG, groups = ValidationGroups.Create.class)
+    private final Long readingBookId;
 
     @PlainTextLength(min = 2, max = 1500, message = "노트 내용은 2~1500자 이내로 입력하셔야 합니다.")
     private final String noteText;

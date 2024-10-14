@@ -12,6 +12,7 @@ public interface HighlightNoteMapper extends NoteMapper {
 
     HighlightNoteMapper INSTANCE = Mappers.getMapper(HighlightNoteMapper.class);
 
+    @Mapping(target = "readingBook.id", source = "readingBookId")
     ReadingNote toEntity(HighlightNoteRequest highlightNoteRequest);
 
     @Mapping(target = "bookInfo", ignore = true)

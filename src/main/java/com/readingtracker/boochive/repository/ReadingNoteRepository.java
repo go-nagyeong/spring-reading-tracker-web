@@ -7,17 +7,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ReadingNoteRepository extends JpaRepository<ReadingNote, Long> {
 
     @Query("SELECT n FROM ReadingNote n " +
-            "JOIN FETCH n.book b " +
+            "JOIN FETCH n.readingBook rb " +
+            "JOIN FETCH rb.book b " +
             "WHERE n.id = :id ")
     Optional<ReadingNote> findById(Long id);
 
     @Query("SELECT n FROM ReadingNote n " +
-            "JOIN FETCH n.book b " +
+            "JOIN FETCH n.readingBook rb " +
+            "JOIN FETCH rb.book b " +
             "JOIN FETCH n.user u " +
             "WHERE u.id = :userId " +
             "AND n.noteType = :noteType " +

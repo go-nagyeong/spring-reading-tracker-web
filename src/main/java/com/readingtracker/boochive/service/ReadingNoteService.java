@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.service;
 
+import com.readingtracker.boochive.domain.ReadingBook;
 import com.readingtracker.boochive.domain.ReadingNote;
 import com.readingtracker.boochive.dto.note.*;
 import com.readingtracker.boochive.enums.NoteType;
@@ -29,6 +30,8 @@ public class ReadingNoteService {
 
     private final ReadingNoteRepository readingNoteRepository;
     private final ResourceAccessUtil<ReadingNote> resourceAccessUtil;
+    private final ResourceAccessUtil<ReadingBook> readingBookResourceAccessUtil;
+
     private final FileStorageUtil fileStorageUtil;
 
     private final String uploadDir = "images/notes/";
@@ -43,7 +46,7 @@ public class ReadingNoteService {
                     resourceAccessUtil.checkAccess(note);
                     // DTO 변환
                     T response = dtoMapper.toDto(note);
-                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getBook()));
+                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getReadingBook().getBook()));
                     return response;
                 });
     }
@@ -59,7 +62,7 @@ public class ReadingNoteService {
                 .stream()
                 .map(note -> {
                     T response = dtoMapper.toDto(note);
-                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getBook()));
+                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getReadingBook().getBook()));
                     return response;
                 })
                 .toList();
@@ -78,12 +81,12 @@ public class ReadingNoteService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PencilNoteResponse> getPencilNotesByUserAndNoteType(Long userId, Pageable pageable) {
+    public Page<PencilNoteResponse> getPencilNotesByUser(Long userId, Pageable pageable) {
         return getNotesByUserAndNoteType(userId, NoteType.PENCIL, PencilNoteMapper.INSTANCE, pageable);
     }
 
     @Transactional(readOnly = true)
-    public Page<HighlightNoteResponse> getHighlightNotesByUserAndNoteType(Long userId, Pageable pageable) {
+    public Page<HighlightNoteResponse> getHighlightNotesByUser(Long userId, Pageable pageable) {
         return getNotesByUserAndNoteType(userId, NoteType.HIGHLIGHT, HighlightNoteMapper.INSTANCE, pageable);
     }
 
@@ -94,12 +97,18 @@ public class ReadingNoteService {
     public PencilNoteResponse createPencilNote(PencilNoteRequest pencilNote) {
         ReadingNote newNote = PencilNoteMapper.INSTANCE.toEntity(pencilNote);
 
+        // 저장 전 참조 데이터(독서 책) 유효성 검증
+        validateReadingBook(pencilNote.getReadingBookId());
+
         return PencilNoteMapper.INSTANCE.toDto(readingNoteRepository.save(newNote));
     }
 
     @Transactional
     public HighlightNoteResponse createHighlightNote(HighlightNoteRequest highlightNote) throws IOException {
         ReadingNote newNote = HighlightNoteMapper.INSTANCE.toEntity(highlightNote);
+
+        // 저장 전 참조 데이터(독서 책) 유효성 검증
+        validateReadingBook(highlightNote.getReadingBookId());
 
         ReadingNote savedNote = readingNoteRepository.save(newNote);
 
@@ -166,5 +175,12 @@ public class ReadingNoteService {
         fileStorageUtil.deleteDirectory(filePath);
 
         readingNoteRepository.delete(existingNote);
+    }
+
+    /**
+     * (공통 메서드) 참조 데이터 유효성 검증 - 독서 책
+     */
+    private ReadingBook validateReadingBook(Long readingBookId) {
+        return readingBookResourceAccessUtil.checkAccessAndRetrieve(readingBookId);
     }
 }

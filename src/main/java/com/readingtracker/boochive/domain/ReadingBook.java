@@ -11,6 +11,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,8 +34,9 @@ public class ReadingBook implements Own {
     @JsonBackReference
     private User user;
 
-    @Column(length = 20, nullable = false)
-    private String bookIsbn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_isbn")
+    private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "collection_id")
@@ -49,6 +52,10 @@ public class ReadingBook implements Own {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "readingBook")
+    private List<ReadingNote> readingNotes = new ArrayList<>();
 
     /**
      * 신규 등록 전 값 자동 세팅

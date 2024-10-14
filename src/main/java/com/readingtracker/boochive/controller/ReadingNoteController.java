@@ -2,7 +2,8 @@ package com.readingtracker.boochive.controller;
 
 import com.readingtracker.boochive.domain.ReadingNote;
 import com.readingtracker.boochive.domain.User;
-import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.ValidationGroups;
+import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.enums.ResourceName;
 import com.readingtracker.boochive.exception.CustomArgumentNotValidException;
 import com.readingtracker.boochive.exception.ResourceNotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,8 +71,9 @@ public class ReadingNoteController {
      */
     @GetMapping("/pencil/me")
     public ResponseEntity<ApiResponse<Page<PencilNoteResponse>>> getPencilNoteList(@AuthenticationPrincipal User user,
-                                                                                   @PageableDefault Pageable pageable) {
-        Page<PencilNoteResponse> noteList = readingNoteService.getPencilNotesByUserAndNoteType(user.getId(), pageable);
+                                                                                   @PageableDefault Pageable pageable
+    ) {
+        Page<PencilNoteResponse> noteList = readingNoteService.getPencilNotesByUser(user.getId(), pageable);
 
         return ApiResponse.success(null, noteList);
     }
@@ -80,7 +83,7 @@ public class ReadingNoteController {
             @AuthenticationPrincipal User user,
             @PageableDefault(value = HIGHLIGHT_NOTE_SIZE_PER_PAGE) Pageable pageable
     ) {
-        Page<HighlightNoteResponse> noteList = readingNoteService.getHighlightNotesByUserAndNoteType(user.getId(), pageable);
+        Page<HighlightNoteResponse> noteList = readingNoteService.getHighlightNotesByUser(user.getId(), pageable);
 
         return ApiResponse.success(null, noteList);
     }
@@ -89,8 +92,10 @@ public class ReadingNoteController {
      * GET - 로그인 유저의 독서 책 목록 조회 (노트 작성에서 책 선택 옵션 세팅)
      */
     @GetMapping("/book-options")
-    public ResponseEntity<ApiResponse<Map<String, List<BookDto>>>> getBookOptionsForNoteCreation(@AuthenticationPrincipal User user) {
-        Map<String, List<BookDto>> readingList = readingBookService
+    public ResponseEntity<ApiResponse<Map<String, List<ReadingBookResponse>>>> getBookOptionsForNoteCreation(
+            @AuthenticationPrincipal User user
+    ) {
+        Map<String, List<ReadingBookResponse>> readingList = readingBookService
                 .getBookListGroupByReadingStatus(user.getId());
 
         return ApiResponse.success(null, readingList);
@@ -101,7 +106,8 @@ public class ReadingNoteController {
      */
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse<String>> uploadImageFile(@RequestParam(required = false) Long noteId,
-                                                               @RequestParam MultipartFile file) throws IOException {
+                                                               @RequestParam MultipartFile file
+    ) throws IOException {
 
         String directory = uploadDir;
         if (noteId == null) {
@@ -120,8 +126,11 @@ public class ReadingNoteController {
      * POST - 노트 신규 생성
      */
     @PostMapping("/pencil")
-    public ResponseEntity<ApiResponse<PencilNoteResponse>> createPencilNote(@Valid @RequestBody PencilNoteRequest pencilNote,
-                                                                            BindingResult bindingResult) throws CustomArgumentNotValidException {
+    public ResponseEntity<ApiResponse<PencilNoteResponse>> createPencilNote(
+            @Validated(ValidationGroups.Create.class) @RequestBody PencilNoteRequest pencilNote,
+            BindingResult bindingResult
+    ) throws CustomArgumentNotValidException {
+
         if (bindingResult.hasErrors()) {
             throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
         }
@@ -132,8 +141,11 @@ public class ReadingNoteController {
     }
 
     @PostMapping("/highlight")
-    public ResponseEntity<ApiResponse<HighlightNoteResponse>> createHighlightNote(@Valid @RequestBody HighlightNoteRequest highlightNote,
-                                                                                  BindingResult bindingResult) throws IOException, CustomArgumentNotValidException {
+    public ResponseEntity<ApiResponse<HighlightNoteResponse>> createHighlightNote(
+            @Validated(ValidationGroups.Create.class) @RequestBody HighlightNoteRequest highlightNote,
+            BindingResult bindingResult
+    ) throws IOException, CustomArgumentNotValidException {
+
         if (bindingResult.hasErrors()) {
             throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
         }
@@ -149,7 +161,9 @@ public class ReadingNoteController {
     @PutMapping("/pencil/{id}")
     public ResponseEntity<ApiResponse<PencilNoteResponse>> updatePencilNote(@PathVariable Long id,
                                                                             @Valid @RequestBody PencilNoteRequest pencilNote,
-                                                                            BindingResult bindingResult) throws CustomArgumentNotValidException {
+                                                                            BindingResult bindingResult
+    ) throws CustomArgumentNotValidException {
+
         if (bindingResult.hasErrors()) {
             throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
         }
@@ -162,7 +176,9 @@ public class ReadingNoteController {
     @PutMapping("/highlight/{id}")
     public ResponseEntity<ApiResponse<HighlightNoteResponse>> updateHighlightNote(@PathVariable Long id,
                                                                                   @Valid @RequestBody HighlightNoteRequest highlightNote,
-                                                                                  BindingResult bindingResult) throws CustomArgumentNotValidException {
+                                                                                  BindingResult bindingResult
+    ) throws CustomArgumentNotValidException {
+
         if (bindingResult.hasErrors()) {
             throw new CustomArgumentNotValidException("single", createValidationPriorityMap(), bindingResult);
         }

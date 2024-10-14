@@ -1,7 +1,9 @@
 package com.readingtracker.boochive.dto.note;
 
+import com.readingtracker.boochive.config.AppConstants;
 import com.readingtracker.boochive.enums.NoteType;
 import com.readingtracker.boochive.validator.PlainTextLength;
+import com.readingtracker.boochive.dto.ValidationGroups;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +16,8 @@ public class PencilNoteRequest {
 
     private final NoteType noteType = NoteType.PENCIL;
 
-    private final String bookIsbn;
+    @NotNull(message = "도서 ID " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG, groups = ValidationGroups.Create.class)
+    private final Long readingBookId;
 
     @NotEmpty(message = "본문을 입력해 주세요.")
     @PlainTextLength(min = 2, max = 1500, message = "본문은 2~1500자 이내로 입력하셔야 합니다.")

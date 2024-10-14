@@ -73,14 +73,14 @@
             <label class="col-3 col-sm-2 col-form-label">책 선택</label>
             <div class="col-9 col-sm-10 d-flex align-items-center">
                 <div class="w-100">
-                    <select class="lc-select" name="bookIsbn" {{#if note.id}} disabled {{/if}}>
+                    <select class="lc-select" name="readingBookId" {{#if note.id}} disabled {{/if}}>
                         {{#with note.bookInfo}}
                             <option value="{{isbn13}}" data-image="{{cover}}" selected>{{title}}</option>
                         {{else}}
                             {{#each bookOptions}}
                                 <optgroup label="{{@key}}">
                                     {{#each this}}
-                                        <option value="{{isbn13}}" data-image="{{cover}}">{{title}}</option>
+                                        <option value="{{id}}" data-image="{{bookInfo.cover}}">{{bookInfo.title}}</option>
                                     {{/each}}
                                 </optgroup>
                             {{/each}}
@@ -129,8 +129,8 @@
     /**
      * 노트 저장 및 삭제
      */
-    // HTML 템플릿 렌더링 후 이벤트 세팅
-    function setModalEventAfterRender() {
+    // HTML 템플릿 렌더링 후 스크립트 실행
+    function executeScriptsAfterRender() {
         Helpers.initializeLCSelect();
 
         // 편집 모드 전환 ('수정' 버튼)

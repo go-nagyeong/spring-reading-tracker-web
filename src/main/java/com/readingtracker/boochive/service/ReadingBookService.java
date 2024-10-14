@@ -8,6 +8,7 @@ import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.enums.ReadingStatus;
+import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.mapper.ReadingBookMapper;
 import com.readingtracker.boochive.repository.PurchaseHistoryRepository;
 import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
@@ -53,32 +54,24 @@ public class ReadingBookService {
 
     @Transactional(readOnly = true)
     public Optional<ReadingBookResponse> findReadingBookByUserAndBook(Long userId, String bookIsbn) {
-        return readingBookRepository.findByUserIdAndBookIsbn(userId, bookIsbn)
+        return readingBookRepository.findByUserIdAndBookIsbn13(userId, bookIsbn)
                 .map(ReadingBookMapper.INSTANCE::toDto);
     }
 
     @Transactional(readOnly = true)
-    public Map<String, List<BookDto>> getBookListGroupByReadingStatus(Long userId) {
+    public Map<String, List<ReadingBookResponse>> getBookListGroupByReadingStatus(Long userId) {
         List<ReadingBookResponse> readingList = readingBookRepository.findAllByUserId(userId)
                 .stream()
-                .map(ReadingBookMapper.INSTANCE::toDto)
+                .map(readingBook -> {
+                    ReadingBookResponse readingBookResponse = ReadingBookMapper.INSTANCE.toDto(readingBook);
+                    readingBookResponse.setBookInfo(BookMapper.INSTANCE.toDto(readingBook.getBook()));
+                    return readingBookResponse;
+                })
                 .toList();
 
-        // 2. ISBN을 기반으로 책 상세 정보 한 번에 조회
-        List<String> isbnList = readingList.stream()
-                .map(ReadingBookResponse::getBookIsbn)
-                .toList();
-        Map<String, BookDto> bookInfoMap = getReadingBookDetailData(isbnList);
-
-        // 3. Reading Status를 기준으로 그룹화하고, 정렬
+        // Reading Status를 기준으로 그룹화하고, 정렬
         return readingList.stream()
-                .collect(Collectors.groupingBy(
-                        ReadingBookResponse::getReadingStatus, // 독서 상태가 key
-                        Collectors.mapping(
-                                book -> bookInfoMap.get(book.getBookIsbn()), // 책 상세 정보가 value가 되게 변환
-                                Collectors.toList()
-                        )
-                ))
+                .collect(Collectors.groupingBy(ReadingBookResponse::getReadingStatus)) // 독서 상태가 key
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.comparingInt(ReadingStatus::getPriority))) // 독서 상태 우선순위에 따라 정렬
@@ -92,7 +85,7 @@ public class ReadingBookService {
 
     @Transactional(readOnly = true)
     public List<ReadingBookResponse> getReadingListByUserAndBookList(Long userId, List<String> bookIsbnList) {
-        return readingBookRepository.findAllByUserIdAndBookIsbnIn(userId, bookIsbnList)
+        return readingBookRepository.findAllByUserIdAndBookIsbn13In(userId, bookIsbnList)
                 .stream()
                 .map(ReadingBookMapper.INSTANCE::toDto)
                 .toList();
@@ -165,7 +158,7 @@ public class ReadingBookService {
     // 책 독자 수 계산
     @Transactional(readOnly = true)
     public Integer getBookReaderCount(String bookIsbn) {
-        return readingBookRepository.countByBookIsbnAndReadingStatus(bookIsbn, ReadingStatus.READ);
+        return readingBookRepository.countByBookIsbn13AndReadingStatus(bookIsbn, ReadingStatus.READ);
     }
 
     /**
@@ -175,9 +168,8 @@ public class ReadingBookService {
     public ReadingBookResponse createReadingBook(ReadingBookRequest readingBook) {
         ReadingBook newReadingBook = ReadingBookMapper.INSTANCE.toEntity(readingBook);
 
-        // 저장 전 참조 데이터 유효성 검증 및 엔티티 객체 매핑
-        BookCollection collection = validateBookCollection(readingBook.getCollectionId());
-        newReadingBook.updateCollection(collection);
+        // 저장 전 참조 데이터(컬렉션) 유효성 검증
+        validateBookCollection(readingBook.getCollectionId());
 
         ReadingBook createdReadingBook = readingBookRepository.save(newReadingBook);
 
@@ -280,7 +272,7 @@ public class ReadingBookService {
     private void saveReadingRecord(ReadingBook readingBook) {
         // 읽는 중 > 독서 이력 생성 / 읽음 > 완독일 세팅
         Long userId = readingBook.getUser().getId();
-        String bookIsbn = readingBook.getBookIsbn();
+        String bookIsbn = readingBook.getBook().getIsbn13();
         LocalDate today = LocalDate.now();
 
         if (readingBook.getReadingStatus().equals(ReadingStatus.READING)) { // 읽는 중

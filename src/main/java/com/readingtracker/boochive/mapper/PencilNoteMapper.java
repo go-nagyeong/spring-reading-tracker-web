@@ -12,6 +12,7 @@ public interface PencilNoteMapper extends NoteMapper {
 
     PencilNoteMapper INSTANCE = Mappers.getMapper(PencilNoteMapper.class);
 
+    @Mapping(target = "readingBook.id", source = "readingBookId")
     ReadingNote toEntity(PencilNoteRequest pencilNoteRequest);
 
     @Mapping(target = "bookInfo", ignore = true)

@@ -44,7 +44,7 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
                 .leftJoin(purchaseHistory)
                 .on(
                         readingBook.user.eq(purchaseHistory.user),
-                        readingBook.bookIsbn.eq(purchaseHistory.bookIsbn)
+                        readingBook.book.isbn13.eq(purchaseHistory.bookIsbn)
                 );
 
         // 페이지네이션을 위한 Total Count 조회

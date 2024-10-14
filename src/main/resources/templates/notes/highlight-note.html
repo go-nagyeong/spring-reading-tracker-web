@@ -229,12 +229,10 @@
 
         if (mode === 'edit') {
             const bookOptions = await loadUserBookList();
-            const defaultHighlightColor = config.highlight.default;
-            const highlightColorOptions = config.highlight.colors;
+            const highlightColorOptions = config.noteColors;
             const html = template({
                 note: data,
                 bookOptions: bookOptions,
-                defaultHighlightColor: defaultHighlightColor,
                 highlightColorOptions: highlightColorOptions
             });
             noteDetailForm.innerHTML = sanitizeHtml(html);
@@ -250,7 +248,7 @@
         }
 
         // 렌더링 후 이벤트 리스너 세팅
-        setModalEventAfterRender();
+        executeScriptsAfterRender();
     }
 </script>
 </body>

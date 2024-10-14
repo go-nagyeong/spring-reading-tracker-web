@@ -26,15 +26,19 @@ let config = {
         textMuted: '#999999',
         borderColor: '#eceef1'
     },
-    highlight: {
-        default: '#FFFF99',
+    noteColors: {
+        default: '#FFDC74',
         colors: [
-            '#FFFF99', // 연한 노란색
-            '#FFB6C1', // 연한 핑크색
-            '#ADD8E6', // 연한 파란색
-            '#90EE90', // 연한 녹색
-            '#FFDAB9', // 연한 오렌지색
-            '#E6E6FA'  // 연한 보라색
+            '#FFDC74', // lemon sunshine
+            '#FBAC87', // beach at sunset
+            '#FF8C87', // watermelon spring
+            '#F3A6C8', // cotton candy cheeks
+            '#DEACF9', // moonlit lily
+            '#AEB5FF', // clear sky sea
+            '#95C8F3', // mountain breeze waves
+            '#81E3E1', // toes in the lagoon
+            '#7DE198', // jungle getaway
+            '#B3E561', // golf club special
         ],
     }
 };

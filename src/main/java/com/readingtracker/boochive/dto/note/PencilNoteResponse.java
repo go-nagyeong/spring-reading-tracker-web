@@ -20,5 +20,5 @@ public class PencilNoteResponse implements NoteResponse {
     private final LocalDate createDate;
 
     @Setter
-    private BookDto bookInfo; // 매핑 이후 조회 변수
+    private BookDto bookInfo; // ManyToOne 관계 Book 데이터 조인
 }
