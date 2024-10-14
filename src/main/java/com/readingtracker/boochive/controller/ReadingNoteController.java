@@ -54,6 +54,7 @@ public class ReadingNoteController {
                 .map(note -> ApiResponse.success(null, note))
                 .orElseThrow(() -> new ResourceNotFoundException(resourceName.getName()));
     }
+
     @GetMapping("/highlight/{id}")
     public ResponseEntity<ApiResponse<HighlightNoteResponse>> getHighlightNoteDetail(@PathVariable Long id) {
         ResourceName resourceName = ResourceName.fromClassName(ReadingNote.class.getSimpleName());
@@ -73,6 +74,7 @@ public class ReadingNoteController {
 
         return ApiResponse.success(null, noteList);
     }
+
     @GetMapping("/highlight/me")
     public ResponseEntity<ApiResponse<Page<HighlightNoteResponse>>> getHighlightNoteList(
             @AuthenticationPrincipal User user,
@@ -115,7 +117,7 @@ public class ReadingNoteController {
     }
 
     /**
-     * POST - [연필 노트] 생성
+     * POST - 노트 신규 생성
      */
     @PostMapping("/pencil")
     public ResponseEntity<ApiResponse<PencilNoteResponse>> createPencilNote(@Valid @RequestBody PencilNoteRequest pencilNote,
@@ -128,6 +130,7 @@ public class ReadingNoteController {
 
         return ApiResponse.success("노트가 작성되었습니다.", savedNote);
     }
+
     @PostMapping("/highlight")
     public ResponseEntity<ApiResponse<HighlightNoteResponse>> createHighlightNote(@Valid @RequestBody HighlightNoteRequest highlightNote,
                                                                                   BindingResult bindingResult) throws IOException, CustomArgumentNotValidException {
@@ -141,7 +144,7 @@ public class ReadingNoteController {
     }
 
     /**
-     * PUT - [연필 노트] 수정
+     * PUT - 노트 수정
      */
     @PutMapping("/pencil/{id}")
     public ResponseEntity<ApiResponse<PencilNoteResponse>> updatePencilNote(@PathVariable Long id,
@@ -155,6 +158,7 @@ public class ReadingNoteController {
 
         return ApiResponse.success("노트가 수정되었습니다.", savedNote);
     }
+
     @PutMapping("/highlight/{id}")
     public ResponseEntity<ApiResponse<HighlightNoteResponse>> updateHighlightNote(@PathVariable Long id,
                                                                                   @Valid @RequestBody HighlightNoteRequest highlightNote,
@@ -169,10 +173,10 @@ public class ReadingNoteController {
     }
 
     /**
-     * DELETE - [연필 노트] 수정
+     * DELETE - 노트 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Object>> deletePencilNote(@PathVariable Long id) throws IOException {
+    public ResponseEntity<ApiResponse<Object>> deleteNote(@PathVariable Long id) throws IOException {
         readingNoteService.deleteNoteById(id);
 
         return ApiResponse.success("노트가 삭제되었습니다.");

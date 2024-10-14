@@ -13,8 +13,6 @@ public class PencilNoteResponse implements NoteResponse {
 
     private final Long id;
 
-    private final String bookIsbn;
-
     private final String noteText;
 
     private final Integer isPublic;

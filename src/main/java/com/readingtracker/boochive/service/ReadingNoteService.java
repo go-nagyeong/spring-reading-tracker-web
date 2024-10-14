@@ -1,10 +1,11 @@
 package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.ReadingNote;
-import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.dto.note.*;
 import com.readingtracker.boochive.enums.NoteType;
+import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.mapper.HighlightNoteMapper;
+import com.readingtracker.boochive.mapper.NoteMapper;
 import com.readingtracker.boochive.mapper.PencilNoteMapper;
 import com.readingtracker.boochive.repository.ReadingNoteRepository;
 import com.readingtracker.boochive.util.FileStorageUtil;
@@ -19,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,71 +31,60 @@ public class ReadingNoteService {
     private final ResourceAccessUtil<ReadingNote> resourceAccessUtil;
     private final FileStorageUtil fileStorageUtil;
 
-    private final BookService bookService;
-
     private final String uploadDir = "images/notes/";
 
     /**
      * C[R]UD - READ
      */
-    @Transactional(readOnly = true)
-    public Optional<PencilNoteResponse> findPencilNoteById(Long id) {
-
+    public <T extends NoteResponse, M extends NoteMapper> Optional<T> findNoteById(Long id, M dtoMapper) {
         return readingNoteRepository.findById(id)
                 .map(note -> {
-                    resourceAccessUtil.checkAccess(note); // 데이터 접근 권한 검사
-                    PencilNoteResponse dto = PencilNoteMapper.INSTANCE.toDto(note);
-                    bookService.findBookByIsbn(note.getBookIsbn()) // 책 상세 정보 세팅
-                            .ifPresent(dto::setBookInfo);
-                    return dto;
+                    // 데이터 접근 권한 검사
+                    resourceAccessUtil.checkAccess(note);
+                    // DTO 변환
+                    T response = dtoMapper.toDto(note);
+                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getBook()));
+                    return response;
                 });
+    }
+
+    public <T extends NoteResponse, M extends NoteMapper> Page<T> getNotesByUserAndNoteType(
+            Long userId, NoteType noteType, M dtoMapper, Pageable pageable
+    ) {
+        Page<ReadingNote> pageableNoteList = readingNoteRepository
+                .findAllByUserIdAndNoteTypeOrderByIdDesc(userId, noteType, pageable);
+
+        // DTO 변환
+        List<T> noteList = pageableNoteList.getContent()
+                .stream()
+                .map(note -> {
+                    T response = dtoMapper.toDto(note);
+                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getBook()));
+                    return response;
+                })
+                .toList();
+
+        return new PageImpl<>(noteList, pageable, pageableNoteList.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<PencilNoteResponse> findPencilNoteById(Long id) {
+        return findNoteById(id, PencilNoteMapper.INSTANCE);
     }
 
     @Transactional(readOnly = true)
     public Optional<HighlightNoteResponse> findHighlightNoteById(Long id) {
-
-        return readingNoteRepository.findById(id)
-                .map(note -> {
-                    resourceAccessUtil.checkAccess(note); // 데이터 접근 권한 검사
-                    HighlightNoteResponse dto = HighlightNoteMapper.INSTANCE.toDto(note);
-                    bookService.findBookByIsbn(note.getBookIsbn()) // 책 상세 정보 세팅
-                            .ifPresent(dto::setBookInfo);
-                    return dto;
-                });
+        return findNoteById(id, HighlightNoteMapper.INSTANCE);
     }
 
     @Transactional(readOnly = true)
     public Page<PencilNoteResponse> getPencilNotesByUserAndNoteType(Long userId, Pageable pageable) {
-        Page<ReadingNote> pageableNoteList = readingNoteRepository
-                .findAllByUserIdAndNoteTypeOrderByIdDesc(userId, NoteType.PENCIL, pageable);
-
-        // Page<Domain>를 List<Dto>로 변환
-        List<PencilNoteResponse> noteList = pageableNoteList.getContent()
-                .stream()
-                .map(PencilNoteMapper.INSTANCE::toDto)
-                .toList();
-
-        // DTO에 책 상세 정보 세텡
-        setBookInfoEachRecord(noteList);
-
-        return new PageImpl<>(noteList, pageable, pageableNoteList.getTotalElements());
+        return getNotesByUserAndNoteType(userId, NoteType.PENCIL, PencilNoteMapper.INSTANCE, pageable);
     }
 
     @Transactional(readOnly = true)
     public Page<HighlightNoteResponse> getHighlightNotesByUserAndNoteType(Long userId, Pageable pageable) {
-        Page<ReadingNote> pageableNoteList = readingNoteRepository
-                .findAllByUserIdAndNoteTypeOrderByIdDesc(userId, NoteType.HIGHLIGHT, pageable);
-
-        // Page<Domain>를 List<Dto>로 변환
-        List<HighlightNoteResponse> noteList = pageableNoteList.getContent()
-                .stream()
-                .map(HighlightNoteMapper.INSTANCE::toDto)
-                .toList();
-
-        // DTO에 책 상세 정보 세텡
-        setBookInfoEachRecord(noteList);
-
-        return new PageImpl<>(noteList, pageable, pageableNoteList.getTotalElements());
+        return getNotesByUserAndNoteType(userId, NoteType.HIGHLIGHT, HighlightNoteMapper.INSTANCE, pageable);
     }
 
     /**
@@ -178,22 +166,5 @@ public class ReadingNoteService {
         fileStorageUtil.deleteDirectory(filePath);
 
         readingNoteRepository.delete(existingNote);
-    }
-
-    /**
-     * (공통 메서드) 책 상세 정보 데이터 세팅 (DTO 데이터 전처리)
-     */
-    private void setBookInfoEachRecord(List<? extends NoteResponse> noteList) {
-        // 2. ISBN을 기반으로 책 상세 정보 한 번에 조회
-        List<String> isbnList = noteList.stream()
-                .map(NoteResponse::getBookIsbn)
-                .distinct()
-                .toList();
-        Map<String, BookDto> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
-                .stream()
-                .collect(Collectors.toMap(BookDto::getIsbn13, bookInfo -> bookInfo));
-
-        // 3. 각 노트 레코드에 추가 정보 세팅
-        noteList.forEach(note -> note.setBookInfo(bookInfoMap.get(note.getBookIsbn())));
     }
 }

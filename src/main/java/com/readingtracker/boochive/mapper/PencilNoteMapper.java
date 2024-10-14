@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface PencilNoteMapper {
+public interface PencilNoteMapper extends NoteMapper {
 
     PencilNoteMapper INSTANCE = Mappers.getMapper(PencilNoteMapper.class);
 

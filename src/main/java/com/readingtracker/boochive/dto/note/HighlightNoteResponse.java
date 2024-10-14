@@ -13,8 +13,6 @@ public class HighlightNoteResponse implements NoteResponse {
 
     private final Long id;
 
-    private final String bookIsbn;
-
     private final String noteText;
 
     private final String attachmentImage;

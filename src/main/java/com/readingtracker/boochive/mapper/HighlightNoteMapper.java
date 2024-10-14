@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface HighlightNoteMapper {
+public interface HighlightNoteMapper extends NoteMapper {
 
     HighlightNoteMapper INSTANCE = Mappers.getMapper(HighlightNoteMapper.class);
 

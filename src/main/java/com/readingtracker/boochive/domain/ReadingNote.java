@@ -30,8 +30,9 @@ public class ReadingNote implements Own {
     @JsonBackReference
     private User user;
 
-    @Column(length = 20, nullable = false)
-    private String bookIsbn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_isbn")
+    private Book book;
 
     @Enumerated(EnumType.STRING)
     private NoteType noteType;
