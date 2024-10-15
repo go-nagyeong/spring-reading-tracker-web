@@ -53,7 +53,9 @@
 
                 <div class="card-body">
                     <div class="bookshelf-cont">
-                        <div th:replace="~{common/result-message :: div('추가된 책이 없습니다.')}"></div>
+                        <div class="position-absolute w-100">
+                            <div th:replace="~{common/result-message :: div('추가된 책이 없습니다.')}"></div>
+                        </div>
 
                         <div class="bookshelf ui-library">
                             <div class="books">

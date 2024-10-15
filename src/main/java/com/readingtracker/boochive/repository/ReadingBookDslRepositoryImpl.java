@@ -34,18 +34,18 @@ public class ReadingBookDslRepositoryImpl implements ReadingBookDslRepository {
         // Base 쿼리 작성
         JPQLQuery<ReadingBook> query = queryFactory
                 .selectFrom(readingBook)
+                .leftJoin(readingBook.book).fetchJoin()
+                .leftJoin(purchaseHistory).on(
+                        readingBook.user.eq(purchaseHistory.user),
+                        readingBook.book.isbn13.eq(purchaseHistory.bookIsbn)
+                )
                 .where(
                         readingBook.user.eq(user),
                         equalsReadingStatus(readingBook, condition),
                         equalsCollectionId(readingBook, condition),
                         equalsOwn(purchaseHistory, condition)
                 )
-                .orderBy(readingBook.id.desc())
-                .leftJoin(purchaseHistory)
-                .on(
-                        readingBook.user.eq(purchaseHistory.user),
-                        readingBook.book.isbn13.eq(purchaseHistory.bookIsbn)
-                );
+                .orderBy(readingBook.id.desc());
 
         // 페이지네이션을 위한 Total Count 조회
         List<ReadingBook> list = query

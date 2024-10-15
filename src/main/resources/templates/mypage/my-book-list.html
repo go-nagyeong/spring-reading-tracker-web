@@ -218,7 +218,7 @@
 
         const filterWrapElement = document.getElementById('filterWrap');
         if (readingStatus) {
-            updateReadingListButtonUI(readingStatus, filterWrapElement); // in book-util.js
+            updateReadingStatusButtonUI(readingStatus, filterWrapElement); // in book-util.js
         }
         if (collectionId) {
             updateCollectionButtonUI(collectionId, filterWrapElement); // in book-util.js
@@ -354,7 +354,8 @@
                 checkbox.disabled = false;
                 checkbox.value = readingInfo.id;
 
-                targetElement.dataset.bookIsbn = item.isbn13;
+                targetElement.dataset.bkId = item.isbn13;
+
                 targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
                 targetElement.querySelector('.info-num .idx-badge').textContent = calculateRowIndex(getListResult.startIndex, getListResult.itemsPerPage, idx+1);

@@ -33,10 +33,10 @@ function handleReadingBook(action, data, targetElement) {
             promise = axios.post('/api/reading-books', data);
             break;
         case 'U':
-            promise = axios.put(`/api/reading-books/${data.id}`, data);
+            promise = axios.put(`/api/reading-books/${data.rdId}`, data);
             break;
         case 'D':
-            promise = axios.delete(`/api/reading-books/${data.id}`);
+            promise = axios.delete(`/api/reading-books/${data.rdId}`);
             break;
         default:
             throw new Error('Invalid action type');
@@ -65,7 +65,7 @@ function handleReadingBook(action, data, targetElement) {
 /**
  * [독서 목록에 추가] 버튼 컴포넌트 초기화 (UI 업데이트 및 이벤트 세팅)
  */
-function updateReadingListButtonUI(status, targetElement) {
+function updateReadingStatusButtonUI(status, targetElement) {
     const buttonGroup = targetElement.querySelector('.reading-btn-group');
 
     const toggleButton = buttonGroup.querySelector('button.reading-list-btn');
@@ -116,10 +116,10 @@ function updateReadingListButtonUI(status, targetElement) {
     })
 
     // 버튼 이벤트 세팅
-    setReadingListButtonEvent();
+    setReadingStatusButtonEvent();
 }
 
-function setReadingListButtonEvent() {
+function setReadingStatusButtonEvent() {
     const readingStatusButtonList = document.querySelectorAll('.reading-btn-group.action .dropdown-item');
 
     readingStatusButtonList.forEach(el => {
@@ -132,8 +132,8 @@ function setReadingListButtonEvent() {
                 handleReadingBook('D', originData, targetElement);
 
             } else {
-                originData['readingStatus'] = el.dataset.value;
-                handleReadingBook(originData.id ? 'U' : 'C', originData, targetElement);
+                originData['rdSttus'] = el.dataset.value;
+                handleReadingBook(originData['rdId'] ? 'U' : 'C', originData, targetElement);
             }
         });
     })
@@ -226,7 +226,7 @@ function setCollectionButtonEvent() {
             const originData = JSON.parse(JSON.stringify(targetElement.dataset));
 
             if (el.classList.contains('delete-btn')) {
-                originData['collectionId'] = null;
+                originData['colId'] = null;
                 handleReadingBook('U', originData, targetElement);
 
             } else if (el.classList.contains('new-collection-modal-btn')) {
@@ -235,9 +235,9 @@ function setCollectionButtonEvent() {
                 loadHTML('/my/partials/modal-collection-form', target);
 
             } else {
-                originData['collectionId'] = el.dataset.value;
-                originData['readingStatus'] ||= null; // Enum 객체로 받기 위해
-                handleReadingBook(originData.id ? 'U' : 'C', originData, targetElement);
+                originData['colId'] = el.dataset.value;
+                originData['rdSttus'] ||= "TO_READ"; // 기본값: 읽을 예정
+                handleReadingBook(originData['rdId'] ? 'U' : 'C', originData, targetElement);
             }
         });
     })
@@ -269,7 +269,10 @@ function updateReadingCarouselCardUI(readingStatus) {
 }
 // (위 Carousel 카드 콘텐츠) 최근 독서 이력
 function setReadingRecordCardData() {
-    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_reading`);
+    const targetElement = document.querySelector('.dataset-el')
+    const readingId = targetElement.dataset.rdId;
+
+    const promise = axios.get(`/api/reading-records/books/${readingId}/me/latest`);
 
     const onSuccess = (result) => {
         const latestReadingRecord = result.data;
@@ -283,7 +286,10 @@ function setReadingRecordCardData() {
 }
 // (위 Carousel 카드 콘텐츠) 완독 독서 이력
 function setReadRecordCardData() {
-    const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_read`);
+    const targetElement = document.querySelector('.dataset-el')
+    const readingId = targetElement.dataset.rdId;
+
+    const promise = axios.get(`/api/reading-records/books/${readingId}/me/latest/completed`);
 
     const onSuccess = (result) => {
         const { latestReadRecord, readCount } = result.data;
@@ -316,7 +322,7 @@ function updateBookStatistics(data, targetElement) {
             reviewCntEl.textContent = data.reviewCount;
         }
 
-        if (data.hasOwnProperty('averageRating')) {
+        if (data.hasOwnProperty('averageRating') && ratingEl) {
             if (data.averageRating < 1) {
                 ratingEl.parentElement.innerHTML = '';
             } else {
@@ -382,12 +388,12 @@ async function getUserCollectionList() {
 function onUpdateReadingInfo(readingInfo, targetElement) {
     // MEMO: ?. => readingInfo 파라미터는 null 일 수도 있음
     // 독서 상태 데이터 저장
-    targetElement.dataset.id = readingInfo?.id || "";
-    targetElement.dataset.readingStatus = readingInfo?.readingStatus || "";
-    targetElement.dataset.collectionId = readingInfo?.collectionId || "";
+    targetElement.dataset.rdId = readingInfo?.id || "";
+    targetElement.dataset.rdSttus = readingInfo?.readingStatus || "";
+    targetElement.dataset.colId = readingInfo?.collectionId || "";
 
     // 독서 상태에 따른 UI 변경
-    updateReadingListButtonUI(readingInfo?.readingStatus, targetElement);
+    updateReadingStatusButtonUI(readingInfo?.readingStatus, targetElement);
     updateCollectionButtonUI(readingInfo?.collectionId, targetElement);
     updateReadingCarouselCardUI(readingInfo?.readingStatus);
 }

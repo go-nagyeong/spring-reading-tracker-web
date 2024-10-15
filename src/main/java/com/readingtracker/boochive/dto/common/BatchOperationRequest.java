@@ -7,7 +7,9 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class BatchUpdateRequest<T> {
+public class BatchOperationRequest<T> {
+
+    private final List<T> createList;
 
     private final List<T> updateList;
 

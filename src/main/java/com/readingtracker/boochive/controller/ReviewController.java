@@ -32,7 +32,7 @@ public class ReviewController {
     /**
      * GET - 특정 책의 전체 리뷰 목록 조회
      */
-    @GetMapping("/book/{bookIsbn}")
+    @GetMapping("/books/{bookIsbn}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllReviews(@PathVariable String bookIsbn,
                                                                           @AuthenticationPrincipal User user) {
         List<ReviewResponse> reviewList = reviewService.getLatestReviewsByBook(bookIsbn);
@@ -51,7 +51,7 @@ public class ReviewController {
     /**
      * GET - 특정 책의 로그인 유저 리뷰 조회
      */
-    @GetMapping("/book/{bookIsbn}/me")
+    @GetMapping("/books/{bookIsbn}/me")
     public ResponseEntity<ApiResponse<ReviewResponse>> getUserReview(@PathVariable String bookIsbn,
                                                                      @AuthenticationPrincipal User user) {
         return reviewService.findReviewByUserAndBook(user.getId(), bookIsbn)

@@ -53,13 +53,14 @@
         const deleteList = [];
         document.querySelectorAll('#recordListWrap form').forEach(el => {
             const data = formToJson(new FormData(el));
+            const id = el.dataset.id;
             switch (data.action) {
                 case 'U':
-                    data.id = el.dataset.id;
+                    data.id = id;
                     updateList.push(data);
                     break;
                 case 'D':
-                    deleteList.push(el.dataset.id);
+                    deleteList.push(id);
                     break;
             }
         })
@@ -83,8 +84,8 @@
             // 이력이 모두 삭제 됐을 경우, 자동으로 독서 상태 변경됨
             if (remainingCompletedReadingRecordCount < 1) {
                 readingStatus = 'TO_READ';
-                updateReadingListButtonUI(readingStatus, document.querySelector('.dataset-el'));
-                lookupBook();
+                updateReadingStatusButtonUI(readingStatus, document.querySelector('.dataset-el'));
+                getBookDetail();
             }
 
             updateReadingCarouselCardUI(readingStatus);

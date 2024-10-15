@@ -26,7 +26,7 @@ public class PurchaseHistoryController {
     /**
      * GET - 로그인 유저의 책 구매 이력 조회
      */
-    @GetMapping("/book/{bookIsbn}/me")
+    @GetMapping("/books/{bookIsbn}/me")
     public ResponseEntity<ApiResponse<PurchaseHistoryResponse>> getBookPurchaseHistory(@PathVariable String bookIsbn,
                                                                                        @AuthenticationPrincipal User user) {
         return purchaseHistoryService.findHistoryByUserAndBook(user.getId(), bookIsbn)

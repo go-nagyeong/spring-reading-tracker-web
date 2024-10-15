@@ -28,15 +28,13 @@ public class ReadingRecord implements Own {
     @JsonBackReference
     private User user;
 
-    @Column(length = 20, nullable = false)
-    private String bookIsbn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reading_book_id")
+    private ReadingBook readingBook;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
-
-    @Transient
-    private Long dDay; // 클라이언트에 전달할 D-Day 계산 결과
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
@@ -67,12 +65,5 @@ public class ReadingRecord implements Own {
      */
     public void updateEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    /**
-     * 독서 디데이 변경
-     */
-    public void updateDDay(Long dDay) {
-        this.dDay = dDay;
     }
 }

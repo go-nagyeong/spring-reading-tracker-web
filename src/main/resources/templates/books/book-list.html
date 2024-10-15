@@ -25,7 +25,7 @@
             <div th:replace="~{common/result-message :: div(_)}"></div>
 
             <ul id="bookSearchList" class="tp-list">
-                <li data-book-isbn="" class="dataset-el template-tag">
+                <li class="dataset-el template-tag">
                     <div class="item-unit row">
                         <div class="item-img">
                         <span class="img-item">
@@ -158,7 +158,8 @@
                 targetElement.classList.remove('template-tag');
 
                 // 책 정보 세팅
-                targetElement.dataset.bookIsbn = item.isbn13;
+                targetElement.dataset.bkId = item.isbn13;
+
                 targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.isbn13);
                 targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
                 targetElement.querySelector('.info-num span').textContent = calculateRowIndex(searchResult.startIndex, searchResult.itemsPerPage, idx+1);

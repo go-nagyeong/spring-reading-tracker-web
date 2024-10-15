@@ -3,7 +3,7 @@ package com.readingtracker.boochive.controller;
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.dto.book.PageableBookListResponse;
-import com.readingtracker.boochive.dto.common.BatchUpdateRequest;
+import com.readingtracker.boochive.dto.common.BatchOperationRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
@@ -94,7 +94,7 @@ public class ReadingBookController {
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
 
-        onUpdateReadingBook(data, savedReadingBook.getBookIsbn(), user.getId());
+        onUpdateReadingBook(data, savedReadingBook, user.getId());
 
         return ApiResponse.success("독서 목록에 추가되었습니다.", data);
     }
@@ -116,7 +116,7 @@ public class ReadingBookController {
         Map<String, Object> data = new HashMap<>();
         data.put("saveResult", savedReadingBook);
 
-        onUpdateReadingBook(data, savedReadingBook.getBookIsbn(), user.getId());
+        onUpdateReadingBook(data, savedReadingBook, user.getId());
 
         return ApiResponse.success("독서 목록이 수정되었습니다.", data);
     }
@@ -128,14 +128,13 @@ public class ReadingBookController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteReadingBook(@PathVariable Long id,
                                                                               @AuthenticationPrincipal User user) {
         ResourceName resourceName = ResourceName.fromClassName(ReadingBook.class.getSimpleName());
-        ReadingBookResponse existing = readingBookService.findReadingBookById(id)
+        ReadingBookResponse existingReadingBook = readingBookService.findReadingBookById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(resourceName.getName()));
-        String bookIsbn = existing.getBookIsbn();
 
         readingBookService.deleteReadingBookById(id);
 
         Map<String, Object> data = new HashMap<>();
-        onUpdateReadingBook(data, bookIsbn, user.getId());
+        onUpdateReadingBook(data, existingReadingBook, user.getId());
 
         return ApiResponse.success("독서 목록에서 삭제되었습니다.", data);
     }
@@ -144,7 +143,7 @@ public class ReadingBookController {
      * POST - 독서 목록에서 Batch Delete (일괄 삭제)
      */
     @PostMapping("/batch")
-    public ResponseEntity<ApiResponse<Object>> batchDeleteReadingBooks(@RequestBody BatchUpdateRequest<ReadingBook> request) {
+    public ResponseEntity<ApiResponse<Object>> batchDeleteReadingBooks(@RequestBody BatchOperationRequest<?> request) {
         readingBookService.batchDeleteReadingBooks(request);
 
         return ApiResponse.success("독서 목록에서 삭제되었습니다.");
@@ -166,7 +165,7 @@ public class ReadingBookController {
         List<BookDto> bookList = readingList.stream()
                 .map(readingBook -> {
                     BookDto book = readingBook.getBookInfo();
-                    setReadingBookStatistics(book, userId); // 책 통계 정보 세팅
+                    setReadingBookStatistics(book, readingBook, userId); // 책 통계 정보 세팅
                     return book;
                 })
                 .toList();
@@ -176,23 +175,26 @@ public class ReadingBookController {
     }
 
     /**
-     * (공통 메서드) 책 통계 정보 세팅 - 리뷰 개수, 평균 평점, 독자 수
+     * (공통 메서드) 책 통계 정보 세팅 - 사용자 리뷰 평점, 완독 수, 독서 노트 수
      */
-    private void setReadingBookStatistics(BookDto book, Long userId) {
+    private void setReadingBookStatistics(BookDto book, ReadingBookResponse readingBook, Long userId) {
+        if (book.getSubInfo() == null) {
+            book.setSubInfo(new BookDto.SubInfo());
+        }
         BookDto.SubInfo subInfo = book.getSubInfo();
 
         reviewService.findReviewByUserAndBook(userId, book.getIsbn13())
                 .ifPresent(review -> subInfo.setUserRating(review.getRating()));
-        subInfo.setUserReadCount(readingRecordService.getUserBookReadCount(userId, book.getIsbn13()));
+        subInfo.setUserReadCount(readingRecordService.getUserBookReadCount(userId, readingBook.getId()));
         subInfo.setUserNoteCount(0); // TODO: 노트 수 추가 로직
     }
 
     /**
      * (공통 메서드) 독서 목록 업데이트 시 관련 데이터 리로드 (독자 수, 완독 수)
      */
-    private void onUpdateReadingBook(Map<String, Object> data, String bookIsbn, Long userId) {
-        data.put("readerCount", readingBookService.getBookReaderCount(bookIsbn)); // 책의 독자 수
-        data.put("userReadCount", readingRecordService.getUserBookReadCount(userId, bookIsbn)); // 유저의 완독 수
+    private void onUpdateReadingBook(Map<String, Object> data, ReadingBookResponse readingBook, Long userId) {
+        data.put("readerCount", readingBookService.getBookReaderCount(readingBook.getBookIsbn())); // 책의 독자 수
+        data.put("userReadCount", readingRecordService.getUserBookReadCount(userId, readingBook.getId())); // 유저의 완독 수
     }
 
     /**

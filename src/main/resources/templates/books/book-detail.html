@@ -321,7 +321,6 @@
 <script th:src="@{/assets/vendor/libs/star-rating/star-rating.js}"></script>
 <script th:src="@{/assets/js/rating-util.js}"></script>
 <script th:src="@{/assets/js/book-util.js}"></script>
-<script th:src="@{/assets/js/editor-util.js}"></script>
 <script type="module">
     import { SimpleEditor } from '/assets/js/editor-util.js';
     window.SimpleEditor = SimpleEditor;
@@ -420,7 +419,8 @@
         const targetElement = document.querySelector('.dataset-el')
 
         // 책 정보 세팅
-        targetElement.dataset.bookIsbn = item.isbn13;
+        targetElement.dataset.bkId = item.isbn13;
+
         targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
         targetElement.querySelector('.info-name p').textContent = item.title;
         targetElement.querySelector('.info-auth > a').textContent = item.formatAuthor;
@@ -430,6 +430,7 @@
         }
         targetElement.querySelector('.info-pub a').textContent = item.publisher;
         targetElement.querySelector('.info-date a').textContent = item.pubDate;
+        targetElement.querySelector('.info-tag').innerHTML = '';
         for (const category of item.categoryList) {
             targetElement.querySelector('.info-tag').insertAdjacentHTML('beforeend', categoryTag(category));
         }
@@ -460,9 +461,8 @@
     function getReviewData() {
         hideNoResultsMessage();
         clearReviewList();
-        globalLoading(true);
 
-        const promise = axios.get(`/api/reviews/book/${bookIsbn}`);
+        const promise = axios.get(`/api/reviews/books/${bookIsbn}`);
 
         const onSuccess = (result) => {
             const { reviewList, userReview } = result.data;
@@ -478,7 +478,7 @@
             setUserReviewSummaryData(userReview);
         };
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, false);
     }
 
     /**
@@ -563,7 +563,7 @@
     function setReviewModalFormData() {
         globalLoading(true);
 
-        const promise = axios.get(`/api/reviews/book/${bookIsbn}/me`);
+        const promise = axios.get(`/api/reviews/books/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
             const review = result.data;
@@ -595,7 +595,7 @@
     function setPurchaseHistoryModalFormData() {
         globalLoading(true);
 
-        const promise = axios.get(`/api/purchase-histories/book/${bookIsbn}/me`);
+        const promise = axios.get(`/api/purchase-histories/books/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
             const purchaseHistory = result.data;
@@ -622,7 +622,7 @@
     function setRentalHistoryModalFormData() {
         globalLoading(true);
 
-        const promise = axios.get(`/api/rental-histories/book/${bookIsbn}/me`);
+        const promise = axios.get(`/api/rental-histories/books/${bookIsbn}/me`);
 
         const onSuccess = (result) => {
             const rentalHistory = result.data;
@@ -647,7 +647,10 @@
      * 4. 현재 독서일 수정 오프캔버스
      */
     function setReadingDateCanvasForm() {
-        const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me/latest_reading`);
+        const targetElement = document.querySelector('.dataset-el')
+        const readingId = targetElement.dataset.rdId;
+
+        const promise = axios.get(`/api/reading-records/books/${readingId}/me/latest`);
 
         const onSuccess = (result) => {
             const latestReadingRecord = result.data;
@@ -668,7 +671,10 @@
      * 5. 독서 이력 수정 오프캔버스
      */
     function setReadingRecordCanvasForm() {
-        const promise = axios.get(`/api/reading-records/book/${bookIsbn}/me`);
+        const targetElement = document.querySelector('.dataset-el')
+        const readingId = targetElement.dataset.rdId;
+
+        const promise = axios.get(`/api/reading-records/books/${readingId}/me`);
 
         const onSuccess = (result) => {
             const readingRecordList = result.data;

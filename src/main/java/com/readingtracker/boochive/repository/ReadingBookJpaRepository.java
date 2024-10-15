@@ -27,6 +27,11 @@ public interface ReadingBookJpaRepository extends JpaRepository<ReadingBook, Lon
 
     List<ReadingBook> findAllByUserIdAndCollectionIdIn(Long userId, List<Long> collectionIdList);
 
+    @Query("SELECT rb FROM ReadingBook rb " +
+            "JOIN FETCH rb.book b " +
+            "JOIN FETCH rb.user u " +
+            "WHERE u.id = :userId " +
+            "AND rb.readingStatus = :readingStatus")
     List<ReadingBook> findAllByUserIdAndReadingStatus(Long userId, ReadingStatus readingStatus);
 
     Integer countByBookIsbn13AndReadingStatus(String bookIsbnList, ReadingStatus readingStatus);

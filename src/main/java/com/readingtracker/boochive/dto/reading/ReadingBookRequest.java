@@ -1,5 +1,6 @@
 package com.readingtracker.boochive.dto.reading;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.readingtracker.boochive.config.AppConstants;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.validator.ValidEnum;
@@ -14,11 +15,14 @@ public class ReadingBookRequest {
 
     @NotBlank(message = "ISBN " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     @Pattern(regexp = AppConstants.BOOK_ISBN_REGEX, message = "ISBN " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @JsonProperty("bkId")
     private final String bookIsbn;
 
+    @JsonProperty("colId")
     private final Long collectionId;
 
     @NotBlank(message = "독서 상태 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     @ValidEnum(enumClass = ReadingStatus.class, message = "독서 상태 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @JsonProperty("rdSttus")
     private final String readingStatus;
 }

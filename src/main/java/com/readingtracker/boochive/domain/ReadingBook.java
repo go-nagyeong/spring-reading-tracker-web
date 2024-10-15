@@ -57,6 +57,10 @@ public class ReadingBook implements Own {
     @OneToMany(mappedBy = "readingBook")
     private List<ReadingNote> readingNotes = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "readingBook")
+    private List<ReadingRecord> readingRecords = new ArrayList<>();
+
     /**
      * 신규 등록 전 값 자동 세팅
      */
@@ -64,8 +68,6 @@ public class ReadingBook implements Own {
     protected void prePersist() {
         // 현재 로그인 유저 정보 세팅
         this.user = CurrentUserContext.getUser();
-        // 컬렉션으로 신규 등록시 독서 상태 기본값 자동 세팅 (기본값: 읽을 예정)
-        this.readingStatus = this.readingStatus == null ? ReadingStatus.TO_READ : this.readingStatus;
     }
 
     /**

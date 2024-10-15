@@ -10,5 +10,5 @@ public interface PurchaseHistoryRepository extends JpaRepository<PurchaseHistory
 
     Optional<PurchaseHistory> findByUserIdAndBookIsbn(Long userId, String bookIsbn);
 
-    List<PurchaseHistory> findAllByUserIdAndBookIsbnIn(Long userId, List<String> bookIsbnList);
+    List<PurchaseHistory> findAllByUserId(Long userId);
 }

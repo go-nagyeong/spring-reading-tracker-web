@@ -3,16 +3,14 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.dto.book.PageableBookListResponse;
-import com.readingtracker.boochive.dto.common.BatchUpdateRequest;
+import com.readingtracker.boochive.dto.common.BatchOperationRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.mapper.ReadingBookMapper;
-import com.readingtracker.boochive.repository.PurchaseHistoryRepository;
-import com.readingtracker.boochive.repository.ReadingBookDslRepositoryImpl;
-import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
+import com.readingtracker.boochive.repository.*;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +35,10 @@ public class ReadingBookService {
     private final ResourceAccessUtil<ReadingBook> resourceAccessUtil;
     private final ResourceAccessUtil<BookCollection> collectionResourceAccessUtil;
 
+    private final ReadingRecordRepository readingRecordRepository;
     private final PurchaseHistoryRepository purchaseHistoryRepository;
+    private final BookRepository bookRepository;
 
-    private final BookService bookService;
-    private final ReadingRecordService readingRecordService;
     private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
 
     /**
@@ -64,6 +62,7 @@ public class ReadingBookService {
                 .stream()
                 .map(readingBook -> {
                     ReadingBookResponse readingBookResponse = ReadingBookMapper.INSTANCE.toDto(readingBook);
+                    // 추가 정보 1. 책 상세 정보
                     readingBookResponse.setBookInfo(BookMapper.INSTANCE.toDto(readingBook.getBook()));
                     return readingBookResponse;
                 })
@@ -74,7 +73,9 @@ public class ReadingBookService {
                 .collect(Collectors.groupingBy(ReadingBookResponse::getReadingStatus)) // 독서 상태가 key
                 .entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByKey(Comparator.comparingInt(ReadingStatus::getPriority))) // 독서 상태 우선순위에 따라 정렬
+                .sorted(Map.Entry.comparingByKey(
+                        Comparator.comparingInt(ReadingStatus::getPriority) // 독서 상태 우선순위에 따라 정렬
+                ))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().getName(), // Enum 코드 값에서 name으로 변환
                         Map.Entry::getValue,
@@ -101,56 +102,48 @@ public class ReadingBookService {
 
     @Transactional(readOnly = true)
     public List<ReadingBookResponse> getIncompleteReadingListWithBookDetailByUser(Long userId) {
-        List<ReadingBookResponse> readingList = readingBookRepository
+        return readingBookRepository
                 .findAllByUserIdAndReadingStatus(userId, ReadingStatus.READING)
                 .stream()
-                .map(ReadingBookMapper.INSTANCE::toDto)
+                .map(readingBook -> {
+                    ReadingBookResponse readingBookResponse = ReadingBookMapper.INSTANCE.toDto(readingBook);
+                    // 추가 정보 1. 책 상세 정보
+                    readingBookResponse.setBookInfo(BookMapper.INSTANCE.toDto(readingBook.getBook()));
+                    // 추가 정보 2. 독서 시작일
+                    readingBookResponse.setReadingStartDate(
+                            readingBook.getReadingRecords()
+                                    .stream()
+                                    .max(Comparator.comparing(ReadingRecord::getId))
+                                    .map(ReadingRecord::getStartDate)
+                                    .orElse(null)
+                    );
+                    return readingBookResponse;
+                })
                 .toList();
-
-        // 2. ISBN을 기반으로 책 상세 정보, 독서 이력(독서 시작일 추출)을 한 번에 조회
-        List<String> isbnList = readingList.stream()
-                .map(ReadingBookResponse::getBookIsbn)
-                .toList();
-
-        Map<String, BookDto> bookInfoMap = getReadingBookDetailData(isbnList);
-
-        // 3. 각 독서 레코드에 추가 정보 세팅
-        readingList.forEach(readingBook -> {
-            readingBook.setBookInfo(bookInfoMap.get(readingBook.getBookIsbn()));
-            readingRecordService.findLatestReadingRecordByUserAndBook(userId, readingBook.getBookIsbn())
-                    .ifPresent(record -> readingBook.setReadingStartDate(record.getStartDate()));
-        });
-
-        return readingList;
     }
 
     @Transactional(readOnly = true)
     public Page<ReadingBookResponse> getReadingListWithBookDetailByUserAndFilters(User user, ReadingBookCondition condition, Pageable pageable) {
         Page<ReadingBook> pageableReadingList = readingBookDslRepository.findAllByUserAndFilters(user, condition, pageable);
 
-        // 1. Page<Domain>를 List<Dto>로 변환
-        List<ReadingBookResponse> readingList = pageableReadingList.getContent()
-                .stream()
-                .map(ReadingBookMapper.INSTANCE::toDto)
-                .toList();
-
-        // 2. ISBN을 기반으로 책 상세 정보, 책 구매 이력(소장 여부 추출)을 한 번에 조회
-        List<String> isbnList = readingList.stream()
-                .map(ReadingBookResponse::getBookIsbn)
-                .toList();
-
-        Map<String, BookDto> bookInfoMap = getReadingBookDetailData(isbnList);
-        List<String> ownedBookList = purchaseHistoryRepository
-                .findAllByUserIdAndBookIsbnIn(user.getId(), isbnList)
+        // 책 소장 여부 정보를 위해 사용자의 전체 구매 이력 가져오기
+        List<String> ownedBooks = purchaseHistoryRepository.findAllByUserId(user.getId())
                 .stream()
                 .map(PurchaseHistory::getBookIsbn)
                 .toList();
 
-        // 3. 각 독서 레코드에 추가 정보 세팅
-        readingList.forEach(readingBook -> {
-            readingBook.setBookInfo(bookInfoMap.get(readingBook.getBookIsbn()));
-            readingBook.setIsOwned(!ownedBookList.isEmpty() && ownedBookList.contains(readingBook.getBookIsbn()));
-        });
+        // DTO 변환
+        List<ReadingBookResponse> readingList = pageableReadingList.getContent()
+                .stream()
+                .map(readingBook -> {
+                    ReadingBookResponse readingBookResponse = ReadingBookMapper.INSTANCE.toDto(readingBook);
+                    // 추가 정보 1. 책 상세 정보
+                    readingBookResponse.setBookInfo(BookMapper.INSTANCE.toDto(readingBook.getBook()));
+                    // 추가 정보 2. 책 소장 여부
+                    readingBookResponse.setIsOwned(ownedBooks.contains(readingBookResponse.getBookIsbn()));
+                    return readingBookResponse;
+                })
+                .toList();
 
         return new PageImpl<>(readingList, pageable, pageableReadingList.getTotalElements());
     }
@@ -168,15 +161,15 @@ public class ReadingBookService {
     public ReadingBookResponse createReadingBook(ReadingBookRequest readingBook) {
         ReadingBook newReadingBook = ReadingBookMapper.INSTANCE.toEntity(readingBook);
 
+        // (이전 연계 작업) 책 데이터 생성 및 변경
+        saveBook(readingBook.getBookIsbn());
+
         // 저장 전 참조 데이터(컬렉션) 유효성 검증
-        validateBookCollection(readingBook.getCollectionId());
+        validateReferenceBookCollection(readingBook.getCollectionId());
 
         ReadingBook createdReadingBook = readingBookRepository.save(newReadingBook);
 
-        // (이후 연계 작업)
-        // 책 데이터 저장
-        saveBook(readingBook.getBookIsbn());
-        // 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
+        // (이후 연계 작업) 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
         saveReadingRecord(createdReadingBook);
 
         return ReadingBookMapper.INSTANCE.toDto(createdReadingBook);
@@ -190,7 +183,7 @@ public class ReadingBookService {
         ReadingBook existingReadingBook = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         // 저장 전 참조 데이터(컬렉션) 유효성 검증
-        BookCollection collection = validateBookCollection(readingBook.getCollectionId());
+        BookCollection collection = validateReferenceBookCollection(readingBook.getCollectionId());
 
         ReadingStatus newReadingStatus = ReadingStatus.valueOf(readingBook.getReadingStatus());
         boolean readingStatusChanged = !existingReadingBook.getReadingStatus().equals(newReadingStatus);
@@ -226,7 +219,7 @@ public class ReadingBookService {
      * CRU[D] - BATCH DELETE
      */
     @Transactional
-    public void batchDeleteReadingBooks(BatchUpdateRequest<ReadingBook> request) {
+    public void batchDeleteReadingBooks(BatchOperationRequest<?> request) {
         for (Long id : request.getDeleteList()) {
             delete(id);
         }
@@ -244,7 +237,7 @@ public class ReadingBookService {
     /**
      * (공통 메서드) 참조 데이터 유효성 검증 - 컬렉션
      */
-    private BookCollection validateBookCollection(Long collectionId) {
+    private BookCollection validateReferenceBookCollection(Long collectionId) {
         BookCollection collection = null;
         if (collectionId != null) {
             collection = collectionResourceAccessUtil.checkAccessAndRetrieve(collectionId);
@@ -253,32 +246,32 @@ public class ReadingBookService {
     }
 
     /**
-     * (공통 메서드) 책 데이터 생성 및 변경
+     * (공통 메서드) 독서 목록 신규 추가 시 책 데이터 자동 생성 또는 변경
      */
     private void saveBook(String isbn) {
-        Optional<BookDto> existingBook = bookService.findBookByIsbn(isbn);
+        Optional<Book> existingBook = bookRepository.findByIsbn13(isbn);
 
         if (existingBook.isEmpty()) {
             PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
-            BookDto book = lookupResult.getItem().get(0);
+            BookDto bookDto = lookupResult.getItem().get(0);
 
-            bookService.createBook(book);
+            bookRepository.save(BookMapper.INSTANCE.toEntity(bookDto));
         }
     }
 
     /**
      * (공통 메서드) 독서 상태에 따라 독서 이력 데이터 자동 생성 및 변경
      */
-    private void saveReadingRecord(ReadingBook readingBook) {
+    private void saveReadingRecord(ReadingBook updatedReadingBook) {
         // 읽는 중 > 독서 이력 생성 / 읽음 > 완독일 세팅
-        Long userId = readingBook.getUser().getId();
-        String bookIsbn = readingBook.getBook().getIsbn13();
+        Long readingBookId = updatedReadingBook.getId();
+        Long userId = updatedReadingBook.getUser().getId();
         LocalDate today = LocalDate.now();
 
-        if (readingBook.getReadingStatus().equals(ReadingStatus.READING)) { // 읽는 중
+        if (updatedReadingBook.getReadingStatus().equals(ReadingStatus.READING)) { // 읽는 중
             // 금일자가 독서시작일인 이력 찾기
-            readingRecordService
-                    .findRecordByUserAndBookAndStartDate(userId, bookIsbn, today)
+            readingRecordRepository
+                    .findByUserIdAndReadingBookIdAndStartDate(userId, readingBookId, today)
                     .ifPresentOrElse(
                             record -> {
                                 // 이미 있는 경우, 완독일 지우기
@@ -287,44 +280,34 @@ public class ReadingBookService {
                             () -> {
                                 // 없는 경우, 금일자를 독서시작일로 새로 생성
                                 ReadingRecord newReadingRecord = ReadingRecord.builder()
-                                        .user(readingBook.getUser())
-                                        .bookIsbn(bookIsbn)
+                                        .user(updatedReadingBook.getUser())
+                                        .readingBook(updatedReadingBook)
                                         .startDate(today)
                                         .build();
-                                readingRecordService.createReadingRecord(newReadingRecord);
+                                readingRecordRepository.save(newReadingRecord);
                             }
                     );
 
-        } else if (readingBook.getReadingStatus().equals(ReadingStatus.READ)) { // 읽음
+        } else if (updatedReadingBook.getReadingStatus().equals(ReadingStatus.READ)) { // 읽음
             // 가장 최근 독서 이력 찾기 (완독일이 없는 이력)
-            readingRecordService
-                    .findLatestReadingRecordByUserAndBook(userId, bookIsbn)
+            readingRecordRepository
+                    .findFirstByUserIdAndReadingBookIdAndEndDateIsNullOrderByIdDesc(userId, readingBookId)
                     .ifPresentOrElse(
                             record -> {
                                 // 있는 경우, 완독일을 금일자로 업데이트
                                 record.updateEndDate(today);
-                                readingRecordService.updateReadingRecord(record.getId(), record);
                             },
                             () -> {
                                 // 없는 경우, 금일자를 독서시작일/완독일로 새로 생성
                                 ReadingRecord newReadingRecord = ReadingRecord.builder()
-                                        .user(readingBook.getUser())
-                                        .bookIsbn(bookIsbn)
+                                        .user(updatedReadingBook.getUser())
+                                        .readingBook(updatedReadingBook)
                                         .startDate(today)
                                         .endDate(today)
                                         .build();
-                                readingRecordService.createReadingRecord(newReadingRecord);
+                                readingRecordRepository.save(newReadingRecord);
                             }
                     );
         }
-    }
-
-    /**
-     * (공통 메서드) 책 상세 정보 데이터 조회 (DTO 데이터 전처리)
-     */
-    private Map<String, BookDto> getReadingBookDetailData(List<String> isbnList) {
-        return bookService.getBooksByIsbnList(isbnList)
-                .stream()
-                .collect(Collectors.toMap(BookDto::getIsbn13, bookInfo -> bookInfo));
     }
 }

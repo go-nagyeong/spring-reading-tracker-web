@@ -26,7 +26,7 @@ public class RentalHistoryController {
     /**
      * GET - 로그인 유저의 책 대여 이력 조회
      */
-    @GetMapping("/book/{bookIsbn}/me")
+    @GetMapping("/books/{bookIsbn}/me")
     public ResponseEntity<ApiResponse<RentalHistoryResponse>> getBookRentalHistory(@PathVariable String bookIsbn,
                                                                                    @AuthenticationPrincipal User user) {
         return rentalHistoryService.findHistoryByUserAndBook(user.getId(), bookIsbn)
