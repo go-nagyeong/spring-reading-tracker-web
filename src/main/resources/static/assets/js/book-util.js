@@ -129,7 +129,15 @@ function setReadingStatusButtonEvent() {
             const originData = JSON.parse(JSON.stringify(targetElement.dataset));
 
             if (el.classList.contains('delete-btn')) {
-                handleReadingBook('D', originData, targetElement);
+                const content = '독서 목록에서 제거 시 관련 데이터가 모두 삭제됩니다.<br/>' +
+                    '삭제된 데이터는 복구가 불가능합니다.<br/>' +
+                    '그래도 제거하시겠습니까?<br/><br/>' +
+                    '※ 삭제 데이터: 독서 노트, 완독 이력, 타이머 기록<br/>' +
+                    '리뷰와 책 구매/대여 이력은 삭제되지 않습니다.';
+                confirmDeleteModal(content)
+                    .then(() => {
+                        handleReadingBook('D', originData, targetElement);
+                    });
 
             } else {
                 originData['rdSttus'] = el.dataset.value;
