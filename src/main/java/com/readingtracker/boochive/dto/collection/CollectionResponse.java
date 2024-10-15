@@ -15,6 +15,7 @@ public class CollectionResponse {
 
     private final String collectionName;
 
+    // DTO 매핑 이후 조회 변수
     @Setter
-    private List<BookDto> books; // 매핑 이후 조회 변수
+    private List<BookDto> books;
 }

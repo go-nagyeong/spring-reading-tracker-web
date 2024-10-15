@@ -39,37 +39,6 @@ public class ReadingNoteService {
     /**
      * C[R]UD - READ
      */
-    public <T extends NoteResponse, M extends NoteMapper> Optional<T> findNoteById(Long id, M dtoMapper) {
-        return readingNoteRepository.findById(id)
-                .map(note -> {
-                    // 데이터 접근 권한 검사
-                    resourceAccessUtil.checkAccess(note);
-                    // DTO 변환
-                    T response = dtoMapper.toDto(note);
-                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getReadingBook().getBook()));
-                    return response;
-                });
-    }
-
-    public <T extends NoteResponse, M extends NoteMapper> Page<T> getNotesByUserAndNoteType(
-            Long userId, NoteType noteType, M dtoMapper, Pageable pageable
-    ) {
-        Page<ReadingNote> pageableNoteList = readingNoteRepository
-                .findAllByUserIdAndNoteTypeOrderByIdDesc(userId, noteType, pageable);
-
-        // DTO 변환
-        List<T> noteList = pageableNoteList.getContent()
-                .stream()
-                .map(note -> {
-                    T response = dtoMapper.toDto(note);
-                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getReadingBook().getBook()));
-                    return response;
-                })
-                .toList();
-
-        return new PageImpl<>(noteList, pageable, pageableNoteList.getTotalElements());
-    }
-
     @Transactional(readOnly = true)
     public Optional<PencilNoteResponse> findPencilNoteById(Long id) {
         return findNoteById(id, PencilNoteMapper.INSTANCE);
@@ -98,7 +67,7 @@ public class ReadingNoteService {
         ReadingNote newNote = PencilNoteMapper.INSTANCE.toEntity(pencilNote);
 
         // 저장 전 참조 데이터(독서 책) 유효성 검증
-        validateReadingBook(pencilNote.getReadingBookId());
+        validateReferenceReadingBook(pencilNote.getReadingBookId());
 
         return PencilNoteMapper.INSTANCE.toDto(readingNoteRepository.save(newNote));
     }
@@ -108,7 +77,7 @@ public class ReadingNoteService {
         ReadingNote newNote = HighlightNoteMapper.INSTANCE.toEntity(highlightNote);
 
         // 저장 전 참조 데이터(독서 책) 유효성 검증
-        validateReadingBook(highlightNote.getReadingBookId());
+        validateReferenceReadingBook(highlightNote.getReadingBookId());
 
         ReadingNote savedNote = readingNoteRepository.save(newNote);
 
@@ -178,9 +147,48 @@ public class ReadingNoteService {
     }
 
     /**
+     * (공통 메서드) READ 공통 로직 1
+     */
+    private <T extends NoteResponse, M extends NoteMapper> Optional<T> findNoteById(Long id, M dtoMapper) {
+        return readingNoteRepository.findById(id)
+                .map(note -> {
+                    // 데이터 접근 권한 검사
+                    resourceAccessUtil.checkAccess(note);
+                    // DTO 변환
+                    T response = dtoMapper.toDto(note);
+                    // 추가 정보 1. 책 상세 정보
+                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getReadingBook().getBook()));
+                    return response;
+                });
+    }
+
+    /**
+     * (공통 메서드) READ 공통 로직 2
+     */
+    private <T extends NoteResponse, M extends NoteMapper> Page<T> getNotesByUserAndNoteType(
+            Long userId, NoteType noteType, M dtoMapper, Pageable pageable
+    ) {
+        Page<ReadingNote> pageableNoteList = readingNoteRepository
+                .findAllByUserIdAndNoteTypeOrderByIdDesc(userId, noteType, pageable);
+
+        // DTO 변환
+        List<T> noteList = pageableNoteList.getContent()
+                .stream()
+                .map(note -> {
+                    T response = dtoMapper.toDto(note);
+                    // 추가 정보 1. 책 상세 정보
+                    response.setBookInfo(BookMapper.INSTANCE.toDto(note.getReadingBook().getBook()));
+                    return response;
+                })
+                .toList();
+
+        return new PageImpl<>(noteList, pageable, pageableNoteList.getTotalElements());
+    }
+
+    /**
      * (공통 메서드) 참조 데이터 유효성 검증 - 독서 책
      */
-    private ReadingBook validateReadingBook(Long readingBookId) {
-        return readingBookResourceAccessUtil.checkAccessAndRetrieve(readingBookId);
+    private void validateReferenceReadingBook(Long readingBookId) {
+        readingBookResourceAccessUtil.checkAccessAndRetrieve(readingBookId);
     }
 }

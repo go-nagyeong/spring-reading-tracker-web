@@ -2,9 +2,7 @@ package com.readingtracker.boochive.dto.reading;
 
 import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.enums.ReadingStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -20,11 +18,13 @@ public class ReadingBookResponse {
 
     private final ReadingStatus readingStatus;
 
-    // 매핑 이후 조회 변수
+    // DTO 매핑 이후 조회 변수
     @Setter
-    private LocalDate readingStartDate;
+    private LocalDate readingStartDate; // 가장 최근 이력의 독서 시작일 (OneToMany 관계 ReadingRecord 데이터 조인)
+
     @Setter
-    private BookDto bookInfo;
+    private BookDto bookInfo; // 책 상세 정보 (ManyToOne 관계 Book 데이터 조인)
+
     @Setter
-    private Boolean isOwned;
+    private Boolean isOwned; // 책 소장 여부 (PurchaseHistory 데이터 유무)
 }
