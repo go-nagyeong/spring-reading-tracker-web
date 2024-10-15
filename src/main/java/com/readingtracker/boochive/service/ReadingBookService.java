@@ -93,14 +93,6 @@ public class ReadingBookService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReadingBookResponse> getReadingListByUserAndCollectionList(Long userId, List<Long> collectionIdList) {
-        return readingBookRepository.findAllByUserIdAndCollectionIdIn(userId, collectionIdList)
-                .stream()
-                .map(ReadingBookMapper.INSTANCE::toDto)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
     public List<ReadingBookResponse> getIncompleteReadingListWithBookDetailByUser(Long userId) {
         return readingBookRepository
                 .findAllByUserIdAndReadingStatus(userId, ReadingStatus.READING)
@@ -132,7 +124,7 @@ public class ReadingBookService {
                 .map(PurchaseHistory::getBookIsbn)
                 .toList();
 
-        // DTO 변환
+        // DTO 변환 및 관계 데이터 세팅
         List<ReadingBookResponse> readingList = pageableReadingList.getContent()
                 .stream()
                 .map(readingBook -> {
@@ -200,11 +192,6 @@ public class ReadingBookService {
         }
 
         return ReadingBookMapper.INSTANCE.toDto(existingReadingBook);
-    }
-
-    @Transactional
-    public void nullifyCollectionReference(Long collectionId) {
-        readingBookRepository.nullifyCollectionReferenceByCollectionId(collectionId);
     }
 
     /**

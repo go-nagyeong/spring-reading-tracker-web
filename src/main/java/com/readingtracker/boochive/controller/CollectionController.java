@@ -5,6 +5,8 @@ import com.readingtracker.boochive.dto.collection.CollectionResponse;
 import com.readingtracker.boochive.service.CollectionService;
 import com.readingtracker.boochive.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +34,9 @@ public class CollectionController {
      * GET - 사용자 컬렉션 목록 조회 (컬렉션 책 목록 포함)
      */
     @GetMapping("/with-books/me")
-    public ResponseEntity<ApiResponse<List<CollectionResponse>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user) {
-        List<CollectionResponse> collectionList = collectionService.getCollectionsWithBooksByUser(user.getId());
+    public ResponseEntity<ApiResponse<Page<CollectionResponse>>> getUserCollectionListWithBooks(@AuthenticationPrincipal User user,
+                                                                                                Pageable pageable) {
+        Page<CollectionResponse> collectionList = collectionService.getCollectionsWithBooksByUser(user.getId(), pageable);
 
         return ApiResponse.success(null, collectionList);
     }

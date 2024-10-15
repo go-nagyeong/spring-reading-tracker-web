@@ -3,11 +3,15 @@ package com.readingtracker.boochive.service;
 import com.readingtracker.boochive.domain.BookCollection;
 import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.dto.collection.CollectionResponse;
-import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
+import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.mapper.CollectionMapper;
 import com.readingtracker.boochive.repository.CollectionRepository;
+import com.readingtracker.boochive.repository.ReadingBookJpaRepository;
 import com.readingtracker.boochive.util.ResourceAccessUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +25,7 @@ public class CollectionService {
     private final CollectionRepository collectionRepository;
     private final ResourceAccessUtil<BookCollection> resourceAccessUtil;
 
-    private final BookService bookService;
-    private final ReadingBookService readingBookService;
+    private final ReadingBookJpaRepository readingBookRepository;
 
     /**
      * C[R]UD - READ
@@ -36,41 +39,36 @@ public class CollectionService {
     }
 
     @Transactional(readOnly = true)
-    public List<CollectionResponse> getCollectionsWithBooksByUser(Long userId) {
-        List<Long> collectionIdList = new ArrayList<>(); //
+    public Page<CollectionResponse> getCollectionsWithBooksByUser(Long userId, Pageable pageable) {
+        // 1. 컬렉션 조회
+        Page<BookCollection> pageableCollectionList = collectionRepository.findAllByUserIdOrderByIdDesc(userId, pageable);
 
-        List<CollectionResponse> collectionList = collectionRepository.findAllByUserIdOrderByIdDesc(userId)
+        // 2. 컬렉션 내 책 목록을 별도로 조회 (BookCollection의 관계 데이터 ReadingBook > ReadingBook의 관계 데이터 Book)
+        List<Long> collectionIds = pageableCollectionList.stream()
+                .map(BookCollection::getId)
+                .toList();
+        Map<Long, List<BookDto>> readingBookMap = readingBookRepository.findAllByCollectionIdIn(collectionIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        readingBook -> readingBook.getCollection().getId(),
+                        Collectors.mapping(
+                                readingBook -> BookMapper.INSTANCE.toDto(readingBook.getBook()),
+                                Collectors.toList()
+                        )
+                ));;
+
+        // 3. DTO 변환 및 관계 데이터 세팅
+        List<CollectionResponse> collectionList = pageableCollectionList.getContent()
                 .stream()
                 .map(collection -> {
-                    collectionIdList.add(collection.getId());
-                    return CollectionMapper.INSTANCE.toDto(collection);
+                    CollectionResponse collectionResponse = CollectionMapper.INSTANCE.toDto(collection);
+                    // 추가 정보 1. 책 목록
+                    collectionResponse.setBooks(readingBookMap.getOrDefault(collection.getId(), Collections.emptyList()));
+                    return collectionResponse;
                 })
                 .toList();
 
-        // 1. 각 컬렉션에 속한 독서 정보 조회
-        List<ReadingBookResponse> readingInfoList = readingBookService.getReadingListByUserAndCollectionList(userId, collectionIdList);
-
-        // 2. 독서 정보를 기반으로 책 목록을 한 번에 조회
-        List<String> isbnList = readingInfoList.stream()
-                .map(ReadingBookResponse::getBookIsbn)
-                .toList();
-
-        Map<String, BookDto> bookInfoMap = bookService.getBooksByIsbnList(isbnList)
-                .stream()
-                .collect(Collectors.toMap(BookDto::getIsbn13, bookInfo -> bookInfo));
-
-        // 3. 각 컬렉션에 책 목록을 설정
-        collectionList.forEach(collection -> {
-            List<BookDto> books = readingInfoList.stream()
-                    .filter(readingInfo -> readingInfo.getCollectionId().equals(collection.getId()))
-                    .map(readingInfo -> bookInfoMap.get(readingInfo.getBookIsbn()))
-                    .collect(Collectors.toList());
-
-            collection.setBooks(books);
-        });
-
-        // TODO: 4. 페이지네이션 정보와 함께 반환
-        return collectionList;
+        return new PageImpl<>(collectionList, pageable, pageableCollectionList.getTotalElements());
     }
 
     /**
@@ -105,7 +103,7 @@ public class CollectionService {
         BookCollection existingBookCollection = resourceAccessUtil.checkAccessAndRetrieve(id);
 
         // (이전 연계 작업) 해당 컬렉션에 소속된 모든 책의 컬렉션 참조 초기화
-        readingBookService.nullifyCollectionReference(id);
+        readingBookRepository.nullifyCollectionReferenceByCollectionId(id);
 
         collectionRepository.delete(existingBookCollection);
     }

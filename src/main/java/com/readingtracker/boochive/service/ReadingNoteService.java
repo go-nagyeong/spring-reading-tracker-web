@@ -171,7 +171,7 @@ public class ReadingNoteService {
         Page<ReadingNote> pageableNoteList = readingNoteRepository
                 .findAllByUserIdAndNoteTypeOrderByIdDesc(userId, noteType, pageable);
 
-        // DTO 변환
+        // DTO 변환 및 관계 데이터 세팅
         List<T> noteList = pageableNoteList.getContent()
                 .stream()
                 .map(note -> {

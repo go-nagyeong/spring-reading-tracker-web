@@ -17,5 +17,5 @@ public class CollectionResponse {
 
     // DTO 매핑 이후 조회 변수
     @Setter
-    private List<BookDto> books;
+    private List<BookDto> books; // 책 목록 (OneToMany 관계 ReadingBook의 Book 데이터)
 }

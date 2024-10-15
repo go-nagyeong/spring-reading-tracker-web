@@ -11,7 +11,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-header d-flex align-items-center flex-wrap">
-            <h5>내 컬렉션</h5>
+            <h5>내 컬렉션 <em class="fs-6 text-primary total-count">0</em></h5>
             <div class="ms-auto">
                 <button type="button" class="btn btn-primary btn-sm new-collection-modal-btn"
                         data-bs-toggle="modal" data-bs-target="#smallModal">새 컬렉션</button>
@@ -70,6 +70,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="p-4">
+            <nav th:replace="~{common/pagination :: nav}"></nav>
         </div>
     </div>
 </div>
@@ -145,23 +149,25 @@
      */
     function getCollectionList() {
         hideNoResultsMessage(); // 조회 시작 시 결과 없음 메시지 숨김
+        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearCollectionList(); // 이전 목록 초기화
         localLoading(true);
 
-        const promise = axios.get('/api/collections/with-books/me');
+        const promise = axios.get('/api/collections/with-books/me'+window.location.search);
 
         const onSuccess = (result) => {
-            const collectionList = result.data;
+            const collectionResult = result.data;
 
-            if (collectionList.length) {
-                setCollectionList(collectionList);
-                // TODO: setPagination
+            setCollectionList(collectionResult);
+            setPagination(collectionResult.number + 1, collectionResult.totalPages);
 
-                // 책장 UI 초기화
-                initializeBookshelfUI();
-                // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
-                setCollectionEditButtonEvent();
-            } else {
+            // 책장 UI 초기화
+            initializeBookshelfUI();
+
+            // 동적으로 로드되는 html 버튼에 대한 이벤트 세팅
+            setCollectionEditButtonEvent();
+
+            if (collectionResult.numberOfElements < 1) {
                 showNoResultMessage();
             }
         };
@@ -172,12 +178,14 @@
     /**
      * 컬랙션 목록 결과 html 동적 추가
      */
-    function setCollectionList(collectionList) {
+    function setCollectionList(collectionResult) {
         const collectionListWrap = document.getElementById('collectionListWrap');
         const templateTag = collectionListWrap.querySelector('.template-tag');
 
         if (templateTag) {
-            for (const item of collectionList) {
+            document.querySelector('.total-count').textContent = collectionResult.totalElements;
+
+            collectionResult.content.forEach(item => {
                 const targetElement = templateTag.cloneNode(true);
                 targetElement.classList.remove('template-tag');
 
@@ -203,7 +211,7 @@
                 }
 
                 collectionListWrap.appendChild(targetElement);
-            }
+            });
         }
     }
 

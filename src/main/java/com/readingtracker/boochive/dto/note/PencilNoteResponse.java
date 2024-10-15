@@ -21,5 +21,5 @@ public class PencilNoteResponse implements NoteResponse {
 
     // DTO 매핑 이후 조회 변수
     @Setter
-    private BookDto bookInfo; // 책 상세 정보 (ManyToOne 관계 Book 데이터 조인)
+    private BookDto bookInfo; // 책 상세 정보 (ManyToOne 관계 ReadingBook의 Book 데이터 조인)
 }
