@@ -23,5 +23,6 @@ public interface BookMapper {
     @Mapping(target = "subInfo.itemPage", source = "pages")
     @Mapping(target = "categoryName", ignore = true)
     @Mapping(target = "categoryList", ignore = true)
+    @Mapping(target = "statistics", ignore = true)
     BookDto toDto(Book book);
 }

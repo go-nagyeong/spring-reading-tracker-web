@@ -2,11 +2,11 @@ package com.readingtracker.boochive.service;
 
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.book.BookDto;
-import com.readingtracker.boochive.dto.book.PageableBookListResponse;
 import com.readingtracker.boochive.dto.common.BatchOperationRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
+import com.readingtracker.boochive.dto.statistics.ReadingBookStatisticsDto;
 import com.readingtracker.boochive.enums.ReadingStatus;
 import com.readingtracker.boochive.mapper.BookMapper;
 import com.readingtracker.boochive.mapper.ReadingBookMapper;
@@ -35,9 +35,9 @@ public class ReadingBookService {
     private final ResourceAccessUtil<ReadingBook> resourceAccessUtil;
     private final ResourceAccessUtil<BookCollection> collectionResourceAccessUtil;
 
+    private final BookRepository bookRepository;
     private final ReadingRecordRepository readingRecordRepository;
     private final PurchaseHistoryRepository purchaseHistoryRepository;
-    private final BookRepository bookRepository;
 
     private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
 
@@ -118,13 +118,21 @@ public class ReadingBookService {
     public Page<ReadingBookResponse> getReadingListWithBookDetailByUserAndFilters(User user, ReadingBookCondition condition, Pageable pageable) {
         Page<ReadingBook> pageableReadingList = readingBookDslRepository.findAllByUserAndFilters(user, condition, pageable);
 
-        // 책 소장 여부 정보를 위해 사용자의 전체 구매 이력 가져오기
+        List<Long> readingBookIds = pageableReadingList.getContent().stream().map(ReadingBook::getId).toList();
+
+        // 1. 사용자 독서 통계 정보 가져오기
+        Map<Long, ReadingBookStatisticsDto> readingStatistics = readingBookRepository
+                .getReadingBookStatistics(user.getId(), readingBookIds)
+                .stream()
+                .collect(Collectors.toMap(ReadingBookStatisticsDto::getReadingBookId, statistics -> statistics));
+
+        // 2. 책 소장 여부 정보를 위해 사용자의 전체 구매 이력 가져오기
         List<String> ownedBooks = purchaseHistoryRepository.findAllByUserId(user.getId())
                 .stream()
                 .map(PurchaseHistory::getBookIsbn)
                 .toList();
 
-        // DTO 변환 및 관계 데이터 세팅
+        // 3. DTO 변환 및 관계 데이터 세팅
         List<ReadingBookResponse> readingList = pageableReadingList.getContent()
                 .stream()
                 .map(readingBook -> {
@@ -133,6 +141,8 @@ public class ReadingBookService {
                     readingBookResponse.setBookInfo(BookMapper.INSTANCE.toDto(readingBook.getBook()));
                     // 추가 정보 2. 책 소장 여부
                     readingBookResponse.setIsOwned(ownedBooks.contains(readingBookResponse.getBookIsbn()));
+                    // 추가 정보 3. 사용자 독서 통계 정보
+                    readingBookResponse.setStatistics(readingStatistics.get(readingBookResponse.getId()));
                     return readingBookResponse;
                 })
                 .toList();
@@ -140,10 +150,9 @@ public class ReadingBookService {
         return new PageImpl<>(readingList, pageable, pageableReadingList.getTotalElements());
     }
 
-    // 책 독자 수 계산
     @Transactional(readOnly = true)
-    public Integer getBookReaderCount(String bookIsbn) {
-        return readingBookRepository.countByBookIsbn13AndReadingStatus(bookIsbn, ReadingStatus.READ);
+    public ReadingBookStatisticsDto getReadingBookStatisticsById(Long userId, Long readingBookId) {
+        return readingBookRepository.getReadingBookStatistics(userId, Collections.singletonList(readingBookId)).get(0);
     }
 
     /**
@@ -157,7 +166,8 @@ public class ReadingBookService {
         saveBook(readingBook.getBookIsbn());
 
         // 저장 전 참조 데이터(컬렉션) 유효성 검증
-        validateReferenceBookCollection(readingBook.getCollectionId());
+        BookCollection collection = validateReferenceBookCollection(readingBook.getCollectionId());
+        newReadingBook.updateCollection(collection);
 
         ReadingBook createdReadingBook = readingBookRepository.save(newReadingBook);
 
@@ -239,10 +249,8 @@ public class ReadingBookService {
         Optional<Book> existingBook = bookRepository.findByIsbn13(isbn);
 
         if (existingBook.isEmpty()) {
-            PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
-            BookDto bookDto = lookupResult.getItem().get(0);
-
-            bookRepository.save(BookMapper.INSTANCE.toEntity(bookDto));
+            BookDto newBook = aladdinOpenAPIHandler.lookupBook(isbn);
+            bookRepository.save(BookMapper.INSTANCE.toEntity(newBook));
         }
     }
 

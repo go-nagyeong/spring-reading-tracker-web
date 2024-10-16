@@ -54,11 +54,11 @@ public class ReadingBook implements Own {
     private LocalDateTime updatedAt;
 
     @Builder.Default
-    @OneToMany(mappedBy = "readingBook")
+    @OneToMany(mappedBy = "readingBook", cascade = CascadeType.REMOVE)
     private List<ReadingNote> readingNotes = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "readingBook")
+    @OneToMany(mappedBy = "readingBook", cascade = CascadeType.REMOVE)
     private List<ReadingRecord> readingRecords = new ArrayList<>();
 
     /**

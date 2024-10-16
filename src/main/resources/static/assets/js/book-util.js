@@ -316,12 +316,12 @@ function setReadRecordCardData() {
  * 책 통계 데이터 업데이트 (독자 수, 리뷰 수, 평균 평점)
  */
 function updateBookStatistics(data, targetElement) {
-    const subInfoWraps = targetElement.querySelectorAll('.info-rating'); // 반응형 엘리먼트 2개
+    const statisticsWraps = targetElement.querySelectorAll('.info-rating'); // 반응형 엘리먼트 2개
 
-    for (const subInfoWrap of subInfoWraps) {
-        const readerCntEl = subInfoWrap.querySelector('em.sale-num, .sale-num em');
-        const reviewCntEl = subInfoWrap.querySelector('em.rating-rv-count, .rating-rv-count em');
-        const ratingEl = subInfoWrap.querySelector('select.star-rating');
+    for (const statisticsWrap of statisticsWraps) {
+        const readerCntEl = statisticsWrap.querySelector('em.sale-num, .sale-num em');
+        const reviewCntEl = statisticsWrap.querySelector('em.rating-rv-count, .rating-rv-count em');
+        const ratingEl = statisticsWrap.querySelector('select.star-rating');
 
         if (data.hasOwnProperty('readerCount') && readerCntEl) {
             readerCntEl.textContent = data.readerCount;
@@ -334,7 +334,7 @@ function updateBookStatistics(data, targetElement) {
             if (data.averageRating < 1) {
                 ratingEl.parentElement.innerHTML = '';
             } else {
-                ratingEl.dataset.value = data.averageRating;
+                ratingEl.dataset.value = data.averageRating.toFixed(2);
                 initializeStarRating(ratingEl);
             }
         }
@@ -346,10 +346,10 @@ function updateBookStatistics(data, targetElement) {
  * 책 통계 데이터 업데이트 (작성 평점, 노트 수, 완독 수)
  */
 function updateUserBookStatistics(data, targetElement) {
-    const subInfoWrap = targetElement.querySelector('.info-rating');
-    const readCntEl = subInfoWrap.querySelector('em.read-cnt');
-    const noteCntEl = subInfoWrap.querySelector('em.note-cnt');
-    const ratingElements = subInfoWrap.querySelectorAll('select.star-rating'); // 반응형 엘리먼트 2개
+    const statisticsWrap = targetElement.querySelector('.info-rating');
+    const readCntEl = statisticsWrap.querySelector('em.read-cnt');
+    const noteCntEl = statisticsWrap.querySelector('em.note-cnt');
+    const ratingElements = statisticsWrap.querySelectorAll('select.star-rating'); // 반응형 엘리먼트 2개
 
     if (data.hasOwnProperty('userReadCount') && readCntEl) {
         readCntEl.textContent = data.userReadCount;

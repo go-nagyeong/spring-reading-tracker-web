@@ -18,8 +18,9 @@ public interface ReadingBookMapper {
 
     @Mapping(target = "bookIsbn", source = "book.isbn13")
     @Mapping(target = "collectionId", source = "collection.id")
-    @Mapping(target = "readingStartDate", ignore = true)
     @Mapping(target = "bookInfo", ignore = true)
+    @Mapping(target = "readingStartDate", ignore = true)
     @Mapping(target = "isOwned", ignore = true)
+    @Mapping(target = "statistics", ignore = true)
     ReadingBookResponse toDto(ReadingBook readingBook);
 }

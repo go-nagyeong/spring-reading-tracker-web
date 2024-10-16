@@ -89,7 +89,7 @@ public class AladdinOpenAPIHandler {
     /**
      * 상품 조회 API
      */
-    public PageableBookListResponse lookupBook(String itemId) {
+    public BookDto lookupBook(String itemId) {
         List<String> optResult = new ArrayList<>(); // 부가 정보
         optResult.add("fulldescription"); // 상품 소개
         optResult.add("Toc"); // 목차
@@ -123,7 +123,7 @@ public class AladdinOpenAPIHandler {
                 handelApiError(response.getErrorCode());
             }
 
-            return formatData(response);
+            return formatData(response).getItem().get(0); // 책 상세 조회 결과 1개만 반환
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new AladinApiException("API 호출 중 오류가 발생했습니다.");
@@ -140,7 +140,6 @@ public class AladdinOpenAPIHandler {
      * 응답 데이터 전처리 메서드
      */
     private PageableBookListResponse formatData(PageableBookListResponse data) {
-        log.info("formatData: {}", data);
         if (data != null) {
             // 도서 목록 개수 및 전체 페이지 수 전처리
             Integer totalCount = data.getTotalResults();

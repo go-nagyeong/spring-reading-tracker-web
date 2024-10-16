@@ -1,9 +1,9 @@
 package com.readingtracker.boochive.dto.book;
 
+import com.readingtracker.boochive.dto.statistics.BookStatisticsDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -30,15 +30,8 @@ public class BookDto {
 
         private String subTitle;
         private String itemPage;
-
-        // 이후 조회 변수 (책 검색 결과 화면 데이터)
-        private BigDecimal averageRating;
-        private Integer reviewCount;
-        private Integer readerCount;
-
-        // ---------- (유저 책장 화면 데이터)
-        private Integer userRating;
-        private Integer userNoteCount;
-        private Integer userReadCount;
     }
+
+    // DTO 매핑 이후 조회 변수
+    private BookStatisticsDto statistics; // 책 통계 정보
 }

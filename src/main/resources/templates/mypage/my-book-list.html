@@ -143,7 +143,7 @@
 
                                 <div class="info-rating-wrap mt-auto">
                                     <div class="info-rating">
-                                        <span class="rating-grade mb-2 d-none d-sm-inline-block">
+                                        <span class="rating-grade d-none d-sm-inline-block">
                                             <select class="star-rating star-rt-sm" data-value="" data-range="10" disabled>
                                             </select>
                                         </span>
@@ -318,13 +318,12 @@
         const promise = axios.get('/api/reading-books/me'+window.location.search);
 
         const onSuccess = (result) => {
-            const data = result.data;
-            const getListResult = data.getListResult;
+            const readingListResult = result.data;
 
-            setBookList(data);
-            setPagination(getListResult.startIndex, getListResult.totalPages);
+            setBookList(readingListResult);
+            setPagination(readingListResult.number + 1, readingListResult.totalPages);
 
-            if (getListResult.item.length < 1) {
+            if (readingListResult.numberOfElements < 1) {
                 showNoResultMessage();
             }
         };
@@ -335,44 +334,43 @@
     /**
      * 책 조회 결과 html 동적 추가
      */
-    function setBookList(data) {
-        const { getListResult, readingInfoList } = data;
+    function setBookList(readingListResult) {
         const bookListWrap = document.getElementById('myBookList');
         const templateTag = bookListWrap.querySelector('.template-tag');
 
         if (templateTag) {
-            document.querySelector('.total-count').textContent = getListResult.totalResults;
+            document.querySelector('.total-count').textContent = readingListResult.totalElements;
 
-            getListResult.item.forEach((item, idx) => {
+            readingListResult.content.forEach((item, idx) => {
                 const targetElement = templateTag.cloneNode(true);
                 targetElement.classList.remove('template-tag');
 
-                const readingInfo = readingInfoList[item.isbn13];
-
-                // 책 정보 세팅
+                // 사용자 독서(ReadingBook) ID 세팅
                 const checkbox = targetElement.querySelector('[name="books[]"]');
                 checkbox.disabled = false;
-                checkbox.value = readingInfo.id;
+                checkbox.value = item.id;
 
-                targetElement.dataset.bkId = item.isbn13;
+                // 책 정보 세팅
+                const bookInfo = item.bookInfo;
 
-                targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.isbn13);
-                targetElement.querySelector('.img-item img').setAttribute('src', item.cover);
-                targetElement.querySelector('.info-num .idx-badge').textContent = calculateRowIndex(getListResult.startIndex, getListResult.itemsPerPage, idx+1);
-                targetElement.querySelector('.info-num .own-badge').toggle(readingInfo.isOwned);
-                targetElement.querySelector('.info-name a').setAttribute('href', '/books/detail/'+item.isbn13);
-                targetElement.querySelector('.info-name a').textContent = item.title;
-                targetElement.querySelector('.info-auth > a').textContent = item.formatAuthor;
-                if (item.translator) {
+                targetElement.dataset.bkId = item.bookIsbn;
+                targetElement.querySelector('.img-item a').setAttribute('href', '/books/detail/'+item.bookIsbn);
+                targetElement.querySelector('.img-item img').setAttribute('src', bookInfo.cover);
+                targetElement.querySelector('.info-num .idx-badge').textContent = calculateRowIndex(readingListResult.number + 1, readingListResult.pageable.pageSize, idx+1);
+                targetElement.querySelector('.info-num .own-badge').toggle(item.isOwned);
+                targetElement.querySelector('.info-name a').setAttribute('href', '/books/detail/'+item.bookIsbn);
+                targetElement.querySelector('.info-name a').textContent = bookInfo.title;
+                targetElement.querySelector('.info-auth > a').textContent = bookInfo.formatAuthor;
+                if (bookInfo.translator) {
                     targetElement.querySelector('.info-auth > span').classList.remove("d-none");
-                    targetElement.querySelector('.info-auth > span > a').textContent = item.translator;
+                    targetElement.querySelector('.info-auth > span > a').textContent = bookInfo.translator;
                 }
-                targetElement.querySelector('.info-pub a').textContent = item.publisher;
-                targetElement.querySelector('.info-date a').textContent = item.pubDate;
-                targetElement.querySelector('.info-detail .bk-intro').innerHTML = item.description;
+                targetElement.querySelector('.info-pub a').textContent = bookInfo.publisher;
+                targetElement.querySelector('.info-date a').textContent = bookInfo.pubDate;
+                targetElement.querySelector('.info-detail .bk-intro').innerHTML = bookInfo.description;
 
                 // 책 관련 통계 세팅 (작성 평점, 노트 수, 완독 수)
-                updateUserBookStatistics(item.subInfo, targetElement);
+                updateUserBookStatistics(item.statistics, targetElement);
 
                 // 컬렉션 버튼 목록 세팅
                 if (cachedUserCollectionList) {
@@ -380,7 +378,7 @@
                 }
 
                 // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 버튼 UI 업데이트
-                onUpdateReadingInfo(readingInfo, targetElement);
+                onUpdateReadingInfo(item, targetElement);
 
                 bookListWrap.appendChild(targetElement);
             })
