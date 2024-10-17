@@ -27,17 +27,15 @@
             </div>
         </div>
 
-        <div class="card-body mb-4">
-            <div th:replace="~{common/loading :: local}"></div>
+        <div class="card-body">
+            <div th:replace="~{common/loading :: local('book-list-loading')}"></div>
             <div class="position-absolute w-100">
-                <div th:replace="~{common/result-message :: div('포스트잇이 없습니다.')}"></div>
+                <div th:replace="~{common/result-message :: div('노트가 없습니다.')}"></div>
             </div>
 
-            <div class="bookshelf-cont">
+            <div class="bookshelf-cont pb-4">
             </div>
-        </div>
 
-        <div class="p-4">
             <nav th:replace="~{common/pagination :: nav}"></nav>
         </div>
     </div>
@@ -94,9 +92,8 @@
      */
     function getPostItBookList() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
-        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearPostItBookList(); // 이전 목록 초기화
-        localLoading(true);
+        localLoading('book-list-loading', true);
 
         const promise = axios.get('/api/reading-notes/post-it/me'+window.location.search);
 
@@ -105,7 +102,6 @@
 
             setPostItBookList(bookListResult);
             setPagination(bookListResult.number + 1, bookListResult.totalPages);
-
             // 책장 UI 초기화
             initializeBookshelfUI();
 
@@ -113,8 +109,11 @@
                 showNoResultMessage();
             }
         };
+        const onComplete = () => {
+            localLoading('book-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     function setPostItBookList(data) {

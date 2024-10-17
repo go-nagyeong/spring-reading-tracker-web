@@ -21,7 +21,7 @@
 
     <div class="card">
         <div class="card-body" id="contentCard">
-            <div th:replace="~{common/loading :: local}"></div>
+            <div th:replace="~{common/loading :: local('book-list-loading')}"></div>
             <div th:replace="~{common/result-message :: div(_)}"></div>
 
             <ul id="bookSearchList" class="tp-list">
@@ -124,9 +124,8 @@
      */
     function getSearchResult() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
-        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearBookList(); // 이전 검색 결과 목록 초기화
-        localLoading(true);
+        localLoading('book-list-loading', true);
 
         const promise = axios.get('/api/books/search'+window.location.search);
 
@@ -134,15 +133,18 @@
             const data = result.data;
             const searchResult = data.searchResult;
 
-            if (searchResult.item.length) {
-                setBookList(data);
-                setPagination(searchResult.startIndex, searchResult.totalPages);
-            } else {
+            setBookList(data);
+            setPagination(searchResult.startIndex, searchResult.totalPages);
+
+            if (searchResult.item.length < 1) {
                 showNoResultMessage();
             }
         };
+        const onComplete = () => {
+            localLoading('book-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     /**

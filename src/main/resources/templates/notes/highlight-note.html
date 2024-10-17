@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div th:replace="~{common/loading :: local}"></div>
+            <div th:replace="~{common/loading :: local('note-list-loading')}"></div>
             <div th:replace="~{common/result-message :: div('노트가 없습니다.')}"></div>
 
             <div class="d-grid grid-2-column grid-md-3-column grid-lg-4-column gap-3 mb-3" id="noteListWrap">
@@ -137,24 +137,26 @@
      */
     function getNoteList() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
-        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearNoteList(); // 이전 목록 초기화
-        localLoading(true);
+        localLoading('note-list-loading', true);
 
         const promise = axios.get('/api/reading-notes/highlight/me'+window.location.search);
 
         const onSuccess = (result) => {
             const data = result.data;
 
-            if (data.numberOfElements) {
-                setNoteList(data);
-                setPagination(data.number + 1, data.totalPages);
-            } else {
+            setNoteList(data);
+            setPagination(data.number + 1, data.totalPages);
+
+            if (data.numberOfElements < 1) {
                 showNoResultMessage();
             }
         };
+        const onComplete = () => {
+            localLoading('note-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     function setNoteList(data) {

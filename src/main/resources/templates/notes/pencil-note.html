@@ -29,10 +29,10 @@
                 </div>
 
                 <div class="card-body">
-                    <div th:replace="~{common/loading :: local}"></div>
+                    <div th:replace="~{common/loading :: local('note-list-loading')}"></div>
                     <div th:replace="~{common/result-message :: div('노트가 없습니다.')}"></div>
 
-                    <div class="table-responsive text-nowrap mb-3" id="noteListWrap">
+                    <div class="table-responsive text-nowrap" id="noteListWrap">
                     </div>
 
                     <nav th:replace="~{common/pagination :: nav}"></nav>
@@ -46,57 +46,59 @@
 </section>
 
 <script id="note-list-template" type="text/x-handlebars-template">
-    <table class="table table-hover fs-6" style="table-layout: fixed; min-width: 540px;">
-        <thead>
-        <tr>
-            <th width="60">책</th>
-            <th width="*">본문</th>
-            <th width="120">작성일자</th>
-            <th width="90">공개여부</th>
-            <th width="55">수정</th>
-        </tr>
-        </thead>
-        <tbody class="table-border-bottom-0">
-        {{#each notes}}
-            <tr class="existing-note-btn" data-bs-show="collapse" data-bs-target="#noteDetailCont" role="button"
-                data-mode="view" data-id="{{id}}">
-                <td>
-                    {{#with bookInfo}}
-                        <img src="{{cover}}" class="img-thumbnail square rounded-circle" width="30"
-                             data-bs-toggle="tooltip" data-bs-offset="0,10" data-bs-placement="bottom"
-                             data-bs-title="{{title}}">
-                    {{/with}}
-                </td>
-                <td class="summary-text">{{contentPreview noteText}}</td>
-                <td class="text-muted">{{createDate}}</td>
-                <td>
-                    {{#if isPublic}}
-                        <span class="badge bg-label-success">전체 공개</span>
-                    {{else}}
-                        <span class="badge bg-label-primary">비공개</span>
-                    {{/if}}
-                </td>
-                <td>
-                    <div class="dropdown">
-                        <button type="button" class="btn btn-sm btn-icon dropdown-toggle hide-arrow"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item existing-note-btn" data-bs-show="collapse"
-                                   data-bs-target="#noteDetailCont" role="button" data-mode="edit">수정</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger delete-row-btn" role="button">삭제</a>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
+    {{#if notes}}
+        <table class="table table-hover fs-6" style="table-layout: fixed; min-width: 540px;">
+            <thead>
+            <tr>
+                <th width="60">책</th>
+                <th width="*">본문</th>
+                <th width="120">작성일자</th>
+                <th width="90">공개여부</th>
+                <th width="55">수정</th>
             </tr>
-        {{/each}}
-        </tbody>
-    </table>
+            </thead>
+            <tbody class="table-border-bottom-0">
+            {{#each notes}}
+                <tr class="existing-note-btn" data-bs-show="collapse" data-bs-target="#noteDetailCont" role="button"
+                    data-mode="view" data-id="{{id}}">
+                    <td>
+                        {{#with bookInfo}}
+                            <img src="{{cover}}" class="img-thumbnail square rounded-circle" width="30"
+                                 data-bs-toggle="tooltip" data-bs-offset="0,10" data-bs-placement="bottom"
+                                 data-bs-title="{{title}}">
+                        {{/with}}
+                    </td>
+                    <td class="summary-text">{{contentPreview noteText}}</td>
+                    <td class="text-muted">{{createDate}}</td>
+                    <td>
+                        {{#if isPublic}}
+                            <span class="badge bg-label-success">전체 공개</span>
+                        {{else}}
+                            <span class="badge bg-label-primary">비공개</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-sm btn-icon dropdown-toggle hide-arrow"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item existing-note-btn" data-bs-show="collapse"
+                                       data-bs-target="#noteDetailCont" role="button" data-mode="edit">수정</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger delete-row-btn" role="button">삭제</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    {{/if}}
 </script>
 
 <script type="module">
@@ -143,24 +145,26 @@
      */
     function getNoteList() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
-        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearNoteList(); // 이전 목록 초기화
-        localLoading(true);
+        localLoading('note-list-loading', true);
 
         const promise = axios.get('/api/reading-notes/pencil/me'+window.location.search);
 
         const onSuccess = (result) => {
             const data = result.data;
 
-            if (data.numberOfElements) {
-                setNoteList(data);
-                setPagination(data.number + 1, data.totalPages);
-            } else {
+            setNoteList(data);
+            setPagination(data.number + 1, data.totalPages);
+
+            if (data.numberOfElements < 1) {
                 showNoResultMessage();
             }
         };
+        const onComplete = () => {
+            localLoading('note-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     function setNoteList(data) {
@@ -280,7 +284,7 @@
             return false;
         }
 
-        const promise = axios.delete(`/api/reading-notes/pencil/${id}`)
+        const promise = axios.delete(`/api/reading-notes/${id}`)
         const onSuccess = (result) => {
             getNoteList();
             closeUIComponents();

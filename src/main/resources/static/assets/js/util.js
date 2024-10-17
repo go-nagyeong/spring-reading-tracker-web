@@ -1,4 +1,11 @@
 /**
+ * 토글 Hide/Show 함수
+ */
+Element.prototype.toggle = function(isShow) {
+    this.classList.toggle('hidden', !isShow)
+};
+
+/**
  * 초 > 시+분+초 형태로 계산
  */
 const calculateTime = (time) => {
@@ -56,7 +63,7 @@ function formToJson(data) {
 /**
  * 공통 API 응답 처리 함수
  */
-function handleApiResponse(promise, onSuccess, onError = () => {}, useLoading = true) {
+function handleApiResponse(promise, onSuccess, onError = () => {}, onComplete = () => {}) {
     promise
         .then(response => {
             const result = response.data;
@@ -65,10 +72,6 @@ function handleApiResponse(promise, onSuccess, onError = () => {}, useLoading = 
 
             if (result.message) {
                 showToast(result.message, 'success');
-            }
-            if (useLoading) {
-                globalLoading(false);
-                localLoading(false);
             }
         })
         .catch(error => {
@@ -80,10 +83,11 @@ function handleApiResponse(promise, onSuccess, onError = () => {}, useLoading = 
             if (result.message) {
                 showToast(result.message, 'error');
             }
-            if (useLoading) {
-                globalLoading(false);
-                localLoading(false);
-            }
+        })
+        .finally(() => {
+            onComplete();
+
+            globalLoading(false);
         })
 }
 
@@ -147,16 +151,16 @@ function showReadingTimerModal() {
 /**
  * 로딩 스피너 함수
  */
-function localLoading(bool) {
-    const loadingSpinner = document.getElementById('localLoading');
+function localLoading(id, bool) {
+    const loadingSpinner = document.querySelector('.local-loading#'+id);
     if (loadingSpinner) {
-        loadingSpinner.classList.toggle('show', bool);
+        loadingSpinner.toggle(bool);
     }
 }
 function globalLoading(bool) {
-    const loadingSpinner = document.getElementById('globalLoading');
+    const loadingSpinner = document.querySelector('.global-loading');
     if (loadingSpinner) {
-        loadingSpinner.classList.toggle('show', bool);
+        loadingSpinner.toggle(bool);
     }
 }
 
@@ -180,57 +184,39 @@ function hideNoResultsMessage() {
  * 페이지네이션 함수
  */
 function setPagination(curPage, lastPage) {
-    const paginationWrap = document.getElementById('paginationWrap');
-    if (paginationWrap) {
-        paginationWrap.toggle(lastPage > 0);
+    const paginationEl = document.querySelector('.pagination');
+    if (paginationEl) {
+        paginationEl.parentElement.toggle(lastPage > 0);
 
-        const pageButtonWrap = paginationWrap.querySelector('.pagination');
         const searchParams = new URLSearchParams(window.location.search);
-
-        const buttonIcon = (direction) => `<i class="tf-icon bx bx-chevron${direction}"></i>`;
-        const buttonLink = (page) => {
-            searchParams.set('page', page);
-            return curPage === page ? '' : '?'+searchParams;
+        const icon = (iconName) => `<i class="tf-icon bx bx-${iconName}"></i>`;
+        const link = (pageNum) => {
+            searchParams.set('page', pageNum);
+            return curPage === pageNum ? '' : '?' + searchParams;
         };
+        const pageButton = (link, content, styleClass) =>
+            `<li class="page-item ${styleClass}"><a class="page-link" href="${link}">${content}</a></li>`;
 
         // 페이지 버튼 표시 범위
         let startPage = Math.max(curPage - 2, 1); // 현재 페이지를 중심으로 앞으로 2페이지 이내로 시작
         let endPage = Math.min(startPage + 4, lastPage); // 시작 페이지부터 4페이지까지 (최대 5개 버튼)
 
+        let pageButtons = '';
+
         // '첫 페이지로 가기', '이전' 버튼
-        appendPageButton(pageButtonWrap, buttonLink(1), buttonIcon('s-left'), 'prev');
-        appendPageButton(pageButtonWrap, buttonLink(Math.max(startPage-1, 1)), buttonIcon('-left'), 'prev');
+        pageButtons += pageButton(link(1), icon('chevrons-left'), 'prev');
+        pageButtons += pageButton(link(Math.max(startPage - 1, 1)), icon('chevron-left'), 'prev');
 
         // 페이지 버튼
         for (let page = startPage; page <= endPage; page++) {
-            appendPageButton(pageButtonWrap, buttonLink(page), page, (page === curPage ? 'active' : null));
+            pageButtons += pageButton(link(page), page, (page === curPage ? 'active' : null));
         }
 
         // '다음', '마지막 페이지로 가기' 버튼
-        appendPageButton(pageButtonWrap, buttonLink(Math.min(endPage+1, lastPage)), buttonIcon('-right'), 'prev');
-        appendPageButton(pageButtonWrap, buttonLink(lastPage), buttonIcon('s-right'), 'next');
-    }
-}
-function appendPageButton(pageButtonWrap, link, content, additionalClass = null) {
-    const templateTag = pageButtonWrap.querySelector('.template-tag');
+        pageButtons += pageButton(link(Math.min(endPage + 1, lastPage)), icon('chevron-right'), 'prev');
+        pageButtons += pageButton(link(lastPage), icon('chevrons-right'), 'next');
 
-    const newButton = templateTag.cloneNode(true);
-    // 버튼 클래스
-    newButton.classList.remove('template-tag');
-    if (additionalClass) {
-        newButton.classList.add(additionalClass);
-    }
-    // 버튼 링크 경로
-    newButton.querySelector('a').href = link;
-    // 버튼 내용
-    newButton.querySelector('a').innerHTML = content;
-
-    pageButtonWrap.appendChild(newButton);
-}
-function clearPageButtons() {
-    const pageButtonWrap = document.querySelector('.pagination');
-    while (pageButtonWrap.children[1]) { // 첫번째 엘리먼트는 템플릿 태그이므로 제외
-        pageButtonWrap.removeChild(pageButtonWrap.children[1]);
+        paginationEl.innerHTML = pageButtons;
     }
 }
 
@@ -336,13 +322,6 @@ function setBirthdateSelectOptions(targetElement) {
 }
 
 /**
- * 토글 Hide/Show 함수
- */
-Element.prototype.toggle = function(isShow) {
-    this.classList.toggle('hidden', !isShow)
-};
-
-/**
  * 삭제 확인 모달
  */
 function confirmDeleteModal(content = null) {
@@ -355,7 +334,7 @@ function confirmDeleteModal(content = null) {
             }
             target.querySelector('#confirmBtn').addEventListener('click', resolve);
         }
-        loadHTML('/common/modal-delete-confirm', target, callback);
+        loadHTML('/common/delete-confirm', target, callback);
 
         const modalBootstrap = new bootstrap.Modal(modalEl)
         modalBootstrap.show();

@@ -22,7 +22,9 @@
         <div class="col-100 col-lg-70 mb-4 order-0">
             <div class="card">
                 <div class="card-body">
-                    <div class="item-detail row">
+                    <div th:replace="~{common/loading :: local('book-detail-loading')}"></div>
+
+                    <div class="item-detail row hidden" id="bookDetailCard">
                         <div class="item-img">
                         <span class="img-item">
                             <img class="img-thumbnail" src="">
@@ -116,9 +118,10 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade active show" id="navs-review" role="tabpanel">
+                        <div th:replace="~{common/loading :: local('review-list-loading')}"></div>
                         <div th:replace="~{common/result-message :: div('등록된 리뷰가 없습니다.')}"></div>
 
-                        <ul class="rv-list">
+                        <ul class="rv-list hidden">
                             <li class="template-tag">
                                 <div class="rv-unit">
                                     <div class="rv-left avatar">
@@ -168,10 +171,12 @@
         <!-- 내 독서 관리 -->
         <div class="col-100 col-md-50 col-lg-30 mb-4 order-1">
             <div class="card">
-                <div class="row row-bordered g-0">
+                <h5 class="card-header">내 독서 관리</h5>
+                <div th:replace="~{common/loading :: local('my-reading-loading')}"></div>
+
+                <div class="row row-bordered g-0 hidden" id="userReadingCard">
                     <div class="col-12">
-                        <h5 class="card-header">내 독서 관리</h5>
-                        <div class="card-body position-relative">
+                        <div class="card-body position-relative pt-0">
                             <div id="readingStatusCarouselCard" class="carousel slide"
                                  data-bs-ride="false">
 <!--                                <div class="carousel-indicators">-->
@@ -203,6 +208,7 @@
                         <div class="card-body">
                             <div class="item-btn-col flex-row flex-grow-all">
                                 <div th:replace="~{common/reading-list-button :: button_group}"></div>
+
                                 <div class="btn-group text-nowrap">
                                     <button type="button" class="btn btn-md btn-outline-dark"
                                             id="purchaseHistEditModalBtn"
@@ -226,6 +232,7 @@
         <div class="col-100 col-md-50 col-lg-30 order-2 order-lg-3">
             <div class="card mb-4">
                 <h5 class="card-header">내 독서 노트</h5>
+
                 <div class="card-body">
                     <div class="list-group">
                         <a th:href="@{/notes/pencil(book=1)}"
@@ -274,7 +281,9 @@
             </div>
             <div class="card d-none d-lg-flex">
                 <h5 class="card-header">내 리뷰</h5>
-                <div class="card-body user-rv-card">
+                <div th:replace="~{common/loading :: local('my-review-loading')}"></div>
+
+                <div class="card-body user-rv-card pt-0 hidden">
                     <div class="rv-wrap" id="reviewEditModalBtn" role="button" data-bs-toggle="modal"
                          data-bs-target="#mediumModal">
                         <div class="rating-grade mb-1">
@@ -297,7 +306,9 @@
         <div class="col-100 col-lg-30 mb-4 d-flex d-lg-none order-3">
             <div class="card w-100">
                 <h5 class="card-header">내 리뷰</h5>
-                <div class="card-body user-rv-card">
+                <div th:replace="~{common/loading :: local('my-review-loading')}"></div>
+
+                <div class="card-body user-rv-card pt-0 hidden">
                     <div class="rv-wrap" id="reviewEditModalBtn" role="button" data-bs-toggle="modal"
                          data-bs-target="#largeModal">
                         <div class="rating-grade mb-1">
@@ -397,15 +408,20 @@
      * 책 조회 (쿼리 파라미터를 통해 파라미터 자동 처리)
      */
     function getBookDetail() {
-        globalLoading(true);
+        localLoading('book-detail-loading', true);
+        localLoading('my-reading-loading', true);
 
         const promise = axios.get(`/api/books/detail/${bookIsbn}`);
 
         const onSuccess = (result) => {
             setBookData(result.data);
         };
+        const onComplete = () => {
+            localLoading('book-detail-loading', false);
+            localLoading('my-reading-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     /**
@@ -416,41 +432,51 @@
         const categoryTag = (text) => `<span class="tag"><a role="button">${text}</a></span>`;
 
         const targetElement = document.querySelector('.dataset-el')
+        const bookDetailCard = document.getElementById('bookDetailCard')
+        const userReadingCard = document.getElementById('userReadingCard')
 
-        // 책 정보 세팅
-        targetElement.dataset.bkId = bookDetail.isbn13;
-        targetElement.querySelector('.img-item img').setAttribute('src', bookDetail.cover);
-        targetElement.querySelector('.info-name p').textContent = bookDetail.title;
-        targetElement.querySelector('.info-auth > a').textContent = bookDetail.formatAuthor;
-        if (bookDetail.translator) {
-            targetElement.querySelector('.info-auth > span').classList.remove("d-none");
-            targetElement.querySelector('.info-auth > span > a').textContent = bookDetail.translator;
+        if (data) {
+            // 책 있을 경우에만 Show
+            bookDetailCard.toggle(true);
+            userReadingCard.toggle(true);
+            const userReviewCards = document.querySelectorAll('.user-rv-card'); // 반응형 엘리먼트 2개
+            userReviewCards.forEach(el => el.toggle(true));
+
+            // 책 정보 세팅
+            targetElement.dataset.bkId = bookDetail.isbn13;
+            targetElement.querySelector('.img-item img').setAttribute('src', bookDetail.cover);
+            targetElement.querySelector('.info-name p').textContent = bookDetail.title;
+            targetElement.querySelector('.info-auth > a').textContent = bookDetail.formatAuthor;
+            if (bookDetail.translator) {
+                targetElement.querySelector('.info-auth > span').classList.remove("d-none");
+                targetElement.querySelector('.info-auth > span > a').textContent = bookDetail.translator;
+            }
+            targetElement.querySelector('.info-pub a').textContent = bookDetail.publisher;
+            targetElement.querySelector('.info-date a').textContent = bookDetail.pubDate;
+            targetElement.querySelector('.info-tag').innerHTML = '';
+            for (const category of bookDetail.categoryList) {
+                targetElement.querySelector('.info-tag').insertAdjacentHTML('beforeend', categoryTag(category));
+            }
+            targetElement.querySelector('.info-detail .bk-page em').textContent = bookDetail.subInfo.itemPage;
+            targetElement.querySelector('.info-detail .bk-isbn em').textContent = `${bookDetail.isbn13} (${bookDetail.isbn})`;
+
+            // 별점 UI 컴포넌트 초기화
+            // const starRatingEl = bookInfoWrap.querySelector('.star-rating');
+            // if (starRatingEl) {
+            //     initializeStarRating(starRatingEl);
+            // }
+
+            // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
+            updateBookStatistics(bookDetail.statistics, targetElement);
+
+            // 컬렉션 버튼 목록 세팅
+            if (cachedUserCollectionList) {
+                setCollectionButtonOptions(cachedUserCollectionList, targetElement);
+            }
+
+            // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 관련 UI 업데이트
+            onUpdateReadingInfo(readingInfo, targetElement);
         }
-        targetElement.querySelector('.info-pub a').textContent = bookDetail.publisher;
-        targetElement.querySelector('.info-date a').textContent = bookDetail.pubDate;
-        targetElement.querySelector('.info-tag').innerHTML = '';
-        for (const category of bookDetail.categoryList) {
-            targetElement.querySelector('.info-tag').insertAdjacentHTML('beforeend', categoryTag(category));
-        }
-        targetElement.querySelector('.info-detail .bk-page em').textContent = bookDetail.subInfo.itemPage;
-        targetElement.querySelector('.info-detail .bk-isbn em').textContent = `${bookDetail.isbn13} (${bookDetail.isbn})`;
-
-        // 별점 UI 컴포넌트 초기화
-        // const starRatingEl = bookInfoWrap.querySelector('.star-rating');
-        // if (starRatingEl) {
-        //     initializeStarRating(starRatingEl);
-        // }
-
-        // 책 관련 통계 세팅 (독자 수, 리뷰 수, 평균 평점)
-        updateBookStatistics(bookDetail.statistics, targetElement);
-
-        // 컬렉션 버튼 목록 세팅
-        if (cachedUserCollectionList) {
-            setCollectionButtonOptions(cachedUserCollectionList, targetElement);
-        }
-
-        // 사용자의 독서 상태 및 컬렉션 정보 세팅 + 관련 UI 업데이트
-        onUpdateReadingInfo(readingInfo, targetElement);
     }
 
     /**
@@ -459,24 +485,28 @@
     function getReviewData() {
         hideNoResultsMessage();
         clearReviewList();
+        localLoading('review-list-loading', true);
+        localLoading('my-review-loading', true);
 
         const promise = axios.get(`/api/reviews/books/${bookIsbn}`);
 
         const onSuccess = (result) => {
             const { reviewList, userReview } = result.data;
 
-            if (reviewList.length) {
-                setReviewList(reviewList);
-                // TODO: setPagination
-            } else {
+            setReviewList(reviewList);
+            // TODO: setPagination
+            setUserReviewSummaryData(userReview); // // 사용자 리뷰 세팅
+
+            if (reviewList.length < 1) {
                 showNoResultMessage();
             }
-
-            // 사용자 리뷰 세팅
-            setUserReviewSummaryData(userReview);
         };
+        const onComplete = () => {
+            localLoading('my-review-loading', false);
+            localLoading('review-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess, () => {}, false);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     /**
@@ -487,6 +517,8 @@
         const templateTag = reviewListWrap.querySelector('.template-tag');
 
         if (templateTag) {
+            reviewListWrap.toggle(true);
+
             reviewList.forEach((item, idx) => {
                 const targetElement = templateTag.cloneNode(true);
                 targetElement.classList.remove('template-tag');

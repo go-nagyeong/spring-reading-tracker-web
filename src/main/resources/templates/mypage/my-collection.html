@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <div th:replace="~{common/loading :: local}"></div>
+        <div th:replace="~{common/loading :: local('collection-list-loading')}"></div>
         <div th:replace="~{common/result-message :: div('컬렉션이 없습니다.')}"></div>
 
         <div id="collectionListWrap">
@@ -149,9 +149,8 @@
      */
     function getCollectionList() {
         hideNoResultsMessage(); // 조회 시작 시 결과 없음 메시지 숨김
-        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearCollectionList(); // 이전 목록 초기화
-        localLoading(true);
+        localLoading('collection-list-loading', true);
 
         const promise = axios.get('/api/collections/with-books/me'+window.location.search);
 
@@ -171,8 +170,11 @@
                 showNoResultMessage();
             }
         };
+        const onComplete = () => {
+            localLoading('collection-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     /**

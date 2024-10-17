@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
@@ -16,15 +15,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ViewController {
 
     /**
-     * Home
+     * Dashboard
      */
     @GetMapping("/")
-    public String home() {
+    public String index() {
         if (!isAuthenticated()) {
             return "redirect:/login"; // 비인증 상태 > 로그인 페이지로 다이렉트
         }
-        return "index";
+        return "dashboard/index";
     }
+
+    // TODO: 추후 웰컴 페이지 만들어서 대시보드랑 분리 (React로)
+//    @GetMapping("/dashboard")
+//    public String dashboard() {
+//        return "dashboard/index";
+//    }
+
 
     /**
      * Authentication
@@ -62,6 +68,7 @@ public class ViewController {
         return authentication.isAuthenticated();
     }
 
+
     /**
      * Book
      */
@@ -80,6 +87,7 @@ public class ViewController {
         return "books/partials/"+partial;
     }
 
+
     /**
      * Setting
      */
@@ -88,9 +96,14 @@ public class ViewController {
         return "settings/account-setting";
     }
 
+
     /**
-     * My Page
+     * My Page - Reading Book, Collection
      */
+    @GetMapping("/mypage")
+    public String myPage() {
+        return "mypage/mypage";
+    }
     @GetMapping("/my/reading-books")
     public String showMyBookList() {
         return "mypage/my-book-list";
@@ -105,6 +118,7 @@ public class ViewController {
     public String showMyPagePartial(@PathVariable String partial) {
         return "mypage/partials/"+partial;
     }
+
 
     /**
      * Reading Note - My Notes
@@ -136,20 +150,15 @@ public class ViewController {
 
 
     /**
-     * TODO: 임시
+     * Common
      */
-    @RequestMapping("/common/{page}")
-    public String custom1(@PathVariable("page") String page) {
-        return "common/"+page;
+    @GetMapping("/common/reading-timer")
+    public String showReadingTimer() {
+        return "common/reading-timer";
     }
 
-    @RequestMapping("/dashboard/{page}")
-    public String custom3(@PathVariable("page") String page) {
-        return "dashboard/"+page;
-    }
-
-    @RequestMapping("/mypage/{page}")
-    public String custom4(@PathVariable("page") String page) {
-        return "mypage/"+page;
+    @GetMapping("/common/delete-confirm")
+    public String showDeleteConfirm() {
+        return "common/modal-delete-confirm";
     }
 }

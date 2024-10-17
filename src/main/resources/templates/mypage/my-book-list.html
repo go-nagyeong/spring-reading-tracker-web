@@ -85,7 +85,7 @@
         </div>
 
         <div class="card-body">
-            <div th:replace="~{common/loading :: local}"></div>
+            <div th:replace="~{common/loading :: local('book-list-loading')}"></div>
             <div th:replace="~{common/result-message :: div('추가된 책이 없습니다.')}"></div>
 
             <form id="batchDeleteForm">
@@ -311,9 +311,8 @@
     const commonReloadOnDelete = getBookList; // 공통 메서드 콜백을 위해 (handleReadingBook 함수)
     function getBookList() {
         hideNoResultsMessage(); // 검색 시작 시 결과 없음 메시지 숨김
-        clearPageButtons(); // 페이지네이션 버튼 초기화
         clearBookList(); // 이전 목록 초기화
-        localLoading(true);
+        localLoading('book-list-loading', true);
 
         const promise = axios.get('/api/reading-books/me'+window.location.search);
 
@@ -327,8 +326,11 @@
                 showNoResultMessage();
             }
         };
+        const onComplete = () => {
+            localLoading('book-list-loading', false);
+        }
 
-        handleApiResponse(promise, onSuccess);
+        handleApiResponse(promise, onSuccess, () => {}, onComplete);
     }
 
     /**

@@ -486,12 +486,8 @@ input[type=color]::-moz-color-swatch {
 }
 
 .spinner-wrap {
-    display: none;
     text-align: center;
     padding: 3rem 0;
-}
-.spinner-wrap.show {
-    display: block;
 }
 
 .spinner-wrap > * {

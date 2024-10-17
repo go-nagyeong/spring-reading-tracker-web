@@ -14,12 +14,12 @@
             </a>
         </li>
 
-        <!-- 마이페이지 -->
-        <li class="menu-item" th:classappend="${#strings.startsWith(page, 'mypage') ? 'active' : ''}">
-            <a th:href="@{/mypage/mypage}" class="menu-link">
-                <div data-i18n="MyPage">마이페이지</div>
-            </a>
-        </li>
+        <!-- TODO: 마이페이지 -->
+<!--        <li class="menu-item" th:classappend="${page == 'mypage' ? 'active' : ''}">-->
+<!--            <a th:href="@{/mypage}" class="menu-link">-->
+<!--                <div data-i18n="MyPage">마이페이지</div>-->
+<!--            </a>-->
+<!--        </li>-->
 
         <li class="menu-item" th:classappend="${page == 'my-book-list' ? 'active' : ''}">
             <a th:href="@{/my/reading-books}" class="menu-link">
@@ -40,18 +40,18 @@
         </li>
 
         <!-- TODO: 독서 리포트 -->
-        <li class="menu-item" th:classappend="${page == 'statistics' ? 'active' : ''}">
-            <a href="javascript:void(0);" class="menu-link under-construction">
-                <div data-i18n="Statistics">독서 리포트</div>
-            </a>
-        </li>
+<!--        <li class="menu-item" th:classappend="${page == 'statistics' ? 'active' : ''}">-->
+<!--            <a href="javascript:void(0);" class="menu-link under-construction">-->
+<!--                <div data-i18n="Statistics">독서 리포트</div>-->
+<!--            </a>-->
+<!--        </li>-->
 
         <!-- TODO: 베스트셀러 -->
-        <li class="menu-item" th:classappend="${page == 'bestseller' ? 'active' : ''}">
-            <a href="javascript:void(0);" class="menu-link under-construction">
-                <div data-i18n="Bestseller">베스트셀러</div>
-            </a>
-        </li>
+<!--        <li class="menu-item" th:classappend="${page == 'bestseller' ? 'active' : ''}">-->
+<!--            <a href="javascript:void(0);" class="menu-link under-construction">-->
+<!--                <div data-i18n="Bestseller">베스트셀러</div>-->
+<!--            </a>-->
+<!--        </li>-->
     </ul>
 
     <ul class="social js-clone-nav">
