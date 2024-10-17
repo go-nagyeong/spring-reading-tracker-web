@@ -16,7 +16,7 @@ public class PencilNoteRequest {
 
     private final NoteType noteType = NoteType.PENCIL;
 
-    @NotNull(message = "도서 ID " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG, groups = ValidationGroups.Create.class)
+    @NotNull(message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG, groups = ValidationGroups.Create.class)
     private final Long readingBookId;
 
     @NotEmpty(message = "본문을 입력해 주세요.")

@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 
 @Service
@@ -20,6 +18,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ResourceAccessUtil<Review> resourceAccessUtil;
+
+    private final BookService bookService;
 
     /**
      * C[R]UD - READ
@@ -52,6 +52,9 @@ public class ReviewService {
     @Transactional
     public ReviewResponse createReview(ReviewRequest review) {
         Review newReview = ReviewMapper.INSTANCE.toEntity(review);
+
+        // 저장 전 도서 정보(ISBN) 유효성 검증
+        bookService.validateBookIsbn(newReview.getBookIsbn());
 
         return ReviewMapper.INSTANCE.toDto(reviewRepository.save(newReview));
     }

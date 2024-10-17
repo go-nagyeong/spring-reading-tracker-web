@@ -1,11 +1,14 @@
 package com.readingtracker.boochive.service;
 
+import com.readingtracker.boochive.config.AppConstants;
+import com.readingtracker.boochive.domain.Book;
 import com.readingtracker.boochive.domain.User;
 import com.readingtracker.boochive.dto.book.BookDto;
 import com.readingtracker.boochive.dto.book.PageableBookListResponse;
 import com.readingtracker.boochive.dto.reading.ReadingBookResponse;
 import com.readingtracker.boochive.dto.statistics.BookStatisticsDto;
 import com.readingtracker.boochive.enums.QueryType;
+import com.readingtracker.boochive.exception.AladinApiException;
 import com.readingtracker.boochive.repository.BookRepository;
 import com.readingtracker.boochive.util.AladdinOpenAPIHandler;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +79,11 @@ public class BookService {
     @Transactional(readOnly = true)
     public Map<String, Object> getBookDetails(String isbn, User user) {
         // 1. 외부 API에서 책 상세 정보 가져오기
-        BookDto bookDetail = aladdinOpenAPIHandler.lookupBook(isbn);
+        PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
+        if (lookupResult.getErrorCode() != null) { // 잘못된 ISBN
+            throw new AladinApiException(lookupResult.getErrorMessage());
+        }
+        BookDto bookDetail = lookupResult.getItem().get(0);
 
         // 2. 책 통계 정보 세팅
         Map<String, BookStatisticsDto> bookStatistics = bookRepository
@@ -116,6 +123,19 @@ public class BookService {
                 ))
                 .findFirst()
                 .orElseGet(() -> new BookStatisticsDto(bookIsbn, 0L, BigDecimal.ZERO, 0L));
+    }
+
+    /**
+     * (공통 유틸 메서드) 책 ISBN 유효성 검증
+     */
+    public void validateBookIsbn(String bookIsbn) {
+        Optional<Book> existingBook = bookRepository.findByIsbn13(bookIsbn);
+        if (existingBook.isEmpty()) {
+            PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(bookIsbn);
+            if (lookupResult.getErrorCode() != null) { // 존재하지 않는 책
+                throw new IllegalArgumentException("도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG);
+            }
+        }
     }
 
     /**

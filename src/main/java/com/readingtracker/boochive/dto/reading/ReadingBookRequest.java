@@ -13,16 +13,16 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReadingBookRequest {
 
-    @NotBlank(message = "ISBN " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
-    @Pattern(regexp = AppConstants.BOOK_ISBN_REGEX, message = "ISBN " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @NotBlank(message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Pattern(regexp = AppConstants.BOOK_ISBN_REGEX, message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     @JsonProperty("bkId")
     private final String bookIsbn;
 
     @JsonProperty("colId")
     private final Long collectionId;
 
-    @NotBlank(message = "독서 상태 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
-    @ValidEnum(enumClass = ReadingStatus.class, message = "독서 상태 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @NotBlank(message = "독서 상태가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @ValidEnum(enumClass = ReadingStatus.class, message = "독서 상태가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     @JsonProperty("rdSttus")
     private final String readingStatus;
 }

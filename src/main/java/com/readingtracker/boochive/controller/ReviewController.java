@@ -105,8 +105,9 @@ public class ReviewController {
      */
     private Map<String, Integer> createValidationPriorityMap() {
         Map<String, Integer> priorityMap = new HashMap<>();
-        priorityMap.put("rating", 1);
-        priorityMap.put("reviewText", 2);
+        priorityMap.put("bookIsbn", 1);
+        priorityMap.put("rating", 2);
+        priorityMap.put("reviewText", 3);
 
         return priorityMap;
     }

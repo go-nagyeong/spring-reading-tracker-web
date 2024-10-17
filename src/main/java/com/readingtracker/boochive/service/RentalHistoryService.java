@@ -19,6 +19,8 @@ public class RentalHistoryService {
     private final RentalHistoryRepository rentalHistoryRepository;
     private final ResourceAccessUtil<RentalHistory> resourceAccessUtil;
 
+    private final BookService bookService;
+
     /**
      * C[R]UD - READ
      */
@@ -34,6 +36,9 @@ public class RentalHistoryService {
     @Transactional
     public RentalHistoryResponse createHistory(RentalHistoryRequest history) {
         RentalHistory newHistory = RentalHistoryMapper.INSTANCE.toEntity(history);
+
+        // 저장 전 도서 정보(ISBN) 유효성 검증
+        bookService.validateBookIsbn(newHistory.getBookIsbn());
 
         return RentalHistoryMapper.INSTANCE.toDto(rentalHistoryRepository.save(newHistory));
     }

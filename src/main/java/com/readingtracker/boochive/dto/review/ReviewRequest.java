@@ -10,10 +10,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReviewRequest {
 
+    @NotBlank(message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Pattern(regexp = AppConstants.BOOK_ISBN_REGEX, message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final String bookIsbn;
 
-    @Max(value = 10, message = "평점 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
-    @Min(value = 0, message = "평점 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Max(value = 10, message = "평점이" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Min(value = 0, message = "평점이" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final Integer rating;
 
     @NotEmpty(message = "리뷰 내용을 입력해 주세요.")

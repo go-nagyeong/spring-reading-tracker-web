@@ -19,7 +19,7 @@ public class UserInfoRequest {
 
     private final String profileImage;
 
-    @OneOf(range = {0,1,2,9}, message = "성별 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @OneOf(range = {0,1,2,9}, message = "성별이" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final Integer sex;
 
     @ValidDate

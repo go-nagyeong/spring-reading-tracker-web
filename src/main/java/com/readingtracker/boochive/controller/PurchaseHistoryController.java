@@ -80,10 +80,11 @@ public class PurchaseHistoryController {
      */
     private Map<String, Integer> createValidationPriorityMap() {
         Map<String, Integer> priorityMap = new HashMap<>();
-        priorityMap.put("purchaseDate", 1);
-        priorityMap.put("purchaseFrom", 2);
-        priorityMap.put("price", 3);
-        priorityMap.put("memo", 4);
+        priorityMap.put("bookIsbn", 1);
+        priorityMap.put("purchaseDate", 2);
+        priorityMap.put("purchaseFrom", 3);
+        priorityMap.put("price", 4);
+        priorityMap.put("memo", 5);
 
         return priorityMap;
     }

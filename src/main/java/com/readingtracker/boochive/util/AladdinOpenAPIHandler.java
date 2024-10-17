@@ -71,7 +71,8 @@ public class AladdinOpenAPIHandler {
             PageableBookListResponse response = objectMapper.readValue(responseEntity.getBody(), PageableBookListResponse.class);
 
             if (response.getErrorCode() != null) {
-                handelApiError(response.getErrorCode());
+                handelApiError(response);
+                return response;
             }
 
             return formatData(response);
@@ -89,7 +90,7 @@ public class AladdinOpenAPIHandler {
     /**
      * 상품 조회 API
      */
-    public BookDto lookupBook(String itemId) {
+    public PageableBookListResponse lookupBook(String itemId) {
         List<String> optResult = new ArrayList<>(); // 부가 정보
         optResult.add("fulldescription"); // 상품 소개
         optResult.add("Toc"); // 목차
@@ -120,10 +121,11 @@ public class AladdinOpenAPIHandler {
             PageableBookListResponse response = objectMapper.readValue(responseEntity.getBody(), PageableBookListResponse.class);
 
             if (response.getErrorCode() != null) {
-                handelApiError(response.getErrorCode());
+                handelApiError(response);
+                return response;
             }
 
-            return formatData(response).getItem().get(0); // 책 상세 조회 결과 1개만 반환
+            return formatData(response);
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new AladinApiException("API 호출 중 오류가 발생했습니다.");
@@ -180,10 +182,13 @@ public class AladdinOpenAPIHandler {
     /**
      * API 에러 응답 사용자 정의
      */
-    private void handelApiError(Integer errorCode) {
-        log.info("handelApiError: {}", errorCode);
-        if (errorCode == 8) { // 존재하지 않는 책
-            throw new AladinApiException("책 정보를 찾을 수 없습니다.");
+    private void handelApiError(PageableBookListResponse response) {
+        log.info("handelApiError Code: {}", response.getErrorCode());
+        log.info("handelApiError Message: {}", response.getErrorMessage());
+        if (response.getErrorCode() == 8) { // 존재하지 않는 책
+            response.setErrorMessage("도서 정보를 찾을 수 없습니다.");
+        } else {
+            throw new AladinApiException(response.getErrorMessage());
         }
     }
 }

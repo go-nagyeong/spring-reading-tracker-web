@@ -80,10 +80,11 @@ public class RentalHistoryController {
      */
     private Map<String, Integer> createValidationPriorityMap() {
         Map<String, Integer> priorityMap = new HashMap<>();
-        priorityMap.put("rentalDate", 1);
-        priorityMap.put("returnDate", 2);
-        priorityMap.put("rentalFrom", 3);
-        priorityMap.put("memo", 4);
+        priorityMap.put("bookIsbn", 1);
+        priorityMap.put("rentalDate", 2);
+        priorityMap.put("returnDate", 3);
+        priorityMap.put("rentalFrom", 4);
+        priorityMap.put("memo", 5);
 
         return priorityMap;
     }

@@ -1,9 +1,7 @@
 package com.readingtracker.boochive.dto.purchase;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Size;
+import com.readingtracker.boochive.config.AppConstants;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,6 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PurchaseHistoryRequest {
 
+    @NotBlank(message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Pattern(regexp = AppConstants.BOOK_ISBN_REGEX, message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final String bookIsbn;
 
     @NotNull(message = "구매일자를 입력해 주세요.")

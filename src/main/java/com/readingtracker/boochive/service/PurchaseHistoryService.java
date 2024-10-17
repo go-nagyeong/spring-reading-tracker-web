@@ -19,6 +19,8 @@ public class PurchaseHistoryService {
     private final PurchaseHistoryRepository purchaseHistoryRepository;
     private final ResourceAccessUtil<PurchaseHistory> resourceAccessUtil;
 
+    private final BookService bookService;
+
     /**
      * C[R]UD - READ
      */
@@ -34,6 +36,9 @@ public class PurchaseHistoryService {
     @Transactional
     public PurchaseHistoryResponse createHistory(PurchaseHistoryRequest history) {
         PurchaseHistory newHistory = PurchaseHistoryMapper.INSTANCE.toEntity(history);
+
+        // 저장 전 도서 정보(ISBN) 유효성 검증
+        bookService.validateBookIsbn(newHistory.getBookIsbn());
 
         return PurchaseHistoryMapper.INSTANCE.toDto(purchaseHistoryRepository.save(newHistory));
     }

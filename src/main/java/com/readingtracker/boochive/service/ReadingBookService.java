@@ -1,7 +1,9 @@
 package com.readingtracker.boochive.service;
 
+import com.readingtracker.boochive.config.AppConstants;
 import com.readingtracker.boochive.domain.*;
 import com.readingtracker.boochive.dto.book.BookDto;
+import com.readingtracker.boochive.dto.book.PageableBookListResponse;
 import com.readingtracker.boochive.dto.common.BatchOperationRequest;
 import com.readingtracker.boochive.dto.reading.ReadingBookCondition;
 import com.readingtracker.boochive.dto.reading.ReadingBookRequest;
@@ -32,12 +34,12 @@ public class ReadingBookService {
 
     private final ReadingBookJpaRepository readingBookRepository;
     private final ReadingBookDslRepositoryImpl readingBookDslRepository;
-    private final ResourceAccessUtil<ReadingBook> resourceAccessUtil;
-    private final ResourceAccessUtil<BookCollection> collectionResourceAccessUtil;
-
     private final BookRepository bookRepository;
     private final ReadingRecordRepository readingRecordRepository;
     private final PurchaseHistoryRepository purchaseHistoryRepository;
+
+    private final ResourceAccessUtil<ReadingBook> resourceAccessUtil;
+    private final ResourceAccessUtil<BookCollection> collectionResourceAccessUtil;
 
     private final AladdinOpenAPIHandler aladdinOpenAPIHandler;
 
@@ -249,8 +251,13 @@ public class ReadingBookService {
         Optional<Book> existingBook = bookRepository.findByIsbn13(isbn);
 
         if (existingBook.isEmpty()) {
-            BookDto newBook = aladdinOpenAPIHandler.lookupBook(isbn);
-            bookRepository.save(BookMapper.INSTANCE.toEntity(newBook));
+            PageableBookListResponse lookupResult = aladdinOpenAPIHandler.lookupBook(isbn);
+            if (lookupResult.getErrorCode() != null) { // 존재하지 않는 책
+                throw new IllegalArgumentException("도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG);
+            }
+
+            BookDto bookDetail = lookupResult.getItem().get(0);
+            bookRepository.save(BookMapper.INSTANCE.toEntity(bookDetail));
         }
     }
 

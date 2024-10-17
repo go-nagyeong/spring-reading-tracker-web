@@ -21,7 +21,7 @@ public class HighlightNoteRequest {
 
     private final NoteType noteType = NoteType.HIGHLIGHT;
 
-    @NotNull(message = "도서 ID " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG, groups = ValidationGroups.Create.class)
+    @NotNull(message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG, groups = ValidationGroups.Create.class)
     private final Long readingBookId;
 
     @PlainTextLength(min = 2, max = 1500, message = "노트 내용은 2~1500자 이내로 입력하셔야 합니다.")
@@ -29,7 +29,7 @@ public class HighlightNoteRequest {
 
     private final String attachmentImage;
 
-    @Pattern(regexp = AppConstants.COLOR_CODE_REGEX, message = "하이라이트 색상 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Pattern(regexp = AppConstants.COLOR_CODE_REGEX, message = "하이라이트 색상이" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final String backgroundColor;
 
     @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.")

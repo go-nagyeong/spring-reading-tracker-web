@@ -23,10 +23,10 @@ import java.util.*;
 public class ReadingRecordService {
 
     private final ReadingRecordRepository readingRecordRepository;
+    private final ReadingBookJpaRepository readingBookRepository;
+
     private final ResourceAccessUtil<ReadingRecord> resourceAccessUtil;
     private final ResourceAccessUtil<ReadingBook> readingBookResourceAccessUtil;
-
-    private final ReadingBookJpaRepository readingBookRepository;
 
     /**
      * C[R]UD - READ

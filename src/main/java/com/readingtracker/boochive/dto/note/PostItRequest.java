@@ -14,7 +14,7 @@ public class PostItRequest {
 
     private final NoteType noteType = NoteType.POST_IT;
 
-    @NotNull(message = "도서 ID " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @NotNull(message = "도서 정보가" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final Long readingBookId;
 
     @Size(max = 20, message = "포스트잇 내용은 20자 이내로 입력하셔야 합니다.")
@@ -24,6 +24,6 @@ public class PostItRequest {
     @Max(value = 5000, message = "페이지 번호는 최대 5000까지 입력할 수 있습니다.")
     private final Integer pageNumber;
 
-    @Pattern(regexp = AppConstants.COLOR_CODE_REGEX, message = "포스트잇 색상 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
+    @Pattern(regexp = AppConstants.COLOR_CODE_REGEX, message = "포스트잇 색상이" + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final String backgroundColor;
 }
