@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ReadingNoteRepository extends JpaRepository<ReadingNote, Long> {
@@ -26,4 +25,6 @@ public interface ReadingNoteRepository extends JpaRepository<ReadingNote, Long> 
             "AND n.noteType = :noteType " +
             "ORDER BY n.id DESC")
     Page<ReadingNote> findAllByUserIdAndNoteTypeOrderByIdDesc(Long userId, NoteType noteType, Pageable pageable);
+
+    Long countByReadingBookIdAndNoteType(Long readingBookId, NoteType noteType);
 }

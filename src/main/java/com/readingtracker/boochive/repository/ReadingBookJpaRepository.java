@@ -21,6 +21,13 @@ public interface ReadingBookJpaRepository extends JpaRepository<ReadingBook, Lon
      */
     Optional<ReadingBook> findByUserIdAndBookIsbn13(Long userId, String bookIsbn);
 
+    @Query("SELECT rb FROM ReadingBook rb " +
+            "JOIN FETCH rb.book b " +
+            "LEFT JOIN FETCH rb.readingNotes n " +
+            "WHERE rb.id = :readingBookId " +
+            "AND n.noteType = :noteType")
+    Optional<ReadingBook> findByIdWithReadingNotes(Long readingBookId, NoteType noteType);
+
 
     /**
      * 범위 조회 쿼리
@@ -47,12 +54,12 @@ public interface ReadingBookJpaRepository extends JpaRepository<ReadingBook, Lon
 
     @Query("SELECT rb FROM ReadingBook rb " +
             "JOIN FETCH rb.book b " +
-            "JOIN FETCH rb.readingNotes n " +
             "JOIN FETCH rb.user u " +
+            "LEFT JOIN FETCH rb.readingNotes n " +
             "WHERE u.id = :userId " +
             "AND n.noteType = :noteType " +
-            "ORDER BY n.id DESC")
-    Page<ReadingBook> findAllByUserIdAndNoteTypeOrderByIdDesc(Long userId, NoteType noteType, Pageable pageable);
+            "ORDER BY n.id DESC") // 노트 기준 책 역정렬 (가장 최근 노트를 생성한 책이 맨 앞)
+    Page<ReadingBook> findAllByUserIdAndNoteTypeOrderByNoteIdDesc(Long userId, NoteType noteType, Pageable pageable);
 
 
     /**

@@ -12,6 +12,7 @@ public final class AppConstants {
     public static final String BOOK_ISBN_REGEX = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$";
     public static final String PHONE_NUMBER_REGEX = "^(01[016789]{1})?[0-9]{3,4}?[0-9]{4}|$";
     public static final String PASSWORD_REGEX = "^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?:[0-9]+))$)[A-Za-z\\d~!@#$%^&*()_+=]{8,20}$";
+    public static final String COLOR_CODE_REGEX = "^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$";
 
     /**
      * Message

@@ -28,7 +28,7 @@
             <div class="col-9 col-sm-10 d-flex align-items-center">
                 <select class="lc-select" name="simple" disabled>
                     {{#with bookInfo}}
-                        <option value="{{isbn13}}" data-image="{{cover}}" selected>{{title}}</option>
+                        <option data-image="{{cover}}" selected>{{title}}</option>
                     {{/with}}
                 </select>
             </div>
@@ -75,7 +75,7 @@
                 <div class="w-100">
                     <select class="lc-select" name="readingBookId" {{#if note.id}} disabled {{/if}}>
                         {{#with note.bookInfo}}
-                            <option value="{{isbn13}}" data-image="{{cover}}" selected>{{title}}</option>
+                            <option data-image="{{cover}}" selected>{{title}}</option>
                         {{else}}
                             {{#each bookOptions}}
                                 <optgroup label="{{@key}}">

@@ -41,10 +41,11 @@ window.initializeBookshelfUI = initializeBookshelfUI;
  */
 // 엘리먼트 숨기고 '더보기' 버튼으로 처리
 function hideOverflowingElement(bookshelfEl) {
-    // const parentSize = getInnerWidth(bookshelfEl.querySelector('.books'));
     const parentSize = getInnerWidth(bookshelfEl) - getOuterWidth(bookshelfEl.querySelector('.more'));
     let childrenSize = 0;
-    bookshelfEl.querySelectorAll('.book').forEach(el => {
+
+    const children = bookshelfEl.querySelectorAll('.book');
+    children.forEach(el => {
         childrenSize += getOuterWidth(el);
         el.toggle(parentSize >= childrenSize);
     });
@@ -52,10 +53,9 @@ function hideOverflowingElement(bookshelfEl) {
 
 // 다음 줄로 엘리먼트 넘기기
 function moveOverflowingElementToNextLine(bookshelfEl) {
-    // const parent = bookshelfEl.querySelector('.books');
-    // const parentSize = getInnerWidth(parent);
-    const parentSize = getInnerWidth(bookshelfEl) - getOuterWidth(bookshelfEl.querySelector('.more'));
+    const parentSize = getInnerWidth(bookshelfEl);
     let childrenSize = 0;
+
     const children = bookshelfEl.querySelectorAll('.book');
     children.forEach(el => {
         childrenSize += getOuterWidth(el);
@@ -87,11 +87,7 @@ function cloneBookShelfElement(bookshelfEl) {
     const books = document.createElement('div');
     books.classList.add('books');
 
-    const shelf = document.createElement('div');
-    shelf.classList.add('shelf');
-
     bookshelf.appendChild(books);
-    bookshelf.appendChild(shelf);
 
     return bookshelf;
 }
@@ -100,17 +96,17 @@ window.hideOverflowingElement = hideOverflowingElement;
 window.moveOverflowingElementToNextLine = moveOverflowingElementToNextLine;
 
 function getInnerWidth(el) {
-    const style = window.getComputedStyle(el),
-        width = el.clientWidth,
-        padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    const style = window.getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
+    const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
 
-    return width - padding;
+    return rect.width - padding;
 }
 
 function getOuterWidth(el) {
-    const style = window.getComputedStyle(el),
-        width = el.offsetWidth,
-        margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-    
-    return width + margin;
+    const style = window.getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
+    const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+
+    return rect.width + margin;
 }

@@ -42,8 +42,8 @@ public class ReadingNoteController {
 
     private final String uploadDir = "images/notes/";
 
-    // 한 페이지에 표시할 아이템 수
-    private final static int HIGHLIGHT_NOTE_SIZE_PER_PAGE = 12; // 반응형 그리드 셀 개수 2,3,4의 공배수
+    // 한 페이지에 표시할 아이템 수 (NOTE: 반응형 그리드 셀 개수 2,3,4의 공배수)
+    private final static int HIGHLIGHT_NOTE_SIZE_PER_PAGE = 12;
 
     /**
      * GET - 로그인 유저의 특정 노트 상세 조회

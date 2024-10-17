@@ -89,7 +89,9 @@ public class BookService {
                         (Long) result[3]
                 ))
                 .collect(Collectors.toMap(BookStatisticsDto::getBookIsbn, statistics -> statistics));
-        bookDetail.setStatistics(bookStatistics.get(bookDetail.getIsbn13()));
+        bookDetail.setStatistics(bookStatistics.getOrDefault(
+                bookDetail.getIsbn13(), new BookStatisticsDto(bookDetail.getIsbn13(), 0L, BigDecimal.ZERO, 0L)
+        ));
 
         // 4. 사용자의 독서 상태 및 컬렉션 정보 가져오기
         Optional<ReadingBookResponse> readingInfo = readingBookService
@@ -113,7 +115,7 @@ public class BookService {
                         (Long) result[3]
                 ))
                 .findFirst()
-                .orElseThrow();
+                .orElseGet(() -> new BookStatisticsDto(bookIsbn, 0L, BigDecimal.ZERO, 0L));
     }
 
     /**

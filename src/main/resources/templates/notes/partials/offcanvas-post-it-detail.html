@@ -1,90 +1,193 @@
 <div class="offcanvas-header">
-    <h5 class="offcanvas-title">포스트잇 상세</h5>
+    <h5 class="offcanvas-title">포스트잇 상세 <em class="fs-6 text-primary total-count">0</em></h5>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 </div>
-<div class="offcanvas-body">
-    <div class="item-unit mb-2">
-        <div class="item-img mb-1" style="width: 45%;">
-            <div class="book book-lg d-flex">
-                <div class="cover">
-                    <img src="/assets/img/book03.jpg">
+<div class="offcanvas-body d-flex flex-column overflow-hidden" id="postItDetailWrap">
+</div>
+<div class="offcanvas-footer">
+    <button type="button" class="btn btn-primary mb-2 w-100" id="savePostItBtn">저장</button>
+    <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="offcanvas">취소</button>
+</div>
+
+<script id="post-it-edit-template" type="text/x-handlebars-template">
+    <div class="book-info mb-4">
+        {{#with data}}
+            <input type="hidden" name="readingBookId" value="{{readingBookId}}">
+            <a href="/books/detail/{{bookIsbn}}" class="row book-link">
+                <div class="col-4 pe-0">
+                    <img class="img-thumbnail" src="{{cover}}">
                 </div>
-                <ul class="post-its">
-                    <li>
-                        <div class="post-it-bg"></div>
-                    </li>
-                    <li>
-                        <div class="post-it-bg"></div>
-                    </li>
-                    <li>
-                        <div class="post-it-bg"></div>
-                    </li>
-                    <li>
-                        <div class="post-it-bg"></div>
-                    </li>
-                    <li>
-                        <div class="post-it-bg"></div>
-                    </li>
-                    <li>
-                        <div class="post-it-bg"></div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="item-info w-100">
-            <div class="info-name">
-                <a href="" class="bk-name btn-link">
-                    배움의 발견 (나의 특별한 가족, 교육, 그리고 자유의 이야기)
-                </a>
-            </div>
-            <div class="info-detail mt-1">
-                <p class="text-muted">2024. 05. 01 부터 읽는 중</p>
-            </div>
+                <div class="col-8">
+                    <h6 class="line-clamp-2 mt-1">{{title}}</h6>
+                    <p class="text-muted">
+                        <small>책 상세</small>
+                    </p>
+                </div>
+            </a>
+        {{/with}}
+        {{#if bookOptions}}
+            <select class="lc-select mb-1" name="readingBookId">
+                {{#each bookOptions}}
+                    <optgroup label="{{@key}}">
+                        {{#each this}}
+                            <option value="{{id}}" data-image="{{bookInfo.cover}}">{{bookInfo.title}}</option>
+                        {{/each}}
+                    </optgroup>
+                {{/each}}
+            </select>
+        {{/if}}
+
+        <div class="add-btn-wrap">
+            <label class="btn rounded-pill btn-md btn-outline-dark post-it-add-btn">
+                <input type="color" list="presetColors" id="postItColor">
+                <datalist id="presetColors">
+                    {{#each postItColorOptions.colors}}
+                        <option value="{{this}}"></option>
+                    {{/each}}
+                </datalist>
+                <span class="bx bx-plus bx-xs rounded-pill me-2" style="background-color: {{postItColorOptions.default}};">
+                </span>
+                포스트잇 추가
+            </label>
         </div>
     </div>
 
-    <ul class="post-its">
-        <li class="d-flex gap-2 active" id="post-it1">
-            <div class="post-it-bg">
-                <input type="text" value="인상 깊었던 내용">
-                <input type="text" value="124" placeholder="0">p
-            </div>
-            <div>
-                <a href="#" class="active-btn" data-id="#post-it1">
-                    <i class="bx bx-check bx-sm"></i>
-                </a>
-            </div>
-        </li>
-        <th:block th:each="num : ${#numbers.sequence(2,6)}">
-            <li class="d-flex gap-2" th:id="'post-it'+${num}">
-                <div class="post-it-bg">
-                    <input type="text" value="" placeholder="한 줄 메모" disabled>
-                    <input type="number" value="" placeholder="0" disabled>p
-                </div>
-                <div>
-                    <a href="#" class="active-btn" th:data-id="'#post-it'+${num}">
-                        <i class="bx bx-check bx-sm"></i>
-                    </a>
-                </div>
-            </li>
-        </th:block>
+    <ul class="post-its overflow-scroll pe-2">
+        {{#with data}}
+            {{#each postIts}}
+                <li class="mb-3">
+                    <form class="d-flex align-items-center gap-3" data-id="{{id}}" data-action="U" data-bg-cd="{{backgroundColor}}">
+                        <div class="post-it-bg" style="background-color: {{backgroundColor}};">
+                            <div class="input-group input-group-md">
+                                <input type="text" class="form-control" name="noteText" value="{{noteText}}" placeholder="한 줄 메모 (20자 이내)">
+                                <input type="number" class="form-control px-2" name="pageNumber" value="{{pageNumber}}" placeholder="0">
+                                <span class="input-group-text px-2">p</span>
+                            </div>
+                        </div>
+                        <a class="btn btn-icon rounded-pill btn-xs btn-secondary remove-btn" role="button">
+                            <i class="bx bx-minus bx-xs"></i>
+                        </a>
+                    </form>
+                </li>
+            {{/each}}
+        {{/with}}
     </ul>
-</div>
+</script>
+
+<script id="new-post-it-unit-template" type="text/x-handlebars-template">
+    <li class="mb-3">
+        <form class="d-flex align-items-center gap-3" data-action="C" data-bg-cd="{{selectedColor}}">
+            <div class="post-it-bg" style="background-color: {{selectedColor}};">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control" name="noteText" value="" placeholder="한 줄 메모 (20자 이내)">
+                    <input type="number" class="form-control px-2" name="pageNumber" value="" placeholder="0">
+                    <span class="input-group-text px-2">p</span>
+                </div>
+            </div>
+            <a class="btn btn-icon rounded-pill btn-xs btn-secondary remove-btn" role="button">
+                <i class="bx bx-minus bx-xs"></i>
+            </a>
+        </form>
+    </li>
+</script>
 
 <script>
     /**
-     * 포스트잇 활성화
+     * 포스트잇 신규 생성, 수정, 삭제
      */
-    for (const el of document.getElementsByClassName('active-btn')) {
-        el.addEventListener('click', function (event) {
-            const postItEl = document.querySelector(el.dataset.id);
-            if (postItEl) {
-                postItEl.classList.toggle('active');
+    // HTML 템플릿 렌더링 후 스크립트 실행
+    function executeScriptsAfterRender() {
+        Helpers.initializeLCSelect();
 
-                const inputElements = postItEl.querySelectorAll('input');
-                inputElements.forEach(el => el.disabled = !postItEl.classList.contains('active'));
-                inputElements[0].focus();
+        // 저장
+        document.getElementById('savePostItBtn').addEventListener('click', function(event) {
+            savePostItList();
+        })
+
+        // 포스트잇 삭제 버튼 이벤트
+        const postItListWrap = document.querySelector('#postItDetailWrap ul.post-its');
+        postItListWrap.addEventListener('click', function (e) {
+            if (e.target.closest('.remove-btn')) {
+                const postItEl = e.target.closest('li');
+                if (postItEl) {
+                    const form = postItEl.querySelector('form');
+                    if (form.dataset.id) {
+                        form.dataset.action = 'D';
+                        postItEl.toggle(false);
+                    } else {
+                        postItEl.remove();
+                    }
+                }
+            }
+        });
+
+        // 포스트잇 추가 버튼 이벤트 (색상 클릭 시)
+        const postItColorInput = document.getElementById('postItColor');
+        postItColorInput.addEventListener('change', function (e) {
+            const selectedColor = this.value;
+
+            const postItAddBtnIcon = document.querySelector('.post-it-add-btn span');
+            postItAddBtnIcon.style.backgroundColor = selectedColor;
+
+            const source = document.getElementById('new-post-it-unit-template').innerHTML;
+            const template = Handlebars.compile(source);
+            const html = template({selectedColor: selectedColor});
+            postItListWrap.insertAdjacentHTML('beforeend', sanitizeHtml(html));
+            postItListWrap.lastElementChild.querySelector('input:first-child').focus(); // 자동 포커스
+
+            this.value = '';
+        })
+    }
+
+    function savePostItList() {
+        globalLoading(true);
+
+        // 폼 데이터 전처리
+        const createList = [];
+        const updateList = [];
+        const deleteList = [];
+        document.querySelectorAll('#postItDetailWrap form').forEach(el => {
+            const data = formToJson(new FormData(el));
+
+            const readingBookIdEl = document.querySelector('[name=readingBookId]');
+            if (readingBookIdEl) {
+                data['readingBookId'] = readingBookIdEl.value;
+            }
+            data['backgroundColor'] = el.dataset.bgCd;
+
+            const id = el.dataset.id;
+            switch (el.dataset.action) {
+                case 'C':
+                    createList.push(data);
+                    break;
+                case 'U':
+                    data.id = id;
+                    updateList.push(data);
+                    break;
+                case 'D':
+                    deleteList.push(id);
+                    break;
             }
         })
+
+        if (createList.length < 1 && updateList.length < 1 && deleteList.length < 1) {
+            globalLoading(false);
+            showToast('변경된 이력이 없습니다.');
+            return false;
+        }
+
+        const data = {
+            createList: createList,
+            updateList: updateList,
+            deleteList: deleteList,
+        };
+        const promise = axios.post(`/api/reading-notes/post-it/batch`, data);
+
+        const onSuccess = (result) => {
+            getPostItBookList();
+            closeUIComponents();
+        };
+
+        handleApiResponse(promise, onSuccess);
     }
 </script>

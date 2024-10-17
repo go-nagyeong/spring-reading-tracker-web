@@ -15,7 +15,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-1">연필</h5>
+                        <h5 class="mb-1">연필 <em class="fs-6 text-primary total-count">0</em></h5>
                         <div class="text-muted">
                             <i class="bx bx-pencil bx-xs me-1"></i>책에 대한 나의 생각을 정리해 보세요.
                         </div>
@@ -178,9 +178,7 @@
 
     function clearNoteList() {
         const noteListWrap = document.getElementById('noteListWrap')
-        while (noteListWrap.children[0]) {
-            noteListWrap.removeChild(noteListWrap.children[0]);
-        }
+        noteListWrap.innerHTML = '';
     }
 
     /**

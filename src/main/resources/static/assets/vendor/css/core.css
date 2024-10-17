@@ -8566,9 +8566,9 @@ button:focus-visible {
 .form-control::placeholder, .form-control:focus::placeholder {
   transition: all 0.25s ease;
 }
-.form-control:hover:not([disabled]):not([focus]) {
-  border-color: #c7cdd4;
-}
+/*.form-control:hover:not([disabled]):not([focus]) {*/
+/*  border-color: #c7cdd4;*/
+/*}*/
 
 .form-select {
   background-clip: padding-box;

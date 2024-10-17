@@ -329,12 +329,14 @@ button.list-group-item-primary.active {
 
 .form-control:focus,
 .form-select:focus {
-  border-color: var(--bs-primary) !important;
+  /*border-color: var(--bs-primary) !important;*/
+  border-color: var(--bs-primary);
 }
 
 .input-group:focus-within .form-control,
 .input-group:focus-within .input-group-text {
-  border-color: var(--bs-primary) !important;
+  /*border-color: var(--bs-primary) !important;*/
+  border-color: var(--bs-primary);
 }
 
 .form-check-input:focus {

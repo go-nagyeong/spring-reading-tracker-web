@@ -29,6 +29,7 @@ public class HighlightNoteRequest {
 
     private final String attachmentImage;
 
+    @Pattern(regexp = AppConstants.COLOR_CODE_REGEX, message = "하이라이트 색상 " + AppConstants.UNKNOWN_INVALID_ARG_ERROR_MSG)
     private final String backgroundColor;
 
     @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.")

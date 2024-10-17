@@ -15,7 +15,7 @@
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-1">형광펜</h5>
+                        <h5 class="mb-1">형광펜 <em class="fs-6 text-primary total-count">0</em></h5>
                         <div class="text-muted">
                             <i class="bx bx-highlight bx-xs me-1"></i>인상깊은 구절을 남겨보세요.
                         </div>
@@ -172,9 +172,7 @@
 
     function clearNoteList() {
         const noteListWrap = document.getElementById('noteListWrap')
-        while (noteListWrap.children[0]) {
-            noteListWrap.removeChild(noteListWrap.children[0]);
-        }
+        noteListWrap.innerHTML = '';
     }
 
     /**
