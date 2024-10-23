@@ -55,6 +55,7 @@ public class AladdinOpenAPIHandler {
                 .queryParam("Output", "JS")        // 출력방법 ("JS" 고정)
                 .queryParam("Version", "20131101") // 검색 API의 Version(날짜형식) ("20131101" 고정)
                 .build()
+                .encode()
                 .toUri();
 
         HttpHeaders headers = new HttpHeaders();
