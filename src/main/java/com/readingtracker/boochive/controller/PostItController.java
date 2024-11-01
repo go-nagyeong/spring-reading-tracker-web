@@ -34,13 +34,18 @@ public class PostItController {
      * GET - 로그인 유저의 포스트잇 책 목록 조회
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<Page<BookWithPostItsResponse>>> getPostItBookList(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getPostItBookList(
             @AuthenticationPrincipal User user,
             @PageableDefault(value = POST_IT_BOOK_SIZE_PER_PAGE) Pageable pageable
     ) {
         Page<BookWithPostItsResponse> bookList = postItService.findBooksWithPostItsByUser(user.getId(), pageable);
+        Long postItCount = postItService.getUserPostItCount(user.getId());
 
-        return ApiResponse.success(null, bookList);
+        Map<String, Object> data = new HashMap<>();
+        data.put("bookList", bookList);
+        data.put("postItCount", postItCount);
+
+        return ApiResponse.success(null, data);
     }
 
     /**

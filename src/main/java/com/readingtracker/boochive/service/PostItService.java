@@ -63,6 +63,11 @@ public class PostItService {
                 .orElseThrow(() -> new ResourceNotFoundException(readingBookResourceName.getName())); // 데이터 유무 검사
     }
 
+    @Transactional(readOnly = true)
+    public Long getUserPostItCount(Long userId) {
+        return readingNoteRepository.countByUserIdAndNoteType(userId, NoteType.POST_IT);
+    }
+
     /**
      * [C]R[U][D] - BATCH CREATE/UPDATE/DELETE
      */
@@ -91,7 +96,7 @@ public class PostItService {
         }
 
         if (readingBookIdSet.size() > 1) {
-            throw new IllegalArgumentException("책 정보가 일치하지 않습니다. 문제가 계속되면 관리자에게 문의해 주세요");
+            throw new IllegalArgumentException("책 정보가 일치하지 않습니다. 문제가 계속되면 관리자에게 문의해 주세요.");
         }
         Long readingBookId = readingBookIdSet.iterator().next();
 

@@ -14,7 +14,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between">
             <div>
-                <h5 class="mb-1">포스트잇</h5>
+                <h5 class="mb-1">포스트잇 <em class="fs-6 text-primary total-count">0</em></h5>
                 <div class="text-muted">
                     <i class="bx bx-tag bx-xs me-1"></i>간단한 한 줄 메모를 해보세요.
                 </div>
@@ -98,9 +98,10 @@
         const promise = axios.get('/api/reading-notes/post-it/me'+window.location.search);
 
         const onSuccess = (result) => {
-            const bookListResult = result.data;
+            const data = result.data;
+            const bookListResult = data.bookList;
 
-            setPostItBookList(bookListResult);
+            setPostItBookList(data);
             setPagination(bookListResult.number + 1, bookListResult.totalPages);
             // 책장 UI 초기화
             initializeBookshelfUI();
@@ -117,13 +118,15 @@
     }
 
     function setPostItBookList(data) {
+        const { bookList, postItCount } = data;
         const bookshelfContainer = document.querySelector('.bookshelf-cont')
 
         // 책 목록 세팅
         const source = document.getElementById('post-it-book-list-template').innerHTML;
         const template = Handlebars.compile(source);
-        const html = template({books: data.content});
+        const html = template({books: bookList.content});
         bookshelfContainer.innerHTML = sanitizeHtml(html);
+        document.querySelector('.total-count').textContent = postItCount;
 
         // 버튼 이벤트 세팅
         setPostItDetailButtonEvent();
@@ -184,7 +187,7 @@
         if (data) {
             const html = template({data: data, ...commonData});
             postItDetailWrap.innerHTML = sanitizeHtml(html);
-            document.querySelector('.total-count').textContent = data.postIts.length;
+            document.querySelector('.count-by-book').textContent = data.postIts.length;
         } else {
             const bookOptions = await loadUserBookList();
             const html = template({bookOptions: bookOptions, ...commonData});

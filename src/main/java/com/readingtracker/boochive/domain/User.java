@@ -97,6 +97,11 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<UserConfig> userConfigs = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<ReadingNote> readingNotes = new ArrayList<>();
+
     /**
      * 비밀번호 변경
      */

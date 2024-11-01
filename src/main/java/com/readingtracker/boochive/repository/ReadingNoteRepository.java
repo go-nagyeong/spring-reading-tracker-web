@@ -26,5 +26,7 @@ public interface ReadingNoteRepository extends JpaRepository<ReadingNote, Long> 
             "ORDER BY n.id DESC")
     Page<ReadingNote> findAllByUserIdAndNoteTypeOrderByIdDesc(Long userId, NoteType noteType, Pageable pageable);
 
+    Long countByUserIdAndNoteType(Long userId, NoteType noteType);
+
     Long countByReadingBookIdAndNoteType(Long readingBookId, NoteType noteType);
 }

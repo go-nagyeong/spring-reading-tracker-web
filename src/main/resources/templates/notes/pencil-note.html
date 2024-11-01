@@ -175,6 +175,7 @@
         const template = Handlebars.compile(source);
         const html = template({notes: data.content});
         noteListWrap.innerHTML = sanitizeHtml(html);
+        document.querySelector('.total-count').textContent = data.totalElements;
 
         // 버튼 이벤트 세팅
         setNoteDetailButtonEvent();
